@@ -1,0 +1,6 @@
+shopware_app:
+    shop_class: Swag\Braintree\Entity\ShopEntity
+#    confirmation_url: '/app/lifecycle/register-confirm'
+    name: '%env(APP_NAME)%'
+    secret: '%env(APP_SECRET)%'
+

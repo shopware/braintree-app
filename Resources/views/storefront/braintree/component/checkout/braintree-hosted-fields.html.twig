@@ -1,0 +1,29 @@
+{% set pluginOptions = {
+    appShopId: appShopId,
+    placeholders: {
+        number: 'braintree.hosted-fields.number'|trans,
+        cvv: 'braintree.hosted-fields.cvv'|trans,
+        expirationDate: 'braintree.hosted-fields.expirationDate'|trans,
+        cardholderName: 'braintree.hosted-fields.cardholderName'|trans,
+        postalCode: 'braintree.hosted-fields.postalCode'|trans,
+    },
+    cardholderName: [context.customer.firstName, context.customer.lastName]|join(' '),
+    postalCode: context.customer.activeBillingAddress.zipcode,
+    cartAmount: page.order.amountTotal ?? page.cart.price.totalPrice,
+    currencyId: page.order.currencyId ?? context.currency.id,
+    salesChannelId: context.salesChannel.id,
+    noMerchantAccountId: 'braintree.noMerchantAccountId'|trans,
+} %}
+
+<div data-swag-braintree-hosted-fields data-swag-braintree-hosted-fields-options="{{ pluginOptions|json_encode }}" class="swag-braintree-hosted-fields">
+    <div id="sw-braintree-payment-method__number" class="form-control"></div>
+
+    <div class="swag-braintree-hosted-fields__group">
+        <div id="sw-braintree-payment-method__expirationDate" class="form-control"></div>
+        <div id="sw-braintree-payment-method__cvv" class="form-control"></div>
+    </div>
+
+    <div id="sw-braintree-payment-method__cardholderName" class="form-control"></div>
+
+    <div id="sw-braintree-payment-method__postalCode" class="form-control"></div>
+</div>

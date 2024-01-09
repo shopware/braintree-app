@@ -1,0 +1,12 @@
+{
+  "braintree": {
+    "hosted-fields": {
+      "number": "Kartennummer",
+      "expirationDate": "Ablaufdatum (MM/JJ)",
+      "cvv": "Sicherheitscode (CVV)",
+      "cardholderName": "Name des Karteninhabers",
+      "postalCode": "Postleitzahl"
+    },
+    "noMerchantAccountId": "Braintree ist nicht für die gewählte Währung verfügbar"
+  }
+}

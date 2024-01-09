@@ -1,0 +1,141 @@
+{
+  "notification": {
+    "success": "Success",
+    "error": "Error"
+  },
+  "register": {
+    "disconnect-button": "Disconnect"
+  },
+  "configuration": {
+    "merchant": {
+      "disconnected": "Not connected"
+    },
+    "merchantId": "Merchant ID",
+    "payment": {
+      "active": "Active",
+      "title": "Braintree by PayPal",
+      "description": "Pay with Braintree by PayPal",
+      "enabled": "Payment method enabled",
+      "disabled": "Payment method disabled",
+      "isBraintreeSandbox": "This is a sandbox account"
+    },
+    "publicKeyLabel": "Braintree public key",
+    "publicKeyPlaceholder": "Enter your Braintree public key ...",
+    "privateKeyLabel": "Braintree private key",
+    "privateKeyPlaceholder": "Enter your Braintree private key ...",
+    "merchantIdLabel": "Braintree merchant ID",
+    "merchantIdPlaceholder": "Enter your Braintree merchant ID ...",
+    "status": {
+      "active": "Connected",
+      "pending": "Pending",
+      "suspended": "Suspended",
+      "disconnected": "Disconnected"
+    },
+    "save": "Save configuration",
+    "test": "Test configuration"
+  },
+  "settings": {
+    "title": "Braintree by PayPal",
+    "allSalesChannels": "All channels",
+    "tabs": {
+      "generalLabel": "General",
+      "currencyLabel": "Currency mapping"
+    },
+    "salesChannelSwitch":{
+      "label": "Sales Channel",
+      "placeholder": "All sales channel"
+    },
+    "saveConfigButton": "Save Settings",
+    "general": {
+      "title": "General",
+      "threeDSecureEnforced": {
+        "label": "Only accept transactions with 3D Secure"
+      },
+      "threeDSecureToolTip": "Transaction will not be accepted, if 3D Secure is not available"
+    },
+    "currency": {
+      "missingAccountTitle": "Missing information",
+      "missingAccount": "Please link your Braintree account in the {link}",
+      "missingAccountLink": "payment methods overview",
+      "table": {
+        "title": "Currency mapping",
+        "columns": {
+          "shopwareCurrencyLabel": "Shopware currency",
+          "braintreeMerchantAccount": "Matching Braintree Merchant"
+        }
+      }
+    }
+  },
+  "orderTransactionDetail": {
+    "tabLabel": "Braintree",
+    "title": "Braintree by PayPal",
+    "emptyStateTitle": "No braintree transaction found",
+    "emptyStateDescription": "This order was not handled through Braintree",
+    "body": {
+      "customerIdTitle": "Customer ID",
+      "customerIdEmptyLabel": "No customer ID",
+      "amountTitle": "Invoice amount",
+      "amountNetLabel": "Subtotal",
+      "amountShippingLabel": "Shipping",
+      "amountGrossLabel": "Total",
+      "paymentDetailsTitle": "Payment details",
+      "paymentDetailsStatusLabel": "Status",
+      "paymentDetailsStatusValue": {
+        "authorization_expired": "Authorization expired",
+        "authorized": "Authorized",
+        "authorizing": "Authorizing",
+        "settlement_pending": "Settlement pending",
+        "settlement_declined": "Settlement declined",
+        "failed": "Failed",
+        "gateway_rejected": "Gateway rejected",
+        "processor_declined": "Processor declined",
+        "settled": "Settled",
+        "settling": "Settling",
+        "submitted_for_settlement": "Submitted for settlement",
+        "voided": "Voided"
+      },
+      "paymentDetailsConclusionTypeLabel": "Payment conclusion type",
+      "paymentDetailsTransactionIdLabel": "Transaction ID",
+      "paymentDetailsCreatedAtLabel": "Created",
+      "paymentDetailsUpdatedAtLabel": "Last updated",
+      "paymentDetailsConclusionTypeValue": {
+        "immediate": "Submitted for settlement immediately"
+      },
+      "threeDSTitle": "3D Secure",
+      "threeDSLiabilityPossibleLabel": "Liability shift possible",
+      "threeDSLiabilityPossibleValue": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "threeDSLiabilityShiftedLabel": "Liability shifted",
+      "threeDSLiabilityShiftedValue": {
+          "true": "Yes",
+          "false": "No"
+      }
+    },
+    "history": {
+      "header": {
+        "status": "Status",
+        "amountCaptured": "Amount captured",
+        "timestamp": "Date"
+      }
+    }
+  },
+  "errors": {
+    "save_settings": "Error saving settings: {error}",
+    "save_config": "Error saving config: {error}",
+    "fetch_settings": "Error fetching settings: {error}",
+    "fetch_config": "Error fetching config: {error}",
+    "fetch_merchant_accounts": "Error fetching braintree's merchant accounts: {error}",
+    "fetch_currencies": "Error fetching shopware's currencies: {error}",
+    "reset_config": "Error disconnecting your account: {error}",
+    "test_config": "Error testing connection: {error}",
+    "fetch_account_status": "Error fetching status: {error}",
+    "connection": "Connection failed"
+  },
+  "success": {
+    "save_settings": "Settings saved successfully",
+    "save_config": "Config saved successfully",
+    "connection": "Connection established"
+  }
+}

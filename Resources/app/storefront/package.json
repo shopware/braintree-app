@@ -1,0 +1,11 @@
+{
+  "name": "swag-braintree-storefront",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shopware Storefront Braintree",
+  "license": "MIT",
+  "dependencies": {
+    "@friendsofshopware/storefront-sdk": "^0.1.2",
+    "braintree-web": "^3.97.1"
+  }
+}

@@ -1,0 +1,4 @@
+/**/*  export-ignore
+Resources -export-ignore
+Resources/**/* -export-ignore
+/manifest.xml -export-ignore

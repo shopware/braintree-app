@@ -1,0 +1,175 @@
+stages:
+  - check
+  - lint
+  - test
+  - release
+
+variables:
+  GIT_STRATEGY: clone
+  PLATFORM_VERSION: '~6.5.0' # has to be a composer constraint
+  WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/public
+  LOG_STDOUT: $CI_PROJECT_DIR/var/log/stdout.log
+  MYSQL_ROOT_PASSWORD: root
+  DATABASE_URL: 'mysql://root:root@database:3306/root'
+  APP_SECRET: 'devsecret'
+  APP_URL: http://localhost:8000
+  DEV_IMAGE:
+    value: shopware/development:8.2-composer-2
+  MYSQL_IMAGE:
+    value: mysql:8.0.33
+  MYSQL8_CMD:
+    value: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
+
+workflow:
+  rules:
+    - when: always
+
+.install_node: &install_node
+  - npm ci --no-audit --prefer-offline
+  - npm run build
+
+default:
+  image: $DEV_IMAGE
+  tags:
+    - shopware
+  services:
+    - name: "$MYSQL_IMAGE"
+      alias: database
+      entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL8_CMD" ]
+  before_script:
+    - echo 'memory_limit = -1' | tee /usr/local/etc/php/conf.d/99-memory-limit.ini
+    - apt-get update && apt-get install --no-install-recommends -y jq zip
+    - composer install --no-interaction
+    - composer dump-autoload
+    - php bin/console cache:clear
+    - rm /usr/local/etc/php/conf.d/99-memory-limit.ini
+
+check:
+  stage: check
+  before_script:
+    - ''
+  script:
+    - APP_VERSION=\"$(sed -n 's/.*<version>\(.*\)<\/version>/\1/p' manifest.xml)\"
+    - echo "Detected app version $APP_VERSION"
+    - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - git show origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME:manifest.xml >> manifest_trunk.xml
+    - TRUNK_APP_VERSION=\"$(sed -n 's/.*<version>\(.*\)<\/version>/\1/p' manifest_trunk.xml)\"
+    - echo "Detected trunk app version $TRUNK_APP_VERSION"
+    - if [[ $APP_VERSION == $TRUNK_APP_VERSION ]] ; then echo "Changes to app detected. Please update manifest.xml version." & exit 1; fi
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - changes:
+      - manifest.xml
+      - Resources/**/*
+
+phpunit:
+  stage: test
+  needs: []
+  script:
+    - php
+      -d pcov.enabled=1 -d pcov.directory=$PWD/src -d pcov.exclude='~(vendor|tests|node_modules)~'
+      ${CI_PROJECT_DIR}/vendor/bin/phpunit
+      --configuration phpunit.xml.dist
+      --log-junit build/artifacts/junit.xml
+      --colors=never
+      --coverage-xml build/artifacts/coverage-xml
+      --coverage-cobertura build/artifacts/cobertura.xml
+      --coverage-text | grep -v -E '^Swag\\Braintree\\|^  Methods:' # do not output covered files lines
+    - php -d pcov.enable=1 -d pcov.directory=$CI_PROJECT_DIR
+      vendor/bin/infection
+      --threads=16
+      --configuration=infection.json5
+      --coverage=build/artifacts
+      --min-msi=90
+      --show-mutations
+      --skip-initial-tests
+  coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
+  artifacts:
+    when: always
+    reports:
+      junit: build/artifacts/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: build/artifacts/cobertura.xml
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+phpstan:
+  stage: test
+  needs: []
+  script:
+    - ${CI_PROJECT_DIR}/vendor/bin/phpstan analyze --error-format=gitlab --no-progress | tee ${CI_PROJECT_DIR}/phpstan-report.json
+  artifacts:
+    when: always
+    reports:
+      codequality: phpstan-report.json
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+ecs:
+  stage: lint
+  needs: []
+  script:
+    - composer ecs
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+eslint (admin):
+  stage: lint
+  needs: []
+  script:
+    - *install_node
+    - npm run eslint
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+build:
+  image:
+    name: ghcr.io/friendsofshopware/shopware-cli:0.3.18
+    entrypoint: [ "/usr/local/bin/entrypoint.sh" ]
+  stage: release
+  script:
+    - >
+      echo -e "build:\n  shopwareVersionConstraint: '$PLATFORM_VERSION'" | tee "$CI_PROJECT_DIR/.shopware-extension.yml"
+    - npm --prefix "$CI_PROJECT_DIR/Resources/app/storefront" ci
+    - shopware-cli extension build --config "$CI_PROJECT_DIR/.shopware-extension.yml" .
+    - echo "APP_VERSION=\"$(sed -n 's/.*<version>\(.*\)<\/version>/\1/p' manifest.xml)\"" | tee -a variables.env
+    - echo "APP_BUILD_CI_JOB_ID=$CI_JOB_ID" | tee -a variables.env
+    - mkdir SwagBraintreeApp
+    - cp -t SwagBraintreeApp/ -r Resources/ manifest.xml
+    - rm -rf SwagBraintreeApp/Resources/app/storefront/node_modules/
+    - zip -r swagbraintreeapp.zip SwagBraintreeApp/
+  artifacts:
+    paths:
+      - swagbraintreeapp.zip
+    expire_in: 1 week
+    reports:
+      dotenv: variables.env
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: never
+    - changes:
+      - manifest.xml
+      - Resources/**/*
+
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: build
+      artifacts: true
+  before_script:
+    - ''
+  script:
+    - release-cli create --name "SwagBraintreeApp $APP_VERSION" --description "SwagBraintreeApp app only $APP_VERSION" --tag-name $APP_VERSION --ref "$CI_COMMIT_SHA" --assets-link "{\"name\":\"Shopware Account uploadeable zip\",\"url\":\"https://gitlab.shopware.com/api/v4/projects/$CI_PROJECT_ID/jobs/$APP_BUILD_CI_JOB_ID/artifacts/swagbraintreeapp.zip\",\"link_type\":\"other\"}"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: never
+    - changes:
+      - manifest.xml
+      - Resources/**/*

@@ -1,0 +1,65 @@
+*, body {
+    font-family: Inter var,-apple-system,blinkmacsystemfont,San Francisco,Segoe UI,roboto,Helvetica Neue,sans-serif;
+    background: none;
+}
+
+body {
+    background: transparent;
+}
+
+#meteor-icon-kit__regular-chevron-right-xs {
+    width: 100%;
+    height: 100%;
+}
+
+#meteor-icon-kit__regular-chevron-left-xs {
+    width: 100%;
+    height: 100%;
+}
+
+.sw-field {
+    margin-bottom: 0;
+}
+
+.sw-block-field__block {
+    padding: 0;
+}
+
+.sw-select-result-list__item-list {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.sw-select-selection-list {
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.sw-select-selection-list .sw-select-selection-list__input {
+    padding: 0;
+}
+
+.sw-select--small {
+    .sw-select__selection:not(.sw-select-selection-list__item) {
+        min-height: 36px;
+    }
+
+    .sw-select-selection-list__item {
+        padding: 2px 0;
+    }
+
+    .sw-label__caption {
+        overflow: visible;
+    }
+}
+
+.sw-select:not(.sw-select--small) {
+    .sw-select__selection:not(.sw-select-selection-list__item) {
+        min-height: 46px;
+    }
+}
+
+.sw-button.sw-button--primary:not(.sw-button.sw-button--primary-ghost):disabled:hover {
+    background: #8ccfff;
+}
