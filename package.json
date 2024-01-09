@@ -1,0 +1,48 @@
+{
+  "scripts": {
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress",
+    "eslint": "eslint ./assets --ext .vue,.ts --ignore-path .gitignore",
+    "eslint-fix": "eslint ./assets --ext .vue,.ts --fix --ignore-path .gitignore",
+    "tsc": "vue-tsc --noEmit"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@shopware-ag/admin-extension-sdk": "^3.0.14",
+    "@shopware-ag/entity-schema-types": "^5.5.1",
+    "@shopware-ag/meteor-component-library": "^2.2.0",
+    "axios": "^1.5.0",
+    "deep-clone-merge": "^1.5.5",
+    "vue": "^2.7.14",
+    "vue-i18n": "^8.28.2",
+    "vue-loader": "^15.10.2",
+    "vue-router": "^3.6.5",
+    "vue-template-compiler": "^2.7.14",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.0",
+    "@babel/preset-env": "^7.16.0",
+    "@symfony/webpack-encore": "^4.4.0",
+    "@types/node": "^20.6.0",
+    "@vue/eslint-config-typescript": "^12.0.0",
+    "core-js": "^3.23.0",
+    "dotenv-webpack": "^8.0.1",
+    "eslint": "^8.49.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "file-loader": "^6.2.0",
+    "regenerator-runtime": "^0.13.9",
+    "sass": "^1.66.1",
+    "sass-loader": "^13.3.2",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.2.2",
+    "vue-eslint-parser": "^9.3.1",
+    "vue-tsc": "^1.8.11",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-notifier": "^1.15.0"
+  }
+}

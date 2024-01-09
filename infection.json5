@@ -1,0 +1,40 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ],
+        excludes: [
+            "Entity/",
+            "Tests/" // changes that doesn't break tests are fine
+        ]
+    },
+    logs: {
+        "text": "var/log/infection.log",
+    },
+    "tmpDir": "var/cache",
+    "testFramework":"phpunit",
+    "mutators": {
+        "@default": true,
+        "LessThan": {
+            "ignore": [
+                "Swag\\Braintree\\Braintree\\Util\\FloatComparator"
+            ]
+        },
+        "PlusEqual": {
+            "ignore": [
+                "Swag\\Braintree\\Braintree\\Payment\\OrderInformationService::extractDiscountAmount",
+            ]
+        },
+        "GreaterThan": {
+            "ignore": [
+                "Swag\\Braintree\\Braintree\\Payment\\OrderInformationService::extractDiscountAmount",
+            ]
+        },
+        "ArrayItem": {
+            "ignore": [
+                "Swag\\Braintree\\Braintree\\Payment\\BraintreePaymentService::handleTransaction",
+            ]
+        }
+    }
+}

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/Framework/App/Manifest/Schema/manifest-2.0.xsd">
+
+    <meta>
+        <name>SwagBraintreeApp</name>
+        <label>Braintree App</label>
+        <label lang="de-DE">Braintree App</label>
+        <description>Payment via Braintree in Shopware 6</description>
+        <description lang="de-DE">Zahlungen mit Braintree für Shopware 6</description>
+        <author>shopware AG</author>
+        <copyright>(c) by shopware AG</copyright>
+        <version>1.0.4</version>
+        <icon>Resources/plugin.webp</icon>
+        <license>MIT</license>
+    </meta>
+
+    <setup>
+        <registrationUrl>http://localhost:8123/app/lifecycle/register</registrationUrl>
+        <secret>devsecret</secret>
+    </setup>
+
+    <webhooks>
+        <webhook name="appActivated" url="http://localhost:8123/app/lifecycle/activate" event="app.activated"/>
+        <webhook name="appDeactivated" url="http://localhost:8123/app/lifecycle/deactivate" event="app.deactivated"/>
+        <webhook name="appDeleted" url="http://localhost:8123/app/lifecycle/delete" event="app.deleted"/>
+    </webhooks>
+
+    <admin>
+        <base-app-url>http://localhost:8123/admin-sdk</base-app-url>
+    </admin>
+
+    <payments>
+        <payment-method>
+            <identifier>credit_card</identifier>
+            <name>Braintree</name>
+            <name lang="de-DE">Braintree</name>
+            <pay-url>http://localhost:8123/api/pay</pay-url>
+            <icon>Resources/config/plugin.jpg</icon>
+        </payment-method>
+    </payments>
+
+    <permissions>
+        <read>sales_channel</read>
+        <read>country_state</read>
+        <read>payment_method</read>
+        <read>payment_method_translation</read>
+        <read>customer</read>
+        <read>order_transaction</read>
+        <read>app_payment_method</read>
+        <read>sales_channel_translation</read>
+        <read>currency</read>
+        <read>language</read>
+        <read>country</read>
+        <read>shipping_method</read>
+        <read>order</read>
+        <read>currency_translation</read>
+        <read>promotion_discount_prices</read>
+        <read>currency_country_rounding</read>
+        <read>sales_channel_domain</read>
+        <read>system_config</read>
+        <read>product_visibility</read>
+        <read>newsletter_recipient</read>
+        <read>number_range_sales_channel</read>
+        <read>promotion_sales_channel</read>
+        <read>document_base_config_sales_channel</read>
+        <read>product_review</read>
+        <read>order_customer</read>
+        <read>seo_url</read>
+        <read>seo_url_template</read>
+        <read>main_category</read>
+        <read>product_export</read>
+        <read>customer_group</read>
+        <read>landing_page</read>
+        <read>customer_wishlist</read>
+        <read>theme</read>
+        <create>notification</create>
+        <create>payment_method</create>
+        <create>payment_method_translation</create>
+        <create>sales_channel</create>
+        <create>customer</create>
+        <create>order_transaction</create>
+        <create>app_payment_method</create>
+        <update>payment_method_translation</update>
+        <update>sales_channel</update>
+        <update>customer</update>
+        <update>order_transaction</update>
+        <update>payment_method</update>
+        <update>app_payment_method</update>
+        <delete>payment_method</delete>
+        <delete>payment_method_translation</delete>
+        <delete>sales_channel</delete>
+        <delete>customer</delete>
+        <delete>order_transaction</delete>
+        <delete>app_payment_method</delete>
+    </permissions>
+</manifest>
