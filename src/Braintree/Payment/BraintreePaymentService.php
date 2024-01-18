@@ -14,6 +14,8 @@ use Swag\Braintree\Repository\TransactionRepository;
 
 class BraintreePaymentService
 {
+    private const BRAINTREE_BN_CODE = 'shopwareAG_Cart_6_Braintree';
+
     public const BRAINTREE_NONCE = 'braintreeNonce';
     public const BRAINTREE_DEVICE_DATA = 'braintreeDeviceData';
 
@@ -57,6 +59,7 @@ class BraintreePaymentService
             'paymentMethodNonce' => $nonce,
             'purchaseOrderNumber' => $payment->order->getOrderNumber(),
             'taxAmount' => $this->orderInformationService->extractTaxAmount($payment),
+            'channel' => BraintreePaymentService::BRAINTREE_BN_CODE,
         ]);
 
         if (!$response->success) {

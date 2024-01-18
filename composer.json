@@ -80,10 +80,12 @@
             "bin/console doctrine:database:drop --force",
             "bin/console doctrine:database:create",
             "bin/console doctrine:migrations:migrate --force",
-            "@setup:url",
-            "npm run dev"
+            "@setup:url"
         ],
-        "setup:url": "bin/console setup:url"
+        "setup:url": [
+            "bin/console setup:url",
+            "npm run dev"
+        ]
     },
     "conflict": {
         "symfony/symfony": "*"

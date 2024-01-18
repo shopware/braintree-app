@@ -58,7 +58,7 @@ in {
   services.caddy = {
     enable = lib.mkDefault true;
 
-    virtualHosts.":8123" = lib.mkDefault {
+    virtualHosts.":8080" = lib.mkDefault {
       extraConfig = lib.mkDefault ''
         @default {
           not path /theme/* /media/* /thumbnail/* /bundles/* /css/* /fonts/* /js/* /sitemap/*
@@ -97,7 +97,7 @@ in {
 
   # Environment variables
 
-  env.APP_URL = lib.mkDefault "http://localhost:8123";
+  env.APP_URL = lib.mkDefault "http://localhost:8080";
   env.APP_SECRET = lib.mkDefault "devsecret";
   env.DATABASE_URL = lib.mkDefault "mysql://swagbraintree:swagbraintree@localhost:3307/swagbraintree";
 }

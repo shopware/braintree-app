@@ -73,6 +73,7 @@ class OrderInformationService
 
         // @infection-ignore-all - if 249 or 248, it really doesn't matter
         if (\count($orderLineItems) > 249) {
+            // @todo - log warning -> only first 249 are selected
             $orderLineItems = \array_slice($orderLineItems, 0, 249);
         }
 
@@ -81,12 +82,18 @@ class OrderInformationService
                 continue;
             }
 
+            // @TODO - We could potencially add more information here
             $lineItems[] = [
+                // 'commodityCode' => $this->substr($lineItem, 12),
+                // 'description' => $this->substr($lineItem->get, 127),
+                // 'discountAmount' => $lineItem,
                 'kind' => self::LINE_ITEM_TYPE_DEBIT,
                 'name' => $this->substr($lineItem->getLabel(), 35),
+                // 'productCode' => $this->substr($lineItem, 12),
                 'quantity' => $lineItem->getQuantity(),
                 'totalAmount' => \round($lineItem->getPrice()->getTotalPrice(), 2),
                 'unitAmount' => \round($lineItem->getPrice()->getUnitPrice(), 2),
+                // 'unitOfMeasure' => $this->substr($lineItem, 12),
                 'unitTaxAmount' => \round($this->taxService->sumTaxes($lineItem->getPrice()->getCalculatedTaxes()), 2),
             ];
         }
