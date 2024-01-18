@@ -95,11 +95,6 @@ class ThreeDSecure
             return false;
         }
 
-        /** @infection-ignore-all hard to test, as other conditions apply on mutation */
-        if (!$info->enrolled && !$info->liabilityShiftPossible && !$info->liabilityShifted) {
-            return false;
-        }
-
         if ($info->enrolled === self::ENROLLMENT_STATUS_UNAVAILABLE) {
             if ($info->status === self::STATUS_LOOKUP_FAILED_ACS_ERROR || $info->status === self::STATUS_AUTHENTICATION_UNAVAILABLE) {
                 return false;
