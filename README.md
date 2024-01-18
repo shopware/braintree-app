@@ -1,5 +1,8 @@
 # SwagBraintreeApp
 
+[![codecov](https://codecov.io/gh/shopware/braintree-app/graph/badge.svg?token=4J4BIGPUJH)](https://codecov.io/gh/shopware/braintree-app)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fshopware%2Fbraintree-app%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/shopware/braintree-app/main)
+
 ## Local Setup
 - First setup [devenv](https://developer.shopware.com/docs/guides/installation/devenv.html)
 - [Replace urls](###-Replace-hardcoded-urls)
