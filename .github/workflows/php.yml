@@ -7,8 +7,10 @@ on:
   push:
     paths:
       - '**/*.php'
+      - .github/workflows/php.yml
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   ecs:
