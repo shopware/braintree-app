@@ -5,7 +5,7 @@
 <script lang='ts'>
 import type { AsyncComponent } from 'vue';
 import { defineComponent } from 'vue';
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 
 export default defineComponent({
     name: 'sw-braintree-app-page-controller',
