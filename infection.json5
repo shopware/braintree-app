@@ -11,6 +11,9 @@
     },
     logs: {
         "text": "var/log/infection.log",
+        "stryker": {
+            "report": "main"
+        }
     },
     "tmpDir": "var/cache",
     "testFramework":"phpunit",
