@@ -17,18 +17,17 @@
     </meta>
 
     <setup>
-        <registrationUrl>http://localhost:8123/app/lifecycle/register</registrationUrl>
-        <secret>devsecret</secret>
+        <registrationUrl>https://braintree.shopware.com/app/lifecycle/register</registrationUrl>
     </setup>
 
     <webhooks>
-        <webhook name="appActivated" url="http://localhost:8123/app/lifecycle/activate" event="app.activated"/>
-        <webhook name="appDeactivated" url="http://localhost:8123/app/lifecycle/deactivate" event="app.deactivated"/>
-        <webhook name="appDeleted" url="http://localhost:8123/app/lifecycle/delete" event="app.deleted"/>
+        <webhook name="appActivated" url="https://braintree.shopware.com/app/lifecycle/activate" event="app.activated"/>
+        <webhook name="appDeactivated" url="https://braintree.shopware.com/app/lifecycle/deactivate" event="app.deactivated"/>
+        <webhook name="appDeleted" url="https://braintree.shopware.com/app/lifecycle/delete" event="app.deleted"/>
     </webhooks>
 
     <admin>
-        <base-app-url>http://localhost:8123/admin-sdk</base-app-url>
+        <base-app-url>https://braintree.shopware.com/admin-sdk</base-app-url>
     </admin>
 
     <payments>
@@ -36,7 +35,7 @@
             <identifier>credit_card</identifier>
             <name>Braintree</name>
             <name lang="de-DE">Braintree</name>
-            <pay-url>http://localhost:8123/api/pay</pay-url>
+            <pay-url>https://braintree.shopware.com/api/pay</pay-url>
             <icon>Resources/config/plugin.jpg</icon>
         </payment-method>
     </payments>

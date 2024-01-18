@@ -9,7 +9,7 @@ import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import ButtonLoadingIndicatorUtil from 'src/utility/loading-indicator/button-loading-indicator.util';
 
-const BASE_URL = 'http://localhost:8123/api';
+const BASE_URL = 'https://braintree.shopware.com/api';
 
 /**
  * @typedef {module:braintree-web/client.Client} BraintreeClient

@@ -33,7 +33,7 @@ class SetupUrlCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $fromUrl = $input->getOption('from-url') ?? 'https://realdomain.example.com';
+        $fromUrl = $input->getOption('from-url') ?? 'https://braintree.shopware.com';
         $toUrl = $input->getOption('to-url') ?? $this->appUrl;
 
         if (!$fromUrl || !$toUrl) {

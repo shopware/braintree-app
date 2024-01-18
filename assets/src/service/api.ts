@@ -7,7 +7,7 @@ export class Api {
 
     constructor() {
         this.server = axios.create({
-            baseURL: `http://localhost:8123/api`,
+            baseURL: `https://braintree.shopware.com/api`,
         });
 
         this.server.interceptors.request.use(requestInterceptor);
