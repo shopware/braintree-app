@@ -169,7 +169,7 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { SwLoader, SwIcon } from '@shopware-ag/meteor-component-library';
 import SwStatusIndicator from '@/component/base/sw-status-indicator.vue';
 
@@ -238,11 +238,9 @@ export default defineComponent({
             void sw.data.subscribe(
                 'sw-order-detail-base__order',
                 async (response) => {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                    const data = response.data as any;
+                    const data = response.data as { id: string };
 
                     const criteria = (new Criteria())
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
                         .addFilter(Criteria.equals('orderId', data.id));
 
                     const result = await Repository.search(criteria);

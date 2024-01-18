@@ -63,7 +63,7 @@ import { defineComponent } from 'vue';
 import SwBraintreeAppTable from '../base/sw-braintree-app-table.vue';
 import SwBraintreeAppCurrencyMappingSelect from './sw-braintree-app-settings-currency-mapping-select.vue';
 import { SwCard, SwBanner, SwExternalLink } from '@shopware-ag/meteor-component-library';
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { DefaultCurrencyMappingEntity } from '@/resources/entities';
 import { registerSaveHandler } from '@/resources/inject-keys';
 import BraintreeCurrencies from '@/resources/braintree-currencies';

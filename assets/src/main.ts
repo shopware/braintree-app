@@ -1,4 +1,4 @@
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 import store from '@/store';
 import Vue from 'vue';
 import { DeviceHelperPlugin, TooltipDirective } from '@shopware-ag/meteor-component-library';
@@ -6,7 +6,7 @@ import VueI18n from 'vue-i18n';
 import messages from '@/i18n';
 import { Api } from '@/service/api';
 import { addLocations } from '@/location';
-import type { Entity } from '@shopware-ag/admin-extension-sdk/es/data/_internals/Entity';
+import type { Entity } from '@shopware-ag/meteor-admin-sdk/es/data/_internals/Entity';
 import { Notify } from './service/notify';
 
 const Criteria = sw.data.Classes.Criteria;
