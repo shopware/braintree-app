@@ -5,6 +5,7 @@
             "src"
         ],
         excludes: [
+            "Command/SetupUrlCommand.php", // internal utility command, that needs no testing
             "Entity/",
             "Tests/" // changes that doesn't break tests are fine
         ]
