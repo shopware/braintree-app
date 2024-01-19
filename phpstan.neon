@@ -59,7 +59,6 @@ rules:
     - Symplify\PHPStanRules\Rules\NoIssetOnObjectRule
 
     # explicit naming
-    - Symplify\PHPStanRules\Rules\NoParentMethodCallOnNoOverrideProcessRule
     - Symplify\PHPStanRules\Rules\ForbiddenMultipleClassLikeInOneFileRule
 
     - Symplify\PHPStanRules\Rules\Complexity\ForbiddenArrayMethodCallRule
@@ -67,13 +66,9 @@ rules:
     # complexity rules
     - Symplify\PHPStanRules\Rules\Explicit\NoMixedPropertyFetcherRule
     - Symplify\PHPStanRules\Rules\Explicit\NoMixedMethodCallerRule
-    - Symplify\PHPStanRules\Rules\PHPUnit\NoRightPHPUnitAssertScalarRule
     - Symplify\PHPStanRules\Rules\NoDynamicNameRule
 
     # naming rules
     - Symplify\PHPStanRules\Rules\NoVoidGetterMethodRule
     - Symplify\PHPStanRules\Rules\UppercaseConstantRule
     - Symplify\PHPStanRules\Rules\CheckClassNamespaceFollowPsr4Rule
-
-    # test rules
-    - Symplify\PHPStanRules\Rules\NoConstructorInTestRule

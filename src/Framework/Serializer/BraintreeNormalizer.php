@@ -20,7 +20,7 @@ class BraintreeNormalizer implements NormalizerInterface
         return \array_map(fn (Instance $braintreeObject) => $braintreeObject->toArray(), $object);
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         if (!\is_array($data) || \count($data) === 0) {
             return false;
@@ -33,5 +33,12 @@ class BraintreeNormalizer implements NormalizerInterface
         }
 
         return true;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Instance::class => true,
+        ];
     }
 }

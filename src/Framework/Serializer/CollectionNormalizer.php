@@ -30,7 +30,7 @@ class CollectionNormalizer implements NormalizerInterface, DenormalizerInterface
         })->toArray();
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof Collection && $data->forAll(function ($_, $item) {
             return $item instanceof EntityInterface || $item instanceof AbstractShop;
@@ -47,8 +47,16 @@ class CollectionNormalizer implements NormalizerInterface, DenormalizerInterface
         return new ArrayCollection($data);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         return \is_subclass_of($type, Collection::class, true) && \is_array($data);
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            AbstractShop::class => true,
+            Collection::class => true,
+        ];
     }
 }
