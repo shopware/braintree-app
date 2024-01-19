@@ -64,7 +64,7 @@
 </template>
 
 <script lang='ts'>
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { defineComponent, type PropType } from 'vue';
 import { SwTextField, SwSwitch } from '@shopware-ag/meteor-component-library';
 

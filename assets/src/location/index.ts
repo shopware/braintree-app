@@ -1,5 +1,5 @@
-import * as sw from '@shopware-ag/admin-extension-sdk';
-import type { Entity } from '@shopware-ag/admin-extension-sdk/es/data/_internals/Entity';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
+import type { Entity } from '@shopware-ag/meteor-admin-sdk/es/data/_internals/Entity';
 import type VueI18n from 'vue-i18n';
 
 const addLocations = async (paymentMethod: Entity<'payment_method'>, i18n: VueI18n): Promise<void> => {

@@ -1,4 +1,4 @@
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { type AxiosError, isAxiosError } from 'axios';
 import type VueI18n from 'vue-i18n';
 import type Messages from '../i18n/en-GB.json';

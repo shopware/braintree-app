@@ -40,7 +40,7 @@
 </template>
 
 <script lang='ts'>
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { defineComponent } from 'vue';
 import SwBraintreeAppConfig from '@/component/sw-braintree-app-config.vue';
 import SwBraintreeAppMerchantDetails from '@/component/sw-braintree-app-merchant-details.vue';

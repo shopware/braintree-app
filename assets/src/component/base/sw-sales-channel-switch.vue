@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
-import * as sw from '@shopware-ag/admin-extension-sdk';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { SwSelect } from '@shopware-ag/meteor-component-library';
 
 const Criteria = sw.data.Classes.Criteria;
