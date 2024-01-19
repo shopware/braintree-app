@@ -1,0 +1,4 @@
+# Each route describes how an incoming URL is going to be processed by Platform.sh.
+"https://{default}/":
+  type: upstream
+  upstream: "swagbraintreeappinfrastructure:http"
