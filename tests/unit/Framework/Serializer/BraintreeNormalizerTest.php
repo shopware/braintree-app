@@ -43,6 +43,14 @@ class BraintreeNormalizerTest extends TestCase
         static::assertFalse($this->normalizer->supportsNormalization([$instance, $entity]));
         static::assertFalse($this->normalizer->supportsNormalization(null));
     }
+
+    public function testSupportedTypes(): void
+    {
+        static::assertSame(
+            [Instance::class => true],
+            $this->normalizer->getSupportedTypes(null)
+        );
+    }
 }
 
 class TestInstance extends Instance

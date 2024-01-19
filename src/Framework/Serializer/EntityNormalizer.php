@@ -7,7 +7,6 @@ use Swag\Braintree\Entity\Contract\EntityInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 #[AutoconfigureTag(name: 'serializer.normalizer')]
 class EntityNormalizer implements NormalizerInterface
@@ -17,7 +16,7 @@ class EntityNormalizer implements NormalizerInterface
     private const REGEX = '/.*(Swag.*)/';
 
     public function __construct(
-        private readonly ObjectNormalizer $normalizer
+        private readonly NormalizerInterface $normalizer
     ) {
     }
 
@@ -25,7 +24,7 @@ class EntityNormalizer implements NormalizerInterface
      * @param EntityInterface|AbstractShop $object
      * @param array<string, mixed> $context
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): mixed
+    public function normalize(mixed $object, string $format = null, array $context = []): string|array|\ArrayObject|bool|float|int|null
     {
         if (\array_key_exists(self::ORIGINAL_DATA, $context) && $context[self::ORIGINAL_DATA]) {
             $objectClass = $this->normalizeSwagNamespace($object::class);
@@ -43,7 +42,7 @@ class EntityNormalizer implements NormalizerInterface
         return $this->normalizer->normalize($object, $format, $context);
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): mixed
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof EntityInterface || $data instanceof AbstractShop;
     }
@@ -60,5 +59,13 @@ class EntityNormalizer implements NormalizerInterface
         }
 
         return $matches[1];
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            AbstractShop::class => true,
+            EntityInterface::class => true,
+        ];
     }
 }

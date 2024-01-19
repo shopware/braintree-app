@@ -11,7 +11,7 @@ use Swag\Braintree\Framework\Serializer\EntityNormalizer;
 use Swag\Braintree\Tests\Entity;
 use Swag\Braintree\Tests\IdsCollection;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[CoversClass(EntityNormalizer::class)]
 class EntityNormalizerTest extends TestCase
@@ -22,11 +22,11 @@ class EntityNormalizerTest extends TestCase
 
     protected function setUp(): void
     {
-        $objectNormalizer = $this->createMock(ObjectNormalizer::class);
+        $objectNormalizer = $this->createMock(NormalizerInterface::class);
         $objectNormalizer
             ->expects(static::any())
             ->method('normalize')
-            ->willReturnCallback(fn (mixed $object) => $object);
+            ->willReturnCallback(fn (mixed $object) => [$object]);
 
         $this->normalizer = new EntityNormalizer($objectNormalizer);
         $this->ids = new IdsCollection();
@@ -44,8 +44,8 @@ class EntityNormalizerTest extends TestCase
         $entity = new Entity();
         $entity->setId($this->ids->getUuid('entity'));
 
-        static::assertSame($entity, $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => $entity]));
-        static::assertSame($entity, $this->normalizer->normalize($entity));
+        static::assertSame([$entity], $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => $entity]));
+        static::assertSame([$entity], $this->normalizer->normalize($entity));
 
         static::assertSame($this->ids->get('entity'), $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => new ShopEntity('', '', '')]));
     }
@@ -54,8 +54,8 @@ class EntityNormalizerTest extends TestCase
     {
         $shop = new ShopEntity($this->ids->get('shop'), '', '');
 
-        static::assertSame($shop, $this->normalizer->normalize($shop, null, [EntityNormalizer::ORIGINAL_DATA => $shop]));
-        static::assertSame($shop, $this->normalizer->normalize($shop));
+        static::assertSame([$shop], $this->normalizer->normalize($shop, null, [EntityNormalizer::ORIGINAL_DATA => $shop]));
+        static::assertSame([$shop], $this->normalizer->normalize($shop));
 
         static::assertSame($this->ids->get('shop'), $this->normalizer->normalize($shop, null, [EntityNormalizer::ORIGINAL_DATA => new Entity()]));
     }
@@ -81,5 +81,16 @@ class EntityNormalizerTest extends TestCase
     public function testNormalizeNamespace(): void
     {
         static::assertSame('Swag\Entity\Braintree', $this->normalizer->normalizeSwagNamespace('Proxies\__CG__\Swag\Entity\Braintree'));
+    }
+
+    public function testSupportedTypes(): void
+    {
+        static::assertSame(
+            [
+                AbstractShop::class => true,
+                EntityInterface::class => true,
+            ],
+            $this->normalizer->getSupportedTypes(null)
+        );
     }
 }

@@ -15,5 +15,9 @@
 
             <tag name="shop">controller.argument_value_resolver</tag>
         </service>
+
+        <service id="Swag\Braintree\Framework\Serializer\EntityNormalizer">
+            <argument type="service" id="serializer.normalizer.object"/>
+        </service>
     </services>
 </container>
