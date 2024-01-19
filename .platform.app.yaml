@@ -27,6 +27,14 @@ variables:
     CORS_ALLOW_ORIGIN: '*'
     DATABASE_URL: mysql://user:@database.internal:3306/main
 
+crons:
+    snapshot:
+        spec: 0 0 * * *
+        cmd: |
+            # only run for the production environment, aka trunk
+            if [ "$PLATFORM_ENVIRONMENT_TYPE" = "production" ]; then
+                croncape bin/console report:turnover
+            fi
 
 # The hooks that will be performed when the package is deployed.
 hooks:

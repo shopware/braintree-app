@@ -5,11 +5,13 @@ namespace Swag\Braintree\Braintree\Payment;
 use Braintree\Exception\NotFound;
 use Braintree\Gateway;
 use Braintree\Transaction;
+use Doctrine\ORM\EntityManagerInterface;
 use Shopware\App\SDK\Context\Payment\PaymentPayAction;
 use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\Braintree\Braintree\Exception\BraintreePaymentException;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
-use Swag\Braintree\Entity\ShopEntity;
+use Swag\Braintree\Entity\TransactionEntity;
+use Swag\Braintree\Entity\TransactionReportEntity;
 use Swag\Braintree\Repository\TransactionRepository;
 
 class BraintreePaymentService
@@ -24,6 +26,7 @@ class BraintreePaymentService
         private readonly OrderInformationService $orderInformationService,
         private readonly SalesChannelConfigService $salesChannelConfigService,
         private readonly TransactionRepository $transactionRepository,
+        private readonly EntityManagerInterface $em,
     ) {
     }
 
@@ -53,9 +56,7 @@ class BraintreePaymentService
             'discountAmount' => $this->orderInformationService->extractDiscountAmount($payment),
             'lineItems' => $this->orderInformationService->extractLineItems($payment),
             'shipping' => $shipping['address'],
-            'options' => [
-                'submitForSettlement' => true,
-            ],
+            'options' => ['submitForSettlement' => true],
             'paymentMethodNonce' => $nonce,
             'purchaseOrderNumber' => $payment->order->getOrderNumber(),
             'taxAmount' => $this->orderInformationService->extractTaxAmount($payment),
@@ -134,16 +135,21 @@ class BraintreePaymentService
         return $braintreeTransaction;
     }
 
-    private function saveTransaction(PaymentPayAction $payment, Transaction $braintreeResponse): void
+    private function saveTransaction(PaymentPayAction $payment, Transaction $braintreeTransaction): void
     {
-        /** @var ShopEntity $shop */
-        $shop = $payment->shop;
+        $transaction = (new TransactionEntity())
+            ->setBraintreeTransactionId($braintreeTransaction->id)
+            ->setOrderTransactionId($payment->orderTransaction->getId())
+            ->setShop($payment->shop);
 
-        $this->transactionRepository->upsert([
-            [
-                'orderTransactionId' => $payment->orderTransaction->getId(),
-                'braintreeTransactionId' => $braintreeResponse->id,
-            ],
-        ], $shop);
+        $report = (new TransactionReportEntity())
+            ->setCurrencyIso($braintreeTransaction->currencyIsoCode)
+            ->setTotalPrice((string) $braintreeTransaction->amount)
+            ->setTransaction($transaction);
+
+        $this->em->persist($transaction);
+        $this->em->persist($report);
+
+        $this->em->flush();
     }
 }

@@ -26,7 +26,8 @@
 
         <exclude>
             <directory suffix="Entity.php">src/Entity</directory>
-            <directory suffix="Command.php">src/Command</directory>
+            <file>src/Command/SetupUrlCommand.php</file>
+            <file>src/Command/ReportTurnoverCommand.php</file>
         </exclude>
     </source>
 
