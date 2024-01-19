@@ -8,7 +8,7 @@ use Swag\Braintree\Framework\Serializer\CollectionNormalizer;
 use Swag\Braintree\Framework\Serializer\EntityNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ProblemNormalizer;
@@ -21,7 +21,7 @@ class TestSerializer
 {
     public static function create(): Serializer
     {
-        $objectNormalizer = new ObjectNormalizer(new ClassMetadataFactory(new AnnotationLoader()));
+        $objectNormalizer = new ObjectNormalizer(new ClassMetadataFactory(new AttributeLoader()));
 
         return new Serializer([
             new UidNormalizer(),

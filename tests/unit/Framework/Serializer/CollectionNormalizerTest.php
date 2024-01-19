@@ -85,4 +85,15 @@ class CollectionNormalizerTest extends TestCase
         static::assertFalse($this->normalizer->supportsDenormalization([], 'null'));
         static::assertFalse($this->normalizer->supportsDenormalization([], 'stdClass'));
     }
+
+    public function testSupportedTypes(): void
+    {
+        static::assertSame(
+            [
+                AbstractShop::class => true,
+                Collection::class => true,
+            ],
+            $this->normalizer->getSupportedTypes(null)
+        );
+    }
 }
