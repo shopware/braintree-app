@@ -3,10 +3,12 @@ on:
   pull_request:
     paths:
       - '**/*.php'
+      - composer.json
       - .github/workflows/php.yml
   push:
     paths:
       - '**/*.php'
+      - composer.json
       - .github/workflows/php.yml
     branches:
       - main
