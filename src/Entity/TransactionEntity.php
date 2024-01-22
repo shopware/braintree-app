@@ -27,6 +27,9 @@ class TransactionEntity implements EntityInterface
     #[ORM\Column(type: Types::STRING, nullable: false)]
     private string $orderTransactionId;
 
+    #[ORM\OneToOne(targetEntity: TransactionReportEntity::class, mappedBy: 'transaction', cascade: ['persist', 'remove'])]
+    private ?TransactionReportEntity $transactionReport = null;
+
     public function getBraintreeTransactionId(): string
     {
         return $this->braintreeTransactionId;
@@ -47,6 +50,18 @@ class TransactionEntity implements EntityInterface
     public function setOrderTransactionId(string $orderTransactionId): self
     {
         $this->orderTransactionId = $orderTransactionId;
+
+        return $this;
+    }
+
+    public function getTransactionReport(): ?TransactionReportEntity
+    {
+        return $this->transactionReport;
+    }
+
+    public function setTransactionReport(?TransactionReportEntity $transactionReport): self
+    {
+        $this->transactionReport = $transactionReport;
 
         return $this;
     }

@@ -11,7 +11,7 @@ on:
       - composer.json
       - .github/workflows/php.yml
     branches:
-      - main
+      - trunk
   workflow_dispatch:
 
 jobs:
@@ -73,6 +73,6 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
       - name: Run Infection
-        run: composer infection
+        run: composer infection -- --min-msi=95
         env:
           INFECTION_DASHBOARD_API_KEY: ${{ secrets.INFECTION_DASHBOARD_API_KEY }}

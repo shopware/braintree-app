@@ -19,5 +19,19 @@
         <service id="Swag\Braintree\Framework\Serializer\EntityNormalizer">
             <argument type="service" id="serializer.normalizer.object"/>
         </service>
+
+        <service id="guzzle.client.report" class="GuzzleHttp\Client">
+            <factory class="Swag\Braintree\Braintree\Util\ReportClientFactory" method="createClient"/>
+            <argument type="collection">
+                <argument key="base_uri">https://api.shopware.com</argument>
+            </argument>
+        </service>
+
+        <service id="Swag\Braintree\Braintree\Util\ReportService">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="Swag\Braintree\Repository\TransactionReportRepository"/>
+            <argument>%env(default::REPORT_IDENTIFIER)%</argument>
+            <argument type="service" id="guzzle.client.report"/>
+        </service>
     </services>
 </container>

@@ -9,6 +9,7 @@ use Braintree\PaymentMethodNonceGateway;
 use Braintree\Result;
 use Braintree\Transaction;
 use Braintree\TransactionGateway;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -20,6 +21,7 @@ use Swag\Braintree\Braintree\Payment\ThreeDSecure;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
 use Swag\Braintree\Entity\ShopEntity;
 use Swag\Braintree\Entity\TransactionEntity;
+use Swag\Braintree\Entity\TransactionReportEntity;
 use Swag\Braintree\Repository\TransactionRepository;
 use Swag\Braintree\Tests\Contract\PaymentPayActionHelperTrait;
 use Swag\Braintree\Tests\IdsCollection;
@@ -45,6 +47,8 @@ class BraintreePaymentServiceTest extends TestCase
 
     private MockObject&TransactionRepository $transactionRepository;
 
+    private MockObject&EntityManagerInterface $entityManager;
+
     protected function setUp(): void
     {
         $this->paymentMethodNonceGateway = $this->createMock(PaymentMethodNonceGateway::class);
@@ -60,6 +64,8 @@ class BraintreePaymentServiceTest extends TestCase
 
         $this->transactionRepository = $this->createMock(TransactionRepository::class);
 
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+
         $this->orderIds = new IdsCollection();
         $this->orderInformationService = new OrderInformationService(new TaxService());
         $this->paymentService = new BraintreePaymentService(
@@ -67,6 +73,7 @@ class BraintreePaymentServiceTest extends TestCase
             $this->orderInformationService,
             $salesChannelConfigService,
             $this->transactionRepository,
+            $this->entityManager,
         );
         $this->shop = new ShopEntity('this-is-shop-id', '', 'this-is-shop-secret');
     }
@@ -90,6 +97,8 @@ class BraintreePaymentServiceTest extends TestCase
         $resultSuccess = new Result\Successful([
             'transaction' => Transaction::factory([
                 'id' => 'this-is-transaction-id',
+                'currencyIsoCode' => 'EUR',
+                'amount' => 200,
             ]),
         ], ['transaction']);
 
@@ -117,13 +126,29 @@ class BraintreePaymentServiceTest extends TestCase
             BraintreePaymentService::BRAINTREE_DEVICE_DATA => 'this-is-device-data',
         ]);
 
-        $this->transactionRepository
+        $emMatcher = static::exactly(2);
+        $this->entityManager
+            ->expects($emMatcher)
+            ->method('persist')
+            ->willReturnCallback(function (object $entity) use (&$emMatcher): void {
+                switch ($emMatcher->numberOfInvocations()) {
+                    case 1:
+                        /** @var TransactionEntity $entity */
+                        static::assertInstanceOf(TransactionEntity::class, $entity);
+                        static::assertEquals('this-is-transaction-id', $entity->getBraintreeTransactionId());
+                        break;
+                    case 2:
+                        /** @var TransactionReportEntity $entity */
+                        static::assertInstanceOf(TransactionReportEntity::class, $entity);
+                        static::assertEquals('EUR', $entity->getCurrencyIso());
+                        static::assertEquals(200, $entity->getTotalPrice());
+                        break;
+                }
+            });
+
+        $this->entityManager
             ->expects(static::once())
-            ->method('upsert')
-            ->with([[
-                'orderTransactionId' => $this->orderIds->get('order-transaction-id'),
-                'braintreeTransactionId' => 'this-is-transaction-id',
-            ]], $this->shop);
+            ->method('flush');
 
         $transaction = $this->paymentService->handleTransaction($paymentPayAction);
 
@@ -281,6 +306,7 @@ class BraintreePaymentServiceTest extends TestCase
             $this->orderInformationService,
             $salesChannelConfigService,
             $this->transactionRepository,
+            $this->entityManager,
         );
 
         $this->paymentMethodNonceGateway
