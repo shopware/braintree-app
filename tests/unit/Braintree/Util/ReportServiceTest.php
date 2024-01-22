@@ -52,7 +52,7 @@ class ReportServiceTest extends TestCase
 
     public function testSendTurnoverReports(): void
     {
-        $this->clientHandler->append(new Response(), new Response());
+        $this->clientHandler->append(new Response(), new Response(), new Response());
 
         $reports = [
             (new TransactionReportEntity())
@@ -72,10 +72,6 @@ class ReportServiceTest extends TestCase
             ->expects(static::once())
             ->method('findAll')
             ->willReturn($reports);
-
-        $this->entityManager
-            ->expects(static::once())
-            ->method('flush');
 
         $this->entityManager
             ->expects(static::once())
@@ -125,10 +121,6 @@ class ReportServiceTest extends TestCase
             ->expects(static::once())
             ->method('flush');
 
-        $this->entityManager
-            ->expects(static::once())
-            ->method('flush');
-
         // will only remove the successful reported transaction
         $this->entityManager
             ->expects(static::once())
@@ -146,6 +138,153 @@ class ReportServiceTest extends TestCase
             'reportDataKeys' => ['turnover' => 100],
             'currency' => 'GBP',
         ]], $this->extractTurnoverReports($this->clientHistory));
+    }
+
+    public function testMultipleRejectedCurrencies(): void
+    {
+        $this->clientHandler->append(new Response(400), new Response(), new Response(400));
+
+        $successfulReport = (new TransactionReportEntity())
+            ->setCurrencyIso('CHF')
+            ->setTotalPrice('9.48');
+
+        $reports = [
+            (new TransactionReportEntity())
+                ->setCurrencyIso('EUR')
+                ->setTotalPrice('10.52'),
+
+            $successfulReport,
+
+            (new TransactionReportEntity())
+                ->setCurrencyIso('GBP')
+                ->setTotalPrice('100.00'),
+        ];
+
+        $this->transactionReportRepository
+            ->expects(static::once())
+            ->method('findAll')
+            ->willReturn($reports);
+
+        $this->entityManager
+            ->expects(static::once())
+            ->method('flush');
+
+        // will only remove the successful reported transaction
+        $this->entityManager
+            ->expects(static::once())
+            ->method('remove')
+            ->with($successfulReport);
+
+        $rejectedCurrencies = $this->service->sendTurnoverReports();
+
+        static::assertEquals(['EUR', 'GBP'], $rejectedCurrencies);
+
+        static::assertEquals([[
+            'reportDataKeys' => ['turnover' => 10.52],
+            'currency' => 'EUR',
+        ], [
+            'reportDataKeys' => ['turnover' => 9.48],
+            'currency' => 'CHF',
+        ], [
+            'reportDataKeys' => ['turnover' => 100],
+            'currency' => 'GBP',
+        ]], $this->extractTurnoverReports($this->clientHistory));
+    }
+
+    public function testTransactionFloatCasting(): void
+    {
+        $this->clientHandler->append(new Response());
+
+        $reports = [
+            (new TransactionReportEntity())
+                ->setCurrencyIso('EUR')
+                ->setTotalPrice('10.52s'),
+        ];
+
+        $this->transactionReportRepository
+            ->expects(static::once())
+            ->method('findAll')
+            ->willReturn($reports);
+
+        $this->service->sendTurnoverReports();
+
+        static::assertNotNull($this->clientHandler->getLastRequest());
+
+        $requestBody = $this->clientHandler->getLastRequest()->getBody()->getContents();
+
+        static::assertJson($requestBody);
+
+        $requestBodyArray = \json_decode($requestBody, true);
+
+        static::assertIsArray($requestBodyArray);
+
+        static::assertArrayHasKey('reportDataKeys', $requestBodyArray);
+        static::assertIsArray($requestBodyArray['reportDataKeys']);
+
+        static::assertArrayHasKey('turnover', $requestBodyArray['reportDataKeys']);
+        static::assertIsFloat($requestBodyArray['reportDataKeys']['turnover']);
+    }
+
+    public function testReportDateIsSent(): void
+    {
+        $this->clientHandler->append(new Response());
+
+        $reports = [
+            (new TransactionReportEntity())
+                ->setCurrencyIso('EUR')
+                ->setTotalPrice('10.52s'),
+        ];
+
+        $this->transactionReportRepository
+            ->expects(static::once())
+            ->method('findAll')
+            ->willReturn($reports);
+
+        $this->service->sendTurnoverReports();
+
+        static::assertNotNull($this->clientHandler->getLastRequest());
+
+        $requestBody = $this->clientHandler->getLastRequest()->getBody()->getContents();
+
+        static::assertJson($requestBody);
+
+        $requestBodyArray = \json_decode($requestBody, true);
+
+        static::assertArrayHasKey('reportDate', $requestBodyArray);
+        static::assertIsString($requestBodyArray['reportDate']);
+
+        $reportDate = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $requestBodyArray['reportDate']);
+
+        static::assertInstanceOf(\DateTimeInterface::class, $reportDate);
+    }
+
+    public function testApiIdentifierIsSent(): void
+    {
+        $this->clientHandler->append(new Response());
+
+        $reports = [
+            (new TransactionReportEntity())
+                ->setCurrencyIso('EUR')
+                ->setTotalPrice('10.52s'),
+        ];
+
+        $this->transactionReportRepository
+            ->expects(static::once())
+            ->method('findAll')
+            ->willReturn($reports);
+
+        $this->service->sendTurnoverReports();
+
+        static::assertNotNull($this->clientHandler->getLastRequest());
+
+        $requestBody = $this->clientHandler->getLastRequest()->getBody()->getContents();
+
+        static::assertJson($requestBody);
+
+        $requestBodyArray = \json_decode($requestBody, true);
+
+        static::assertArrayHasKey('identifier', $requestBodyArray);
+        static::assertSame('test-id', $requestBodyArray['identifier']);
     }
 
     /**

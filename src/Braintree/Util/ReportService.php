@@ -9,16 +9,14 @@ use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\Utils;
 use GuzzleHttp\RequestOptions;
 use Swag\Braintree\Repository\TransactionReportRepository;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class ReportService
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly TransactionReportRepository $transactionReportRepository,
-        #[Autowire(env: 'REPORT_IDENTIFIER')]
-        private readonly string $apiIdentifier = '',
-        private readonly Client $client = new Client(['base_uri' => 'https://api.shopware.com']),
+        private readonly ?string $apiIdentifier,
+        private readonly Client $client,
     ) {
     }
 
@@ -38,7 +36,7 @@ class ReportService
         $requests = [];
         foreach ($reports as $currency => $turnover) {
             $body = [
-                'identifier' => $this->apiIdentifier,
+                'identifier' => $this->apiIdentifier ?? '',
                 'reportDate' => (new \DateTime())->format(\DateTimeInterface::ATOM),
                 'reportDataKeys' => ['turnover' => $turnover],
                 'currency' => $currency,
