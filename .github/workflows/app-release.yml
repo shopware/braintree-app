@@ -1,0 +1,18 @@
+name: App Release
+on:
+  workflow_dispatch:
+
+jobs:
+  zip:
+    uses: shopware/github-actions/.github/workflows/build-zip.yml@main
+    with:
+      extensionName: SwagBraintreeApp
+
+  release:
+    uses: shopware/github-actions/.github/workflows/store-release.yml@main
+    with:
+      extensionName: SwagBraintreeApp
+    secrets:
+      accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
+      accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
+      ghToken: ${{ secrets.GITHUB_TOKEN }}
