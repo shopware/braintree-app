@@ -1,0 +1,54 @@
+# .shopware-extension.yml
+build:
+  shopwareVersionConstraint: ~6.5.0
+  zip:
+    composer:
+      enabled: false
+    pack:
+      excludes:
+        paths:
+          - .devenv/
+          - .direnv/
+          - .github/
+          - .platform/
+          - .idea/
+          - assets/
+          - bin/
+          - config/
+          - migrations/
+          - node_modules/
+          - public/
+          - src/
+          - templates/
+          - tests/
+          - var/
+          - vendor/
+          - .devenv.flake.nix
+          - .env
+          - .env.test
+          - .envrc
+          - .eslintrc.js
+          - .gitattributes
+          - .gitignore
+          - .gitlab-ci.yml
+          - .php-cs-fixer.cache
+          - .php-cs-fixer.dist.php
+          - .platform.app.yaml
+          - .shopware-extension.yml
+          - composer.json
+          - composer.lock
+          - devenv.lock
+          - devenv.nix
+          - devenv.yaml
+          - ecs.php
+          - infection.json5
+          - LICENSE
+          - package.json
+          - package-lock.json
+          - phpstan.neon
+          - phpunit.xml.dist
+          - README.md
+          - SECURITY.md
+          - symfony.lock
+          - tsconfig.json
+          - webpack.config.js
