@@ -2,9 +2,19 @@ name: "Security"
 
 on:
   push:
+    paths:
+      - '**/*.js'
+      - '**/*.ts'
+      - package.json
+      - .github/workflows/js.yml
     branches:
       - "trunk"
   pull_request:
+    paths:
+      - '**/*.js'
+      - '**/*.ts'
+      - package.json
+      - .github/workflows/js.yml
     branches:
       - "trunk"
   schedule:
