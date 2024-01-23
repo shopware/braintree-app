@@ -7,8 +7,8 @@
         <name>SwagBraintreeApp</name>
         <label>Braintree App</label>
         <label lang="de-DE">Braintree App</label>
-        <description>Payment via Braintree in Shopware 6</description>
-        <description lang="de-DE">Zahlungen mit Braintree für Shopware 6</description>
+        <description>With the “PayPal Braintree” app developed by Shopware, you can now easily integrate one of the most popular solutions for credit card payments into your store.</description>
+        <description lang="de-DE">Mit der App “PayPal Braintree” App von Shopware integrierst du ab sofort eine der beliebtesten Lösungen für Kreditkartenzahlungen ganz einfach in deinen Shop.</description>
         <author>shopware AG</author>
         <copyright>(c) by shopware AG</copyright>
         <version>1.0.5</version>
