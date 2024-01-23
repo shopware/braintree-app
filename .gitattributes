@@ -3,3 +3,4 @@ Resources -export-ignore
 Resources/**/* -export-ignore
 /manifest.xml -export-ignore
 /.shopware-extension.yml -export-ignore
+CHANGELOG_*.md -export-ignore
