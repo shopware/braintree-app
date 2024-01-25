@@ -12,6 +12,7 @@ jobs:
     uses: shopware/github-actions/.github/workflows/store-release.yml@main
     with:
       extensionName: SwagBraintreeApp
+      publishOnly: true
     secrets:
       accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
       accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
