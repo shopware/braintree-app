@@ -1,4 +1,5 @@
 {
+  "name": "braintree-app",
   "scripts": {
     "dev-server": "encore dev-server",
     "dev": "encore dev",

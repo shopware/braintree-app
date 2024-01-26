@@ -17,7 +17,8 @@
       "description": "Pay with Braintree by PayPal",
       "enabled": "Payment method enabled",
       "disabled": "Payment method disabled",
-      "isBraintreeSandbox": "This is a sandbox account"
+      "isBraintreeSandbox": "This is a sandbox account",
+      "editDetails": "Edit details"
     },
     "publicKeyLabel": "Braintree public key",
     "publicKeyPlaceholder": "Enter your Braintree public key ...",
