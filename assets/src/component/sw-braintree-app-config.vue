@@ -12,6 +12,13 @@
                 <span>{{ $tc('configuration.payment.description') }}</span>
             </div>
 
+            <span
+                class='sw-braintree-payment-method__card__method-link'
+                @click='onPaymentMethodDetails'
+            >
+                {{ $tc("configuration.payment.editDetails") }}
+            </span>
+
             <sw-switch
                 :label="$tc('configuration.payment.active')"
                 :checked='$store.getters.paymentMethod?.active ?? false'
@@ -130,6 +137,14 @@ export default defineComponent({
 
             this.$emit('update:shop', { ...this.shop, ...update });
         },
+
+        onPaymentMethodDetails() {
+            void sw.window.routerPush({
+                name: 'sw.settings.payment.detail',
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                params: { id: this.$store.getters.paymentMethod?.id },
+            });
+        },
     },
 });
 </script>
@@ -153,7 +168,8 @@ export default defineComponent({
 
         &__method {
             display: grid;
-            grid-template-columns: 34px 1fr 80px;
+            grid-template-columns: 34px 1fr min-content 80px;
+            gap: 16px;
             font-size: 14px;
             align-items: center;
 
@@ -165,6 +181,14 @@ export default defineComponent({
             &-image {
                 height: 24px;
                 object-fit: contain;
+            }
+
+            &-link {
+                padding-bottom: 4px;
+                white-space: nowrap;
+                color: #189eff;
+                text-decoration: underline;
+                cursor: pointer;
             }
 
             .sw-field--switch {
