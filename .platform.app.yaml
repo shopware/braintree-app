@@ -33,7 +33,11 @@ crons:
         cmd: |
             # only run for the production environment, aka trunk
             if [ "$PLATFORM_ENVIRONMENT_TYPE" = "production" ]; then
-                croncape bin/console report:turnover
+                bin/console report:turnover
+                code="$?"
+                if [ "$code" -ne "0" ]; then
+                    printf 'Turnover report exited with %s\n' "$code"
+                fi
             fi
 
 # The hooks that will be performed when the package is deployed.
