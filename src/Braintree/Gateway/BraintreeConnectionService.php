@@ -4,6 +4,7 @@ namespace Swag\Braintree\Braintree\Gateway;
 
 use Braintree\Configuration;
 use Braintree\Exception;
+use Braintree\Exception\Authentication;
 use Braintree\Gateway;
 use Braintree\MerchantAccount;
 use Swag\Braintree\Braintree\Gateway\Connection\BraintreeConnectionStatus;
@@ -53,7 +54,6 @@ class BraintreeConnectionService
                 }
             }
         } catch (Exception) {
-            return null;
         }
 
         return null;
@@ -66,9 +66,12 @@ class BraintreeConnectionService
     {
         $accounts = [];
 
-        /** @var MerchantAccount $account */
-        foreach ($this->gateway->merchantAccount()->all() as $account) {
-            $accounts[] = $account;
+        try {
+            /** @var MerchantAccount $account */
+            foreach ($this->gateway->merchantAccount()->all() as $account) {
+                $accounts[] = $account;
+            }
+        } catch (Authentication) {
         }
 
         return $accounts;

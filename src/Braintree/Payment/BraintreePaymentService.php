@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Shopware\App\SDK\Context\Payment\PaymentPayAction;
 use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\Braintree\Braintree\Exception\BraintreePaymentException;
+use Swag\Braintree\Braintree\Exception\BraintreeTransactionNotFoundException;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
 use Swag\Braintree\Entity\TransactionEntity;
 use Swag\Braintree\Entity\TransactionReportEntity;
@@ -66,11 +67,11 @@ class BraintreePaymentService
         if (!$response->success) {
             // @infection-ignore-all - As if that line isn't painful enough
             // @phpstan-ignore-next-line - Braintree SDK needs better typing
-            throw new BraintreePaymentException($response->errors->deepAll()[0]?->message ?? 'Unknown error occured');
+            throw new BraintreePaymentException($response->errors->deepAll()[0]?->message ?? 'Unknown error occured', shop: $payment->shop);
         }
 
         if (!isset($response->transaction)) {
-            throw new BraintreePaymentException('No transaction provided');
+            throw new BraintreePaymentException('No transaction provided', shop: $payment->shop);
         }
 
         $this->saveTransaction($payment, $response->transaction);
@@ -82,17 +83,17 @@ class BraintreePaymentService
     {
         if (!$payment->requestData) {
             /** @infection-ignore-all can not be tested */
-            throw new BraintreePaymentException('No nonce provided');
+            throw new BraintreePaymentException('No nonce provided', shop: $payment->shop);
         }
 
         if (!\array_key_exists(self::BRAINTREE_NONCE, $payment->requestData)) {
-            throw new BraintreePaymentException('No nonce provided');
+            throw new BraintreePaymentException('No nonce provided', shop: $payment->shop);
         }
 
         $nonce = $payment->requestData[self::BRAINTREE_NONCE];
 
         if (!\is_string($nonce)) {
-            throw new BraintreePaymentException('No nonce provided');
+            throw new BraintreePaymentException('No nonce provided', shop: $payment->shop);
         }
 
         return $nonce;
@@ -115,26 +116,6 @@ class BraintreePaymentService
         }
     }
 
-    /**
-     * @param string[] $transactions
-     */
-    public function getTransactionDetails(ShopInterface $shop, array $transactions): Transaction
-    {
-        $transaction = $this->transactionRepository->findNewestBraintreeTransaction($shop, $transactions);
-
-        if (!$transaction) {
-            throw new BraintreePaymentException('No braintree transaction found');
-        }
-
-        try {
-            $braintreeTransaction = $this->gateway->transaction()->find($transaction->getBraintreeTransactionId());
-        } catch (NotFound) {
-            throw new BraintreePaymentException('No braintree transaction found');
-        }
-
-        return $braintreeTransaction;
-    }
-
     private function saveTransaction(PaymentPayAction $payment, Transaction $braintreeTransaction): void
     {
         $transaction = (new TransactionEntity())
@@ -151,5 +132,25 @@ class BraintreePaymentService
         $this->em->persist($report);
 
         $this->em->flush();
+    }
+
+    /**
+     * @param string[] $transactions
+     */
+    public function getTransactionDetails(ShopInterface $shop, array $transactions): Transaction
+    {
+        $transaction = $this->transactionRepository->findNewestBraintreeTransaction($shop, $transactions);
+
+        if (!$transaction) {
+            throw new BraintreeTransactionNotFoundException($transactions, $shop);
+        }
+
+        try {
+            $braintreeTransaction = $this->gateway->transaction()->find($transaction->getBraintreeTransactionId());
+        } catch (NotFound) {
+            throw new BraintreeTransactionNotFoundException($transactions, $shop, $transaction->getBraintreeTransactionId());
+        }
+
+        return $braintreeTransaction;
     }
 }

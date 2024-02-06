@@ -12,26 +12,26 @@ use Symfony\Component\Uid\Uuid;
 #[CoversClass(RespectfulUuidGenerator::class)]
 class RespectfulUuidGeneratorTest extends TestCase
 {
-    public function testGenerate(): void
+    public function testGenerateId(): void
     {
         $entity = $this->getTestEntity();
 
         $generator = new RespectfulUuidGenerator();
-        $id = $generator->generate($this->createMock(EntityManager::class), $entity);
+        $id = $generator->generateId($this->createMock(EntityManager::class), $entity);
 
         static::assertNotNull($id);
         static::assertTrue(Uuid::isValid($id->toRfc4122()));
     }
 
-    public function testGenerateWithNullEntity(): void
+    public function testGenerateIdWithNullEntity(): void
     {
         $generator = new RespectfulUuidGenerator();
-        $id = $generator->generate($this->createMock(EntityManager::class), null);
+        $id = $generator->generateId($this->createMock(EntityManager::class), null);
 
         static::assertNull($id);
     }
 
-    public function testGenerateWithNonEntity(): void
+    public function testGenerateIdWithNonEntity(): void
     {
         $entity = new \stdClass();
 
@@ -40,17 +40,17 @@ class RespectfulUuidGeneratorTest extends TestCase
         static::expectException(\RuntimeException::class);
         static::expectExceptionMessage('Class stdClass not supported for respectful uuid generation. Use Swag\Braintree\Entity\Contract\EntityInterface instead');
 
-        $generator->generate($this->createMock(EntityManager::class), $entity);
+        $generator->generateId($this->createMock(EntityManager::class), $entity);
     }
 
-    public function testGenerateWithExistingId(): void
+    public function testGenerateIdWithExistingId(): void
     {
         $uuid = Uuid::v7();
 
         $entity = $this->getTestEntity($uuid);
 
         $generator = new RespectfulUuidGenerator();
-        $id = $generator->generate($this->createMock(EntityManager::class), $entity);
+        $id = $generator->generateId($this->createMock(EntityManager::class), $entity);
 
         static::assertNotNull($id);
         static::assertSame($uuid, $id);
