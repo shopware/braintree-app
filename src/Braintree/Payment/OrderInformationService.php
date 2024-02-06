@@ -73,7 +73,6 @@ class OrderInformationService
 
         // @infection-ignore-all - if 249 or 248, it really doesn't matter
         if (\count($orderLineItems) > 249) {
-            // @todo - log warning -> only first 249 are selected
             $orderLineItems = \array_slice($orderLineItems, 0, 249);
         }
 

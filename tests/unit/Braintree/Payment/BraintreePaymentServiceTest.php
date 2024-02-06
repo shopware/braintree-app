@@ -14,6 +14,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Braintree\Exception\BraintreePaymentException;
+use Swag\Braintree\Braintree\Exception\BraintreeTransactionNotFoundException;
 use Swag\Braintree\Braintree\Payment\BraintreePaymentService;
 use Swag\Braintree\Braintree\Payment\OrderInformationService;
 use Swag\Braintree\Braintree\Payment\Tax\TaxService;
@@ -403,8 +404,8 @@ class BraintreePaymentServiceTest extends TestCase
             ->with('this-is-transaction-id')
             ->willThrowException(new NotFound());
 
-        static::expectException(BraintreePaymentException::class);
-        static::expectExceptionMessage('No braintree transaction found');
+        static::expectException(BraintreeTransactionNotFoundException::class);
+        static::expectExceptionMessage('Braintree transaction not found');
 
         $this->paymentService->getTransactionDetails($this->shop, ['this-is-order-transaction-id']);
     }
@@ -421,8 +422,8 @@ class BraintreePaymentServiceTest extends TestCase
             ->expects(static::never())
             ->method('find');
 
-        static::expectException(BraintreePaymentException::class);
-        static::expectExceptionMessage('No braintree transaction found');
+        static::expectException(BraintreeTransactionNotFoundException::class);
+        static::expectExceptionMessage('Braintree transaction not found');
 
         $this->paymentService->getTransactionDetails($this->shop, ['this-is-order-transaction-id']);
     }

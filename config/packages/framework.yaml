@@ -26,3 +26,15 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+
+when@prod:
+    framework:
+        exceptions:
+            App\SDK\Exception\SignatureInvalidException:
+                log_level: warning
+            App\SDK\Exception\MissingShopParameterException:
+                log_level: warning
+            App\SDK\Exception\ShopNotFoundException:
+                log_level: warning
+            Swag\Braintree\Braintree\Exception\BraintreeTransactionNotFoundException:
+                log_level: info

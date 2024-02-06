@@ -3,6 +3,7 @@
 namespace Swag\Braintree\Tests\Unit\Braintree\Gateway;
 
 use Braintree\Exception as BraintreeException;
+use Braintree\Exception\Authentication;
 use Braintree\Gateway;
 use Braintree\MerchantAccount;
 use Braintree\MerchantAccountGateway;
@@ -241,6 +242,26 @@ class BraintreeConnectionServiceTest extends TestCase
         $merchantAccounts = $service->getAllMerchantAccounts();
 
         static::assertCount(3, $merchantAccounts);
+    }
+
+    public function testGetAllMerchantAccountsThrowsAuthenticationException(): void
+    {
+        $accountGateway = $this->createMock(MerchantAccountGateway::class);
+        $accountGateway
+            ->expects(static::once())
+            ->method('all')
+            ->willThrowException(new Authentication());
+
+        $gateway = $this->createMock(Gateway::class);
+        $gateway
+            ->expects(static::once())
+            ->method('merchantAccount')
+            ->willReturn($accountGateway);
+
+        $service = new BraintreeConnectionService($gateway);
+        $merchantAccounts = $service->getAllMerchantAccounts();
+
+        static::assertEmpty($merchantAccounts);
     }
 
     /**
