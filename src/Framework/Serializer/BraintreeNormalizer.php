@@ -15,12 +15,12 @@ class BraintreeNormalizer implements NormalizerInterface
      *
      * @return array<int, array<string, mixed>>
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         return \array_map(fn (Instance $braintreeObject) => $braintreeObject->toArray(), $object);
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         if (!\is_array($data) || \count($data) === 0) {
             return false;

@@ -8,7 +8,7 @@ class ShopNotFoundException extends BraintreeHttpException
 {
     public const ERROR_CODE = 'SWAG_BRAINTREE__SHOP_NOT_FOUND';
 
-    public function __construct(string $shopId, \Throwable $e = null)
+    public function __construct(string $shopId, ?\Throwable $e = null)
     {
         parent::__construct(
             'Shop "{{ shopId }}" not found.',

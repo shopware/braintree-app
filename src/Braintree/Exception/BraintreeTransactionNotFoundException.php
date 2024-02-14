@@ -13,7 +13,7 @@ class BraintreeTransactionNotFoundException extends BraintreeHttpException
     /**
      * @param string[] $orderTransactionIds
      */
-    public function __construct(array $orderTransactionIds, ShopInterface $shop, string $braintreeTransactionId = null, array $parameters = [])
+    public function __construct(array $orderTransactionIds, ShopInterface $shop, ?string $braintreeTransactionId = null, array $parameters = [])
     {
         $parameters['shopId'] = $shop->getShopId();
         $parameters['orderTransactionIds'] = $orderTransactionIds;

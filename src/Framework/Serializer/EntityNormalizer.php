@@ -24,7 +24,7 @@ class EntityNormalizer implements NormalizerInterface
      * @param EntityInterface|AbstractShop $object
      * @param array<string, mixed> $context
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): string|array|\ArrayObject|bool|float|int|null
+    public function normalize(mixed $object, ?string $format = null, array $context = []): string|array|\ArrayObject|bool|float|int|null
     {
         if (\array_key_exists(self::ORIGINAL_DATA, $context) && $context[self::ORIGINAL_DATA]) {
             $objectClass = $this->normalizeSwagNamespace($object::class);
@@ -42,7 +42,7 @@ class EntityNormalizer implements NormalizerInterface
         return $this->normalizer->normalize($object, $format, $context);
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof EntityInterface || $data instanceof AbstractShop;
     }

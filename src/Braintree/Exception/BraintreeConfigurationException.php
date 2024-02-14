@@ -8,7 +8,7 @@ class BraintreeConfigurationException extends BraintreeHttpException
 {
     public const ERROR_CODE = 'SWAG_BRAINTREE__CONFIGURATION_EXCEPTION';
 
-    public function __construct(\Throwable $previous = null)
+    public function __construct(?\Throwable $previous = null)
     {
         parent::__construct(
             'Braintree configuration is invalid.',

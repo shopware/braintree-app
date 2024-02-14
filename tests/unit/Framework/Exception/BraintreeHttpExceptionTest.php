@@ -122,7 +122,7 @@ class BraintreeHttpExceptionTest extends TestCase
     private function getException(
         string $message,
         array $parameters = [],
-        \Throwable $previous = null,
+        ?\Throwable $previous = null,
         string $errorCode = 'SWAG_BRAINTREE__TEST',
     ): TestException {
         return new TestException($message, $parameters, $previous, $errorCode);
@@ -136,7 +136,7 @@ class TestException extends BraintreeHttpException
     public function __construct(
         string $message,
         array $parameters = [],
-        \Throwable $e = null,
+        ?\Throwable $e = null,
         string $errorCode = 'SWAG_BRAINTREE__TEST',
     ) {
         $this->errorCode = $errorCode;
