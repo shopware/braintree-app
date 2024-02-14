@@ -21,7 +21,7 @@ abstract class BraintreeHttpException extends HttpException
     public function __construct(
         string $message,
         array $parameters = [],
-        \Throwable $e = null
+        ?\Throwable $e = null
     ) {
         $this->parameters = $parameters;
         $message = $this->parse($message, $parameters);

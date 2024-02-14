@@ -56,7 +56,7 @@ class RespectfulUuidGeneratorTest extends TestCase
         static::assertSame($uuid, $id);
     }
 
-    private function getTestEntity(Uuid $id = null): EntityInterface
+    private function getTestEntity(?Uuid $id = null): EntityInterface
     {
         return new class($id) implements EntityInterface {
             public function __construct(private ?Uuid $id = null)

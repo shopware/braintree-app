@@ -23,7 +23,7 @@ class BraintreeConnectionStatus
     ) {
     }
 
-    public static function connected(MerchantAccount $merchantAccount = null): self
+    public static function connected(?MerchantAccount $merchantAccount = null): self
     {
         return new self(self::STATUS_CONNECTED, $merchantAccount);
     }

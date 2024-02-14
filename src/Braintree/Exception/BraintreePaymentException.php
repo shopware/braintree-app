@@ -9,7 +9,7 @@ class BraintreePaymentException extends BraintreeHttpException
 {
     public const ERROR_CODE = 'SWAG_BRAINTREE__PAYMENT_EXCEPTION';
 
-    public function __construct(string $message, array $parameters = [], \Throwable $e = null, ShopInterface $shop = null)
+    public function __construct(string $message, array $parameters = [], ?\Throwable $e = null, ?ShopInterface $shop = null)
     {
         if ($shop) {
             $parameters['shopId'] = $shop->getShopId();
