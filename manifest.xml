@@ -14,6 +14,7 @@
         <version>1.0.5</version>
         <icon>Resources/plugin.webp</icon>
         <license>MIT</license>
+        <compatibility>~6.5.0</compatibility>
     </meta>
 
     <setup>
@@ -33,8 +34,8 @@
     <payments>
         <payment-method>
             <identifier>credit_card</identifier>
-            <name>Credit Card (by Braintree)</name>
-            <name lang="de-DE">Kreditkarte (by Braintree)</name>
+            <name>Credit or Debit Card (by Braintree)</name>
+            <name lang="de-DE">Kredit- oder Debitkarte (von Braintree)</name>
             <pay-url>https://braintree.shopware.com/api/pay</pay-url>
             <icon>Resources/config/plugin.jpg</icon>
         </payment-method>
