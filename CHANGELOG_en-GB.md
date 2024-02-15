@@ -1,3 +1,7 @@
+# 2.0.0
+
+* Shopware 6.6 compatible release
+
 # 1.0.5
 
 * GitHub release
