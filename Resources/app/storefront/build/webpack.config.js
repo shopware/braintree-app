@@ -1,10 +1,11 @@
-const { join, resolve } = require('path');
+const { join } = require('path');
+
 
 module.exports = (params) => {
     return {
         resolve: {
             modules: [
-                `${params.basePath}Resources/app/storefront/node_modules`,
+                join(params.basePath, 'Resources/app/storefront/node_modules'),
             ],
         },
     };
