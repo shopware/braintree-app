@@ -26,7 +26,7 @@ class OrderInformationService
      */
     public function extractShippingAddress(PaymentPayAction $payment): array
     {
-        $shippingAddress = $payment->order->getDeliveries()[0]->getShippingOrderAddress();
+        $shippingAddress = $payment->order->getDeliveries()->first()->getShippingOrderAddress();
 
         return [
             'id' => $shippingAddress->getId(),
