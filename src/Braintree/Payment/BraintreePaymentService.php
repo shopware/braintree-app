@@ -66,7 +66,6 @@ class BraintreePaymentService
 
         if (!$response->success) {
             // @infection-ignore-all - As if that line isn't painful enough
-            // @phpstan-ignore-next-line - Braintree SDK needs better typing
             throw new BraintreePaymentException($response->errors->deepAll()[0]?->message ?? 'Unknown error occured', shop: $payment->shop);
         }
 

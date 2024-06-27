@@ -2,7 +2,6 @@
 
 namespace Swag\Braintree\Tests\Serializer;
 
-use PHPUnit\Framework\Attributes\IgnoreClassForCodeCoverage;
 use Swag\Braintree\Framework\Serializer\BraintreeNormalizer;
 use Swag\Braintree\Framework\Serializer\CollectionNormalizer;
 use Swag\Braintree\Framework\Serializer\EntityNormalizer;
@@ -16,7 +15,6 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-#[IgnoreClassForCodeCoverage(TestSerializer::class)]
 class TestSerializer
 {
     public static function create(): Serializer

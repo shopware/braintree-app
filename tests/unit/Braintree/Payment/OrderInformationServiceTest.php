@@ -8,6 +8,7 @@ use Shopware\App\SDK\Context\ActionSource;
 use Shopware\App\SDK\Context\Cart\LineItem;
 use Shopware\App\SDK\Context\Order\Order;
 use Shopware\App\SDK\Context\Payment\PaymentPayAction;
+use Shopware\App\SDK\Framework\Collection;
 use Swag\Braintree\Braintree\Payment\OrderInformationService;
 use Swag\Braintree\Braintree\Payment\Tax\TaxService;
 use Swag\Braintree\Entity\ShopEntity;
@@ -166,11 +167,13 @@ class OrderInformationServiceTest extends TestCase
             'unitTaxAmount' => 19.0,
         ];
 
+
+
         $order = $this->createMock(Order::class);
         $order
             ->expects(static::once())
             ->method('getLineItems')
-            ->willReturn(array_fill(0, 250, new LineItem($lineItemData)));
+            ->willReturn(new Collection(array_fill(0, 250, new LineItem($lineItemData))));
 
         $paymentPayAction = new PaymentPayAction(
             $this->shop,
