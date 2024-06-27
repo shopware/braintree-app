@@ -5,6 +5,7 @@ namespace Swag\Braintree\Tests\Unit\Braintree\Payment\Tax;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\App\SDK\Context\Cart\CalculatedTax;
+use Shopware\App\SDK\Framework\Collection;
 use Swag\Braintree\Braintree\Payment\Tax\TaxService;
 
 #[CoversClass(TaxService::class)]
@@ -26,7 +27,7 @@ class TaxServiceTest extends TestCase
 
         $taxService = new TaxService();
 
-        $sum = $taxService->sumTaxes([$tax1, $tax2]);
+        $sum = $taxService->sumTaxes(new Collection([$tax1, $tax2]));
 
         static::assertSame(30.0, $sum);
     }

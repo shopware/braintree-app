@@ -22,41 +22,16 @@ parameters:
             containerXmlPath: 'var/cache/dev/Swag_Braintree_KernelDevDebugContainer.xml'
 
     ignoreErrors:
-            # This rule is stupid
-            -
-                message: '#returns bool type\, so the name should start with is/has/was\.#'
-
-            # This is as well
-            -
-                message: '#Use explicit interface contract or a service over unclear abstract methods#'
-
-            # PHPStan is stupid
-            -
-                message: '#Instead of protected element, use private element or contract method#'
-
             # TestException
             -
                 message: '#Multiple class/interface/trait is not allowed in single file#'
-                path: tests/unit
-
-            # TestException
-            -
-                message: '#There should be no empty class#'
                 path: tests/unit
 
 rules:
     # rules from https://github.com/symplify/phpstan-rules
     # domain
     - Symplify\PHPStanRules\Rules\Enum\RequireUniqueEnumConstantRule
-    - Symplify\PHPStanRules\Rules\ForbiddenParamTypeRemovalRule
     - Symplify\PHPStanRules\Rules\PreventParentMethodVisibilityOverrideRule
-
-    # paths
-    - Symplify\PHPStanRules\Rules\NoMissingDirPathRule
-    - Symplify\PHPStanRules\Rules\NoArrayAccessOnObjectRule
-
-    # dead-code
-    - Symplify\PHPStanRules\Rules\NoIssetOnObjectRule
 
     # explicit naming
     - Symplify\PHPStanRules\Rules\ForbiddenMultipleClassLikeInOneFileRule
@@ -64,11 +39,8 @@ rules:
     - Symplify\PHPStanRules\Rules\Complexity\ForbiddenArrayMethodCallRule
 
     # complexity rules
-    - Symplify\PHPStanRules\Rules\Explicit\NoMixedPropertyFetcherRule
-    - Symplify\PHPStanRules\Rules\Explicit\NoMixedMethodCallerRule
     - Symplify\PHPStanRules\Rules\NoDynamicNameRule
 
     # naming rules
-    - Symplify\PHPStanRules\Rules\NoVoidGetterMethodRule
     - Symplify\PHPStanRules\Rules\UppercaseConstantRule
     - Symplify\PHPStanRules\Rules\CheckClassNamespaceFollowPsr4Rule
