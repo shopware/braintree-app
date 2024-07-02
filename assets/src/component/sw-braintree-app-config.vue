@@ -1,7 +1,7 @@
 <template>
 <div class='sw-braintree-payment-method'>
     <div class='sw-braintree-payment-method__title'>
-        {{ $tc('configuration.payment.title') }}
+        {{ $t('configuration.payment.title') }}
     </div>
 
     <div class='sw-braintree-payment-method__card'>
@@ -9,56 +9,56 @@
             <img class='sw-braintree-payment-method__card__method-image' src='build/img/braintree-logo.webp' alt='Braintree'>
 
             <div class='sw-braintree-payment-method__card__method-description'>
-                <span>{{ $tc('configuration.payment.description') }}</span>
+                <span>{{ $t('configuration.payment.description') }}</span>
             </div>
 
             <span
                 class='sw-braintree-payment-method__card__method-link'
                 @click='onPaymentMethodDetails'
             >
-                {{ $tc("configuration.payment.editDetails") }}
+                {{ $t("configuration.payment.editDetails") }}
             </span>
 
-            <sw-switch
-                :label="$tc('configuration.payment.active')"
-                :checked='$store.getters.paymentMethod?.active ?? false'
+            <mt-switch
+                :label="$t('configuration.payment.active')"
+                :checked='paymentMethod?.active ?? false'
                 :disabled='activating'
                 @change='onActiveChange'
             />
         </div>
 
         <div class='sw-braintree-payment-method__card__content'>
-            <sw-text-field
-                :value='shop?.braintreeMerchantId'
+            <mt-text-field
                 class='sw-braintree-payment-method__card__content__braintreeMerchantId'
-                :label="$tc('configuration.merchantIdLabel')"
-                :placeholder="$tc('configuration.merchantIdPlaceholder')"
+                :model-value='shop?.braintreeMerchantId'
+                :label="$t('configuration.merchantIdLabel')"
+                :placeholder="$t('configuration.merchantIdPlaceholder')"
                 :disabled='loading'
                 @change='updateShop({ braintreeMerchantId: $event })'
             />
 
-            <sw-text-field
-                :value='shop?.braintreePublicKey'
+            <mt-text-field
                 class='sw-braintree-payment-method__card__content__braintreePublicKey'
-                :label="$tc('configuration.publicKeyLabel')"
-                :placeholder="$tc('configuration.publicKeyPlaceholder')"
+                :model-value='shop?.braintreePublicKey'
+                :label="$t('configuration.publicKeyLabel')"
+                :placeholder="$t('configuration.publicKeyPlaceholder')"
                 :disabled='loading'
                 @change='updateShop({ braintreePublicKey: $event })'
             />
 
-            <sw-text-field
-                :value='shop?.braintreePrivateKey'
+            <mt-text-field
                 class='sw-braintree-payment-method__card__content__braintreePrivateKey'
-                :label="$tc('configuration.privateKeyLabel')"
-                :placeholder="$tc('configuration.privateKeyPlaceholder')"
+                :model-value='shop?.braintreePrivateKey'
+                :label="$t('configuration.privateKeyLabel')"
+                :placeholder="$t('configuration.privateKeyPlaceholder')"
                 :disabled='loading'
                 @change='updateShop({ braintreePrivateKey: $event })'
             />
         </div>
 
         <div>
-            <sw-switch
-                :label="$tc('configuration.payment.isBraintreeSandbox')"
+            <mt-switch
+                :label="$t('configuration.payment.isBraintreeSandbox')"
                 :disabled='loading'
                 :checked='shop?.braintreeSandbox'
                 @change='updateShop({ braintreeSandbox: $event })'
@@ -73,12 +73,14 @@
 <script lang='ts'>
 import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { defineComponent, type PropType } from 'vue';
-import { SwTextField, SwSwitch } from '@shopware-ag/meteor-component-library';
+import { MtTextField, MtSwitch } from '@shopware-ag/meteor-component-library';
+import { useStore } from '@/store';
+import { mapState } from 'pinia';
 
 const Repository = sw.data.repository<'payment_method'>('payment_method');
 
 export default defineComponent({
-    components: { SwSwitch, SwTextField },
+    components: { MtSwitch, MtTextField },
 
     emits: ['update:shop', 'update:loading'],
 
@@ -103,32 +105,32 @@ export default defineComponent({
         };
     },
 
-    methods: {
-        onActiveChange(status: boolean) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const paymentMethod = this.$store.getters.paymentMethod as EntitySchema.Entity<'payment_method'>;
+    computed: {
+        ...mapState(useStore, ['paymentMethod']),
+    },
 
-            paymentMethod.active = status;
+    methods: {
+        async onActiveChange(active: boolean) {
+            if (!this.paymentMethod)
+                return;
 
             this.activating = true;
             this.$emit('update:loading', true);
 
-            void Repository.save(paymentMethod).then(() => {
-                this.$store.commit('setPaymentMethod', paymentMethod);
+            try {
+                await Repository.save({ ...this.paymentMethod, active });
 
-                const messageKey = status
-                    ? 'configuration.payment.enabled'
-                    : 'configuration.payment.disabled';
+                this.paymentMethod.active = active;
 
                 void sw.notification.dispatch({
                     variant: 'success',
-                    title: this.$tc('notification.success'),
-                    message: this.$tc(messageKey),
+                    title: this.$t('notification.success'),
+                    message: this.$t(`configuration.payment.${active ? 'enabled' : 'disabled'}`),
                 });
-            }).finally(() => {
+            } finally {
                 this.$emit('update:loading', false);
                 this.activating = false;
-            });
+            }
         },
 
         updateShop(update: Partial<ShopEntity>) {
@@ -139,10 +141,12 @@ export default defineComponent({
         },
 
         onPaymentMethodDetails() {
+            if (!this.paymentMethod)
+                return;
+
             void sw.window.routerPush({
                 name: 'sw.settings.payment.detail',
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-                params: { id: this.$store.getters.paymentMethod?.id },
+                params: { id: this.paymentMethod.id },
             });
         },
     },
@@ -189,10 +193,6 @@ export default defineComponent({
                 color: #189eff;
                 text-decoration: underline;
                 cursor: pointer;
-            }
-
-            .sw-field--switch {
-                margin: 0;
             }
         }
 

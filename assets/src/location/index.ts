@@ -1,47 +1,48 @@
+import type { I18n } from '@/i18n';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
-import type { Entity } from '@shopware-ag/meteor-admin-sdk/es/data/_internals/Entity';
-import type VueI18n from 'vue-i18n';
 
-const addLocations = async (paymentMethod: Entity<'payment_method'>, i18n: VueI18n): Promise<void> => {
-    if (sw.location.is(sw.location.MAIN_HIDDEN)) {
-        await sw.ui.module.payment.overviewCard.add({
+export async function addLocations(paymentMethod: EntitySchema.Entity<'payment_method'>, i18n: I18n) {
+    if (!sw.location.is(sw.location.MAIN_HIDDEN))
+        return;
+
+    await Promise.all([
+        sw.ui.module.payment.overviewCard.add({
             positionId: 'swag-braintree-app-payment-overview-position',
             paymentMethodHandlers: [
                 'handler_app_swagbraintreeapp_credit_card',
             ],
-        });
+        }),
 
-        await sw.ui.componentSection.add({
+        sw.ui.componentSection.add({
             component: 'card',
             positionId: 'swag-braintree-app-payment-overview-position',
             props: {
-                title: paymentMethod?.translated?.name,
+                title: paymentMethod.translated?.name,
                 locationId: 'swag-braintree-app-payment-overview-position-before',
             },
-        });
+        }),
 
-        await sw.ui.settings.addSettingsItem({
-            label: i18n.tc('settings.title'),
+        sw.ui.settings.addSettingsItem({
+            label: i18n.global.t('settings.title'),
             locationId: 'swag-braintree-app-settings-position',
-            icon: 'default-object-books',
+            // @ts-expect-error - icons are incomplete
+            icon: 'regular-bold',
             displaySearchBar: true,
             tab: 'plugins',
-        });
+        }),
 
-        await sw.ui.tabs('sw-order-detail').addTabItem({
-            label: i18n.tc('orderTransactionDetail.tabLabel'),
+        sw.ui.tabs('sw-order-detail').addTabItem({
+            label: i18n.global.t('orderTransactionDetail.tabLabel'),
             componentSectionId: 'swag-braintree-app-order-transaction-detail',
-        });
+        }),
 
-        await sw.ui.componentSection.add({
+        sw.ui.componentSection.add({
             component: 'card',
             positionId: 'swag-braintree-app-order-transaction-detail',
             props: {
-                title: i18n.tc('orderTransactionDetail.title'),
+                title: i18n.global.t('orderTransactionDetail.title'),
                 locationId: 'swag-braintree-app-order-transaction-detail-position-before',
             },
-        });
-    }
-};
-
-export { addLocations };
+        }),
+    ]);
+}

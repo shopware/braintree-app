@@ -123,15 +123,15 @@
     }
   },
   "errors": {
-    "save_settings": "Error saving settings: {error}",
-    "save_config": "Error saving config: {error}",
-    "fetch_settings": "Error fetching settings: {error}",
-    "fetch_config": "Error fetching config: {error}",
-    "fetch_merchant_accounts": "Error fetching braintree's merchant accounts: {error}",
-    "fetch_currencies": "Error fetching shopware's currencies: {error}",
-    "reset_config": "Error disconnecting your account: {error}",
-    "test_config": "Error testing connection: {error}",
-    "fetch_account_status": "Error fetching status: {error}",
+    "save_settings": "Error saving settings: {message}",
+    "save_config": "Error saving config: {message}",
+    "fetch_settings": "Error fetching settings: {message}",
+    "fetch_config": "Error fetching config: {message}",
+    "fetch_merchant_accounts": "Error fetching braintree's merchant accounts: {message}",
+    "fetch_currencies": "Error fetching shopware's currencies: {message}",
+    "reset_config": "Error disconnecting your account: {message}",
+    "test_config": "Error testing connection: {message}",
+    "fetch_account_status": "Error fetching status: {message}",
     "connection": "Connection failed"
   },
   "success": {

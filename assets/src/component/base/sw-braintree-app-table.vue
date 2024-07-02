@@ -33,12 +33,12 @@
 
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
-// import { SwPagination } from '@shopware-ag/meteor-component-library';
+// import { MtPagination } from '@shopware-ag/meteor-component-library';
 
 export default defineComponent({
     name: 'sw-braintree-app-table',
     components: {
-        // SwPagination,
+        // MtPagination,
     },
 
     emits: ['update:page', 'update:per-page'],

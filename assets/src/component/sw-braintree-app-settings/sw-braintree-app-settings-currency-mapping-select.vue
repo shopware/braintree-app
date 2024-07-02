@@ -1,6 +1,6 @@
 <template>
-<sw-select
-    :value='mapping?.merchantAccountId'
+<mt-select
+    :model-value='mapping?.merchantAccountId ?? undefined'
     :options='merchants'
     :enable-multi-selection='false'
     :hide-clearable-button='false'
@@ -16,7 +16,7 @@
     :class='inheritance ? "is-inheritance" : ""'
     @change='onUpdateMerchantAccount($event)'
     @paginate='$emit("load:merchants", item.isoCode)'
-    @click.native='$emit("load:merchants", item.isoCode)'
+    @click='$emit("load:merchants", item.isoCode)'
     @inheritance-remove='$emit("remove:inheritance")'
     @inheritance-restore='$emit("restore:inheritance")'
 />
@@ -25,14 +25,14 @@
 <script lang='ts'>
 import type { PropType } from 'vue';
 import { defineComponent } from 'vue';
-import { SwSelect } from '@shopware-ag/meteor-component-library';
+import { MtSelect } from '@shopware-ag/meteor-component-library';
 import { DefaultCurrencyMappingEntity } from '@/resources/entities';
 
 export default defineComponent({
     name: 'sw-braintree-app-settings-currency',
 
     components: {
-        SwSelect,
+        MtSelect,
     },
 
     emits: [

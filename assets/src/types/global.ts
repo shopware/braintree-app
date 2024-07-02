@@ -1,9 +1,6 @@
 import '@shopware-ag/entity-schema-types';
-import type Entity from '@shopware-ag/meteor-admin-sdk/es/data/_internals/Entity';
 
 declare global {
-    interface Entities extends EntitySchema.Entities {}
-
     interface ShopEntity {
         shopId: string,
         shopUrl: string,
@@ -89,7 +86,7 @@ declare global {
         translated: {
             name: string,
         },
-    } & typeof Entity;
+    } & EntitySchema.Entity<'sales_channel'>;
 
     interface TabItem {
         label: string,

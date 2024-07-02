@@ -1,32 +1,38 @@
 import * as sw from '@shopware-ag/meteor-admin-sdk';
-import { type AxiosError, isAxiosError } from 'axios';
-import type VueI18n from 'vue-i18n';
-import type Messages from '../i18n/en-GB.json';
+import type { I18n, Messages } from '@/i18n';
 
 export class Notify {
     constructor(
-        private readonly i18n: VueI18n,
+        private readonly i18n: I18n,
     ) {
     }
 
-    error(code: keyof typeof Messages.errors, error?: any) {
-        if (!!error && !isAxiosError(error))
-            throw error;
+    async error(code: keyof Messages['errors'], response?: unknown) {
+        if (!(response instanceof Response))
+            throw response;
+
+        if (response.ok)
+            return;
+
+        const clone = response.clone();
+        const message = await response
+            .json()
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            .then((json) => String(json?.message || json))
+            .catch(() => clone.text());
 
         void sw.notification.dispatch({
             variant: 'error',
-            title: this.i18n.tc('notification.error'),
-            message: this.i18n.tc(`errors.${String(code)}`, 0, {
-                error: (error as AxiosError | undefined)?.message,
-            }),
+            title: this.i18n.global.t('notification.error'),
+            message: this.i18n.global.t(`errors.${String(code)}`, { message }),
         });
     }
 
-    success(code: keyof typeof Messages.success) {
+    success(code: keyof Messages['success']) {
         void sw.notification.dispatch({
             variant: 'success',
-            title: this.i18n.tc('notification.success'),
-            message: this.i18n.tc(`success.${String(code)}`),
+            title: this.i18n.global.t('notification.success'),
+            message: this.i18n.global.t(`success.${String(code)}`),
         });
     }
 }

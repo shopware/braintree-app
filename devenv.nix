@@ -20,7 +20,8 @@ in {
 
   languages.javascript = {
     enable = lib.mkDefault true;
-    package = lib.mkDefault pkgs.nodejs-18_x;
+    package = lib.mkDefault pkgs.nodejs-slim;
+    npm.enable = lib.mkDefault true;
   };
 
   languages.php = {

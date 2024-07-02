@@ -1,15 +1,15 @@
 <template>
 <div class='sw-braintree-app-order-transaction-detail-page'>
-    <sw-loader v-if='loading' class='transaction loading' />
+    <mt-loader v-if='loading' class='transaction loading' />
     <div v-else class='transaction'>
         <div v-if='showEmptyState'>
             <div class='empty-state'>
-                <sw-icon name='regular-shopping-basket' class='empty-state__icon' />
+                <mt-icon name='regular-shopping-basket' class='empty-state__icon' />
                 <div class='empty-state__title'>
-                    {{ $tc('orderTransactionDetail.emptyStateTitle') }}
+                    {{ $t('orderTransactionDetail.emptyStateTitle') }}
                 </div>
                 <div class='empty-state__description'>
-                    {{ $tc('orderTransactionDetail.emptyStateDescription') }}
+                    {{ $t('orderTransactionDetail.emptyStateDescription') }}
                 </div>
             </div>
         </div>
@@ -32,10 +32,10 @@
                 </div>
                 <div class='transaction__header__detail'>
                     <div class='transaction__header__detail__price'>
-                        {{ parseFloat(transaction.amount) | toCurrency(transaction.currencyIsoCode) }}
+                        {{ $filters.toCurrency(parseFloat(transaction.amount), transaction.currencyIsoCode) }}
                     </div>
                     <div class='transaction__header__detail__date'>
-                        {{ transaction.createdAt | toDateTime('short') }}
+                        {{ $filters.toDateTime(transaction.createdAt, 'short') }}
                     </div>
                 </div>
             </div>
@@ -43,51 +43,51 @@
                 <div class='transaction__body__transaction-detail'>
                     <div class='transaction__body__transaction-detail__customer-id flex-column'>
                         <span class='transaction__body__title bold'>
-                            {{ $tc('orderTransactionDetail.body.customerIdTitle') }}
+                            {{ $t('orderTransactionDetail.body.customerIdTitle') }}
                         </span>
-                        {{ transaction?.customer.id ?? $tc('orderTransactionDetail.body.customerIdEmptyLabel') }}
+                        {{ transaction?.customer.id ?? $t('orderTransactionDetail.body.customerIdEmptyLabel') }}
                     </div>
                     <div class='transaction__body__transaction-detail__amount flex-column'>
                         <span class='transaction__body__title bold'>
-                            {{ $tc('orderTransactionDetail.body.amountTitle') }}
+                            {{ $t('orderTransactionDetail.body.amountTitle') }}
                         </span>
                         <div class='transaction__body__transaction-detail__amount__detail flex-column'>
                             <div class='transaction__body__transaction-detail__amount__detail__net flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.amountNetLabel') }}
+                                    {{ $t('orderTransactionDetail.body.amountNetLabel') }}
                                 </span>
-                                {{ amountNet | toCurrency(transaction.currencyIsoCode) }}
+                                {{ $filters.toCurrency(amountNet, transaction.currencyIsoCode) }}
                             </div>
                             <div class='transaction__body__transaction-detail__amount__detail__shipping flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.amountShippingLabel') }}
+                                    {{ $t('orderTransactionDetail.body.amountShippingLabel') }}
                                 </span>
-                                {{ parseFloat(transaction.shippingAmount) | toCurrency(transaction.currencyIsoCode) }}
+                                {{ $filters.toCurrency(parseFloat(transaction.shippingAmount), transaction.currencyIsoCode) }}
                             </div>
                             <div class='transaction__body__transaction-detail__amount__detail__gross flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.amountGrossLabel') }}
+                                    {{ $t('orderTransactionDetail.body.amountGrossLabel') }}
                                 </span>
-                                {{ parseFloat(transaction.amount) | toCurrency(transaction.currencyIsoCode) }}
+                                {{ $filters.toCurrency(parseFloat(transaction.amount), transaction.currencyIsoCode) }}
                             </div>
                         </div>
                     </div>
                     <div class='transaction__body__transaction-detail__three-d-s flex-column'>
                         <span class='transaction__body__title bold'>
-                            {{ $tc('orderTransactionDetail.body.threeDSTitle') }}
+                            {{ $t('orderTransactionDetail.body.threeDSTitle') }}
                         </span>
                         <div class='transaction__body__transaction-detail__three-d-s__detail flex-column'>
                             <div class='transaction__body__transaction-detail__three-d-s__detail__liability-possible flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.threeDSLiabilityPossibleLabel') }}
+                                    {{ $t('orderTransactionDetail.body.threeDSLiabilityPossibleLabel') }}
                                 </span>
-                                {{ $tc(`orderTransactionDetail.body.threeDSLiabilityPossibleValue.${ transaction.threeDSecureInfo.liabilityShiftPossible }`) }}
+                                {{ $t(`orderTransactionDetail.body.threeDSLiabilityPossibleValue.${ transaction.threeDSecureInfo.liabilityShiftPossible }`) }}
                             </div>
                             <div class='transaction__body__transaction-detail__three-d-s__detail__liability-shifted flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.threeDSLiabilityShiftedLabel') }}
+                                    {{ $t('orderTransactionDetail.body.threeDSLiabilityShiftedLabel') }}
                                 </span>
-                                {{ $tc(`orderTransactionDetail.body.threeDSLiabilityShiftedValue.${ transaction.threeDSecureInfo.liabilityShifted }`) }}
+                                {{ $t(`orderTransactionDetail.body.threeDSLiabilityShiftedValue.${ transaction.threeDSecureInfo.liabilityShifted }`) }}
                             </div>
                         </div>
                     </div>
@@ -95,38 +95,38 @@
                 <div class='transaction__body__payment-detail'>
                     <div class='transaction__body__payment-detail__payment flex-column'>
                         <span class='transaction__body__title bold'>
-                            {{ $tc('orderTransactionDetail.body.paymentDetailsTitle') }}
+                            {{ $t('orderTransactionDetail.body.paymentDetailsTitle') }}
                         </span>
                         <div class='transaction__body__payment-detail__payment__detail flex-column'>
                             <div class='transaction__body__payment-detail__payment__detail__status flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.paymentDetailsStatusLabel') }}
+                                    {{ $t('orderTransactionDetail.body.paymentDetailsStatusLabel') }}
                                 </span>
                                 <sw-status-indicator :status='statusType' :text='statusText(transaction.status)' />
                             </div>
                             <div class='transaction__body__payment-detail__payment__detail__type flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.paymentDetailsConclusionTypeLabel') }}
+                                    {{ $t('orderTransactionDetail.body.paymentDetailsConclusionTypeLabel') }}
                                 </span>
-                                {{ $tc('orderTransactionDetail.body.paymentDetailsConclusionTypeValue.immediate') }}
+                                {{ $t('orderTransactionDetail.body.paymentDetailsConclusionTypeValue.immediate') }}
                             </div>
                             <div class='transaction__body__payment-detail__payment__detail__transaction-id flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.paymentDetailsTransactionIdLabel') }}
+                                    {{ $t('orderTransactionDetail.body.paymentDetailsTransactionIdLabel') }}
                                 </span>
                                 {{ transaction.id }}
                             </div>
                             <div class='transaction__body__payment-detail__payment__detail__created-at flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.paymentDetailsCreatedAtLabel') }}
+                                    {{ $t('orderTransactionDetail.body.paymentDetailsCreatedAtLabel') }}
                                 </span>
-                                {{ transaction.createdAt | toDateTime('short', 'medium') }}
+                                {{ $filters.toDateTime(transaction.createdAt, 'short', 'medium') }}
                             </div>
                             <div class='transaction__body__payment-detail__payment__detail__updated-at flex-column'>
                                 <span class='transaction__body__title light'>
-                                    {{ $tc('orderTransactionDetail.body.paymentDetailsUpdatedAtLabel') }}
+                                    {{ $t('orderTransactionDetail.body.paymentDetailsUpdatedAtLabel') }}
                                 </span>
-                                {{ transaction.updatedAt | toDateTime('short', 'medium') }}
+                                {{ $filters.toDateTime(transaction.updatedAt, 'short', 'medium') }}
                             </div>
                         </div>
                     </div>
@@ -137,26 +137,30 @@
                     <thead class='transaction__history__table__header'>
                         <tr class='transaction__history__table__header__row'>
                             <th class='transaction__history__table__header__row__cell'>
-                                {{ $tc('orderTransactionDetail.history.header.status') }}
+                                {{ $t('orderTransactionDetail.history.header.status') }}
                             </th>
                             <th class='transaction__history__table__header__row__cell'>
-                                {{ $tc('orderTransactionDetail.history.header.amountCaptured') }}
+                                {{ $t('orderTransactionDetail.history.header.amountCaptured') }}
                             </th>
                             <th class='transaction__history__table__header__row__cell'>
-                                {{ $tc('orderTransactionDetail.history.header.timestamp') }}
+                                {{ $t('orderTransactionDetail.history.header.timestamp') }}
                             </th>
                         </tr>
                     </thead>
                     <tbody class='transaction__history__table__body'>
-                        <tr v-for='(history, index) in transaction.statusHistory' :key='index' class='transaction__history__table__body__row'>
+                        <tr
+                            v-for='(history, index) in transaction.statusHistory'
+                            :key='index'
+                            class='transaction__history__table__body__row'
+                        >
                             <td class='transaction__history__table__body__row__cell'>
                                 {{ statusText(history.status) }}
                             </td>
                             <td class='transaction__history__table__body__row__cell'>
-                                {{ parseFloat(history.amount) | toCurrency(transaction.currencyIsoCode) }}
+                                {{ $filters.toCurrency(parseFloat(history.amount), transaction.currencyIsoCode) }}
                             </td>
                             <td class='transaction__history__table__body__row__cell'>
-                                {{ history.timestamp.date | toDateTime('short', 'short') }}
+                                {{ $filters.toDateTime(history.timestamp.date, 'short', 'short') }}
                             </td>
                         </tr>
                     </tbody>
@@ -170,7 +174,7 @@
 <script lang='ts'>
 import { defineComponent } from 'vue';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
-import { SwLoader, SwIcon } from '@shopware-ag/meteor-component-library';
+import { MtLoader, MtIcon } from '@shopware-ag/meteor-component-library';
 import SwStatusIndicator from '@/component/base/sw-status-indicator.vue';
 
 const Criteria = sw.data.Classes.Criteria;
@@ -178,7 +182,7 @@ const Repository = sw.data.repository<'order_transaction'>('order_transaction');
 
 export default defineComponent({
     name: 'sw-braintree-app-order-transaction-detail',
-    components: { SwStatusIndicator, SwLoader, SwIcon },
+    components: { SwStatusIndicator, MtLoader, MtIcon },
 
     data(): {
         loading: boolean,
@@ -225,11 +229,11 @@ export default defineComponent({
     },
 
     created() {
-        void this.loadBraintreeTransaction();
+        this.loadBraintreeTransaction();
     },
 
     methods: {
-        loadBraintreeTransaction(): void {
+        loadBraintreeTransaction() {
             this.loading = true;
 
             sw.location.stopAutoResizer();
@@ -248,11 +252,11 @@ export default defineComponent({
 
                     void this.$api.post<BraintreeTransaction | null>('/transaction/newest', {
                         transactions: transactionIds,
-                    }).then((response) => {
-                        if (!response.data)
+                    }).then((transaction) => {
+                        if (!transaction)
                             return;
 
-                        this.transaction = response.data;
+                        this.transaction = transaction;
                     }).finally(() => {
                         sw.location.startAutoResizer();
                         this.loading = false;
@@ -265,7 +269,7 @@ export default defineComponent({
         },
 
         statusText(braintreeStatus: string): string {
-            return this.$tc(`orderTransactionDetail.body.paymentDetailsStatusValue.${ braintreeStatus }`);
+            return this.$t(`orderTransactionDetail.body.paymentDetailsStatusValue.${ braintreeStatus }`);
         },
     },
 
@@ -274,6 +278,8 @@ export default defineComponent({
 
 <style scoped lang='scss'>
 .sw-braintree-app-order-transaction-detail-page {
+    background: #fff;
+
     .flex-column {
         display: flex;
         flex-direction: column;

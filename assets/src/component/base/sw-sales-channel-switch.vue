@@ -1,13 +1,13 @@
 <template>
-<sw-select
+<mt-select
     v-if='!loading'
     class='sw-braintree-sales-channel-switch__select'
-    :label='$tc("settings.salesChannelSwitch.label")'
+    :label='$t("settings.salesChannelSwitch.label")'
     :options='salesChannelOptions'
-    :value='value'
+    :model-value='value ?? undefined'
     :is-loading='isLoading || loading'
     :disabled='disabled'
-    :placeholder='$tc("settings.salesChannelSwitch.placeholder")'
+    :placeholder='$t("settings.salesChannelSwitch.placeholder")'
     @change='onChange'
 />
 </template>
@@ -15,7 +15,7 @@
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
-import { SwSelect } from '@shopware-ag/meteor-component-library';
+import { MtSelect } from '@shopware-ag/meteor-component-library';
 
 const Criteria = sw.data.Classes.Criteria;
 const Repository = sw.data.repository<'sales_channel'>('sales_channel');
@@ -29,7 +29,7 @@ declare type SalesChannelOption = {
 export default defineComponent({
     name: 'sw-sales-channel-switch',
 
-    components: { SwSelect },
+    components: { MtSelect },
 
     emits: ['update:value'],
 
@@ -73,7 +73,7 @@ export default defineComponent({
 
             return [...salesChannelArray, {
                 id: '',
-                label: this.$tc('settings.allSalesChannels'),
+                label: this.$t('settings.allSalesChannels'),
                 value: undefined as unknown as string,
             }];
         },
@@ -83,8 +83,7 @@ export default defineComponent({
         const criteria = new Criteria();
         criteria.addSorting(Criteria.sort('name', 'ASC'));
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
-        void Repository.search(criteria, this.$store.getters.apiContext)
+        void Repository.search(criteria)
             .then((response) => {
                 this.salesChannels = (response ?? []);
                 this.loading = false;
@@ -112,13 +111,6 @@ export default defineComponent({
         box-shadow: none !important;
         border: 1px solid rgb(209, 217, 224) !important;
         border-radius: 4px !important;
-
-        .sw-card__content {
-            background: rgb(240, 242, 245) !important;
-        }
-    }
-    .sw-label__caption{
-        font-size: 24px;
     }
 }
 </style>

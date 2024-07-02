@@ -1,36 +1,72 @@
-import type { AxiosInstance } from 'axios';
-import axios, { type AxiosResponse, type AxiosRequestConfig } from 'axios';
-import { requestInterceptor } from './interceptor';
-
+/**
+ * API client
+ * Will throw the original fetch response if the status is not ok
+ */
 export class Api {
-    server: AxiosInstance;
+    readonly baseUrl: string;
+    readonly prefix: string;
 
-    constructor() {
-        this.server = axios.create({
-            baseURL: `https://braintree.shopware.com/api`,
+    constructor(baseUrl: string = 'https://braintree.shopware.com', prefix: string = '/api') {
+        this.baseUrl = baseUrl;
+        this.prefix = prefix;
+    }
+
+    get<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
+        return this.fetch<T>(path, {
+            ...options,
+            method: 'GET',
+        });
+    }
+
+    post<T = unknown>(path: string, data: any = {}, options: RequestInit = {}): Promise<T> {
+        return this.fetch<T>(path, {
+            ...options,
+            body: JSON.stringify(data),
+            method: 'POST',
+        });
+    }
+
+    put<T = unknown>(path: string, data: any = {}, options: RequestInit = {}): Promise<T> {
+        return this.fetch<T>(path, {
+            ...options,
+            body: JSON.stringify(data),
+            method: 'PATCH',
+        });
+    }
+
+    patch<T = unknown>(path: string, data: any = {}, options: RequestInit = {}): Promise<T> {
+        return this.fetch<T>(path, {
+            ...options,
+            body: JSON.stringify(data),
+            method: 'PATCH',
+        });
+    }
+
+    delete<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
+        return this.fetch<T>(path, {
+            ...options,
+            method: 'DELETE',
+        });
+    }
+
+    async fetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
+        const url = new URL(`${this.prefix}${path}`, this.baseUrl);
+
+        const addParams = new URLSearchParams(document.location.search);
+        url.searchParams.forEach((value: string, key: string) => addParams.set(key, value));
+        url.search = addParams.toString();
+
+        const response = await fetch(url, {
+            ...options,
         });
 
-        this.server.interceptors.request.use(requestInterceptor);
-    }
+        if (!response.ok)
+            throw response;
 
-    get<T = any>(url: string, config: AxiosRequestConfig<T> = {}): Promise<AxiosResponse<T>> {
-        return this.server.get<T>(url, config);
-    }
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json'))
+            throw new TypeError(`API response is not JSON: ${await response.text()}`);
 
-    post<T = any>(url: string, data: any = {}, config: AxiosRequestConfig<T> = {}): Promise<AxiosResponse<T>> {
-        return this.server.post<T>(url, data, config);
-    }
-
-    put<T = any>(url: string, data: any = {}, config: AxiosRequestConfig<T> = {}): Promise<AxiosResponse<T>> {
-        return this.server.put<T>(url, data, config);
-    }
-
-    patch<T = any>(url: string, data: any = {}, config: AxiosRequestConfig<T> = {}): Promise<AxiosResponse<T>> {
-        return this.server.patch<T>(url, data, config);
-    }
-
-    delete<T = any>(url: string, config: AxiosRequestConfig<T> = {}): Promise<AxiosResponse<T>> {
-        return this.server.delete<T>(url, config);
+        return (await response.json()) as T;
     }
 }
-
