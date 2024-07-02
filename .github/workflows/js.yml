@@ -5,12 +5,14 @@ on:
       - '**/*.js'
       - '**/*.ts'
       - package.json
+      - package-lock.json
       - .github/workflows/js.yml
   push:
     paths:
       - '**/*.js'
       - '**/*.ts'
       - package.json
+      - package-lock.json
       - .github/workflows/js.yml
     branches:
       - trunk
@@ -24,7 +26,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci --no-audit --prefer-offline
       - name: Run ESLint
         run: npm run eslint
+
+  type-checking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci --no-audit --prefer-offline
+      - name: Run ESLint
+        run: npm run tsc
