@@ -1,23 +1,23 @@
 <template>
 <div>
-    <sw-banner
+    <mt-banner
         v-if='missingAccount'
         variant='attention'
         class='sw-braintree-app-settings-currency__missing-account'
         :closable='false'
-        :title='$tc("settings.currency.missingAccountTitle")'
+        :title='$t("settings.currency.missingAccountTitle")'
     >
-        <i18n path='settings.currency.missingAccount' tag='span'>
+        <i18n-t keypath='settings.currency.missingAccount' tag='span'>
             <template #link>
-                <sw-external-link @click='onPaymentMethodOverview'>
-                    {{ $tc("settings.currency.missingAccountLink") }}
-                </sw-external-link>
+                <mt-external-link @click='onPaymentMethodOverview'>
+                    {{ $t("settings.currency.missingAccountLink") }}
+                </mt-external-link>
             </template>
-        </i18n>
-    </sw-banner>
+        </i18n-t>
+    </mt-banner>
 
-    <sw-card
-        :title='$tc("settings.currency.table.title")'
+    <mt-card
+        :title='$t("settings.currency.table.title")'
         :is-loading='loading'
     >
         <template #grid>
@@ -53,16 +53,16 @@
                 :items='[{},{},{}]'
             />
         </template>
-    </sw-card>
+    </mt-card>
 </div>
 </template>
 
 <script lang='ts'>
 import type { PropType } from 'vue';
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
 import SwBraintreeAppTable from '../base/sw-braintree-app-table.vue';
 import SwBraintreeAppCurrencyMappingSelect from './sw-braintree-app-settings-currency-mapping-select.vue';
-import { SwCard, SwBanner, SwExternalLink } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtBanner, MtExternalLink } from '@shopware-ag/meteor-component-library';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { DefaultCurrencyMappingEntity } from '@/resources/entities';
 import { registerSaveHandler } from '@/resources/inject-keys';
@@ -76,19 +76,12 @@ const currencyRepository = sw.data.repository<'currency'>('currency');
 export default defineComponent({
     name: 'sw-braintree-app-settings-currency',
 
-    inject: {
-        registerSaveHandler: {
-            from: registerSaveHandler,
-            default: () => {},
-        },
-    },
-
     components: {
         SwBraintreeAppTable,
-        SwCard,
+        MtCard,
         SwBraintreeAppCurrencyMappingSelect,
-        SwBanner,
-        SwExternalLink,
+        MtBanner,
+        MtExternalLink,
     },
 
     props: {
@@ -97,6 +90,12 @@ export default defineComponent({
             required: false,
             default: null,
         },
+    },
+
+    setup() {
+        return {
+            registerSaveHandler: inject(registerSaveHandler, () => {}),
+        };
     },
 
     data(): {
@@ -121,10 +120,10 @@ export default defineComponent({
             currencies: [] as unknown as Currencies,
             columns: [{
                 property: 'currency',
-                label: this.$tc('settings.currency.table.columns.shopwareCurrencyLabel'),
+                label: this.$t('settings.currency.table.columns.shopwareCurrencyLabel'),
             }, {
                 property: 'merchantAccount',
-                label: this.$tc('settings.currency.table.columns.braintreeMerchantAccount'),
+                label: this.$t('settings.currency.table.columns.braintreeMerchantAccount'),
             }],
         };
     },
@@ -155,8 +154,6 @@ export default defineComponent({
     },
 
     created() {
-        // @ts-expect-error - TODO: Fix this
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         this.registerSaveHandler(this.saveCurrencyMappings.bind(this));
         void this.getShopwareCurrencies();
 
@@ -164,7 +161,7 @@ export default defineComponent({
         void Promise.all(promises).then(() => this.loadingInputs = false);
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         if (!this.hasChanges) return;
         void this.saveCurrencyMappings();
     },
@@ -178,7 +175,12 @@ export default defineComponent({
             this.loadingInputs = true;
 
             return this.$api.get<MerchantAccount[]>('/braintree/merchant_accounts')
-                .then((response) => {this.merchantAccounts = response.data ?? [];})
+                .then((merchantAccounts) => {
+                    if (merchantAccounts.length > 0)
+                        this.merchantAccounts = merchantAccounts;
+                    else
+                        this.missingAccount = true;
+                })
                 .catch(() => {this.missingAccount = true;});
         },
 
@@ -189,7 +191,7 @@ export default defineComponent({
 
             return this.$api
                 .get<CurrencyMappingEntity[]>(`/entity/by-sales-channel/currency_mapping/${String(salesChannelId)}`)
-                .then((response) => void this.mappings.push(...response.data ?? []))
+                .then((mappings) => void this.mappings.push(...mappings))
                 .catch((e) => this.$notify.error('fetch_settings', e));
         },
 
@@ -321,7 +323,7 @@ export default defineComponent({
         align-items: center;
         gap: 4px;
 
-        .sw-field__label {
+        .mt-field__label {
             width: auto;
             margin: 0;
 
@@ -330,17 +332,17 @@ export default defineComponent({
             }
         }
 
-        .sw-block-field__block {
+        .mt-block-field__block {
             width: 100%;
         }
 
-        .sw-field__hint {
+        .mt-field__hint {
             display: none
         }
     }
 
     &__merchant-account-select:not(.is-inheritance) {
-        .sw-field__label {
+        .mt-field__label {
             display: none;
         }
     }
@@ -348,7 +350,7 @@ export default defineComponent({
     &__missing-account {
         max-width: 960px;
 
-        .sw-external-link {
+        .mt-external-link {
             font-size: 16px;
         }
     }

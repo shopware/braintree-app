@@ -12,28 +12,30 @@
         @update:shop='onUpdateShop'
         @update:loading='onUpdateLoading'
     >
-        <sw-button
-            variant='primary'
-            size='default'
-            :is-loading='saving'
-            :disabled='loading || testing'
-            @click='saveShopConfig'
-        >
-            {{ $tc('configuration.save') }}
-        </sw-button>
+        <div class='sw-braintree-app-config-page__buttons'>
+            <mt-button
+                variant='primary'
+                size='default'
+                :is-loading='saving'
+                :disabled='loading || testing'
+                @click='saveShopConfig'
+            >
+                {{ $t('configuration.save') }}
+            </mt-button>
 
-        <sw-button
-            variant='secondary'
-            size='default'
-            :is-loading='testing'
-            :disabled='loading || saving || !testable'
-            @click='onTest'
-        >
-            {{ $tc('configuration.test') }}
-        </sw-button>
+            <mt-button
+                variant='secondary'
+                size='default'
+                :is-loading='testing'
+                :disabled='loading || saving || !testable'
+                @click='onTest'
+            >
+                {{ $t('configuration.test') }}
+            </mt-button>
+        </div>
     </sw-braintree-app-config>
 
-    <sw-loader
+    <mt-loader
         v-if='!shop'
     />
 </div>
@@ -44,12 +46,12 @@ import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { defineComponent } from 'vue';
 import SwBraintreeAppConfig from '@/component/sw-braintree-app-config.vue';
 import SwBraintreeAppMerchantDetails from '@/component/sw-braintree-app-merchant-details.vue';
-import { SwButton, SwLoader } from '@shopware-ag/meteor-component-library';
+import { MtButton, MtLoader } from '@shopware-ag/meteor-component-library';
 
 export default defineComponent({
     name: 'sw-braintree-app-config-page',
 
-    components: { SwBraintreeAppMerchantDetails, SwBraintreeAppConfig, SwButton, SwLoader },
+    components: { SwBraintreeAppMerchantDetails, SwBraintreeAppConfig, MtButton, MtLoader },
 
     data(): {
         shop?: ShopEntity,
@@ -88,8 +90,8 @@ export default defineComponent({
             this.loading = true;
 
             return this.$api.get<ShopEntity>('/entity/shop')
-                .then((response) => {
-                    this.shop = response.data;
+                .then((shop) => {
+                    this.shop = shop;
                 }).catch((e) => this.$notify.error('fetch_config', e)).finally(() => {
                     this.loading = false;
                 });
@@ -99,8 +101,8 @@ export default defineComponent({
             this.loading = true;
 
             return this.$api.get<BraintreeConnection>('/config/status')
-                .then((response) => {
-                    this.connection = response.data;
+                .then((connection) => {
+                    this.connection = connection;
                 })
                 .catch((e) => this.$notify.error('fetch_account_status', e))
                 .finally(() => {
@@ -112,9 +114,9 @@ export default defineComponent({
             this.saving = true;
 
             return this.$api.patch<BraintreeConnection>('/entity/shop', this.shop)
-                .then((response) => {
-                    this.connection = response.data;
-                    this.notifyConnectionStatus(response.data.connectionStatus);
+                .then((connection) => {
+                    this.connection = connection;
+                    this.notifyConnectionStatus(connection.connectionStatus);
                 })
                 .catch((e) => this.$notify.error('save_config', e))
                 .finally(() => this.saving = false);
@@ -141,7 +143,7 @@ export default defineComponent({
             this.testing = true;
 
             void this.$api.post<BraintreeConnection>('/config/test', this.shop)
-                .then((response) => this.notifyConnectionStatus(response.data.connectionStatus))
+                .then((connection) => this.notifyConnectionStatus(connection.connectionStatus))
                 .catch((e) => this.$notify.error('test_config', e))
                 .finally(() => {
                     this.loading = false;
@@ -151,7 +153,7 @@ export default defineComponent({
 
         notifyConnectionStatus(status: string): void {
             if (status === 'active') this.$notify.success('connection');
-            else this.$notify.error('connection');
+            else void this.$notify.error('connection');
         },
 
         onUpdateShop(shop: ShopEntity) {
@@ -164,3 +166,12 @@ export default defineComponent({
     },
 });
 </script>
+
+<style lang='scss'>
+.sw-braintree-app-config-page {
+    &__buttons {
+        display: flex;
+        gap: 8px;
+    }
+}
+</style>

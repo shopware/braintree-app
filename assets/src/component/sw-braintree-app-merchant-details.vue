@@ -2,7 +2,7 @@
 <div class='sw-braintree-merchant-container'>
     <div class='sw-braintree-merchant-container__merchant'>
         <span class='sw-braintree-merchant-container__merchant__id'>
-            {{ $tc('configuration.merchantId' ) }}: <span class='fw-normal'>{{ merchantDetails }}</span>
+            {{ $t('configuration.merchantId' ) }}: <span class='fw-normal'>{{ merchantDetails }}</span>
         </span>
 
         <sw-internal-link
@@ -52,7 +52,7 @@ export default defineComponent({
 
         merchantDetails(): string {
             return this.connection?.merchantAccount?.id
-                ?? this.$tc('configuration.merchant.disconnected');
+                ?? this.$t('configuration.merchant.disconnected');
         },
 
         status(): StatusIndicatorType | undefined {
@@ -69,7 +69,7 @@ export default defineComponent({
         },
 
         statusText(): string {
-            return this.$tc(`configuration.status.${this.connectionStatus}`);
+            return this.$t(`configuration.status.${this.connectionStatus}`);
         },
     },
 });

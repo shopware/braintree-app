@@ -26,6 +26,7 @@ variables:
     APP_DEBUG: 0
     CORS_ALLOW_ORIGIN: '*'
     DATABASE_URL: mysql://user:@database.internal:3306/main
+    NODE_VERSION: v20.15.0
 
 crons:
     snapshot:

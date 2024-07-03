@@ -1,14 +1,7 @@
 declare module '*.vue' {
-    import type { defineComponent } from 'vue';
+    import type { DefineComponent } from 'vue';
 
-    const component: ReturnType<typeof defineComponent>;
+    const component: DefineComponent<object, object, any>;
+
     export default component;
-}
-
-declare module '@shopware-ag/meteor-component-library/src/plugin/device-helper.plugin' {
-    import type Vue from 'vue';
-
-    export default class DeviceHelperPlugin {
-        static install(vue: typeof Vue): void;
-    }
 }

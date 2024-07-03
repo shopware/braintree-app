@@ -14,19 +14,8 @@ module.exports = {
     },
     extends: [
         'eslint:recommended',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:@typescript-eslint/recommended-requiring-type-checking',
-        'plugin:vue/recommended',
-    ],
-    overrides: [
-        {
-            files: ['*.ts'],
-            parser: '@typescript-eslint/parser',
-            parserOptions: {
-                sourceType: 'module',
-                project: './tsconfig.json',
-            },
-        },
+        'plugin:@typescript-eslint/recommended-type-checked',
+        'plugin:vue/vue3-recommended',
     ],
     rules: {
         'no-undef': 'off',

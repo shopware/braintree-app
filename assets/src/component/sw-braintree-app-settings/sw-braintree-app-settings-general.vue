@@ -1,49 +1,43 @@
 <template>
-<sw-card
+<mt-card
     class='sw-braintree-app-settings-general'
-    :title='$tc("settings.general.title")'
+    :title='$t("settings.general.title")'
     :is-loading='loading'
 >
     <div class='sw-braintree-app-settings-general__container'>
-        <!-- eslint-disable vue/attribute-hyphenation -->
-        <sw-switch
+        <mt-switch
             class='sw-braintree-app-settings-general__threeDSecureEnforced'
-            :label='$tc("settings.general.threeDSecureEnforced.label")'
-            :checked='activeConfig?.threeDSecureEnforced'
-            :isInherited='isThreeDSecureEnforcedInherited'
-            :isInheritanceField='!!salesChannelId'
+            :label='$t("settings.general.threeDSecureEnforced.label")'
+            :checked='activeConfig?.threeDSecureEnforced ?? undefined'
+            :is-inherited='isThreeDSecureEnforcedInherited'
+            :is-inheritance-field='!!salesChannelId'
             @change='onChanceThreeDSecureEnforcedInherited'
             @inheritance-remove='onRemoveInheritance'
             @inheritance-restore='onRestoreInheritance'
         />
 
-        <sw-icon
-            v-tooltip.top='$tc("settings.general.threeDSecureToolTip")'
+        <mt-icon
+            v-tooltip.top='$t("settings.general.threeDSecureToolTip")'
             style='position: relative; top: -1px'
             :color="'#189EFF'"
             name='solid-question-circle-s'
         />
     </div>
-</sw-card>
+</mt-card>
 </template>
 
 <script lang='ts'>
 import type { PropType } from 'vue';
 import { defineComponent } from 'vue';
-import { SwCard, SwSwitch, SwIcon } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtSwitch, MtIcon } from '@shopware-ag/meteor-component-library';
 import { registerSaveHandler } from '@/resources/inject-keys';
 import { DefaultConfigEntity } from '@/resources/entities';
+import { inject } from 'vue';
 
 export default defineComponent({
     name: 'sw-braintree-app-settings-general',
 
-    inject: {
-        registerSaveHandler: {
-            from: registerSaveHandler,
-            default: () => {},
-        },
-    },
-    components: { SwCard, SwSwitch, SwIcon },
+    components: { MtCard, MtSwitch, MtIcon },
 
     props: {
         salesChannelId: {
@@ -51,6 +45,12 @@ export default defineComponent({
             required: false,
             default: null,
         },
+    },
+
+    setup() {
+        return {
+            registerSaveHandler: inject(registerSaveHandler, () => {}),
+        };
     },
 
     data(): {
@@ -88,8 +88,6 @@ export default defineComponent({
 
     created() {
         void this.getConfig();
-        // @ts-expect-error - TODO: Fix this
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         this.registerSaveHandler(this.updateConfig.bind(this));
     },
 
@@ -98,8 +96,8 @@ export default defineComponent({
             if(this.config[this.stringifySalesChannelId]) return;
 
             return this.$api.get<ConfigEntity>('/entity/by-sales-channel/config/' + this.stringifySalesChannelId)
-                .then((response) => {
-                    this.$set(this.config, this.stringifySalesChannelId, response.data);
+                .then((config) => {
+                    this.config[this.stringifySalesChannelId] = config;
                     this.loading = false;
                     if (this.config['null']?.threeDSecureEnforced === null)
                         this.config['null'].threeDSecureEnforced = false;
@@ -119,15 +117,15 @@ export default defineComponent({
         },
 
         onChanceThreeDSecureEnforcedInherited(){
-            this.config[this.stringifySalesChannelId].threeDSecureEnforced = !this.config[this.stringifySalesChannelId].threeDSecureEnforced;
+            this.activeConfig.threeDSecureEnforced = !this.activeConfig.threeDSecureEnforced;
         },
 
         onRemoveInheritance(){
-            this.$set(this.config[this.stringifySalesChannelId], 'threeDSecureEnforced', this.config['null']?.threeDSecureEnforced ?? false);
+            this.activeConfig.threeDSecureEnforced = this.config['null']?.threeDSecureEnforced ?? false;
         },
 
         onRestoreInheritance(){
-            this.$set(this.config[this.stringifySalesChannelId], 'threeDSecureEnforced', null);
+            this.activeConfig.threeDSecureEnforced = null;
         },
     },
 });
@@ -141,7 +139,7 @@ export default defineComponent({
         gap: 8px;
     }
 
-    .sw-field--switch__container .sw-field--switch {
+    .mt-field--switch__container .mt-field--switch {
         margin: 0;
     }
 }

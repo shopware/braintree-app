@@ -1,7 +1,7 @@
 <template>
 <sw-card-view-content class='sw-braintree-app-settings-page'>
-    <sw-card class='sw-braintree-app-settings-page__navigation'>
-        <sw-tabs
+    <mt-card class='sw-braintree-app-settings-page__navigation'>
+        <mt-tabs
             :items='tabs'
             :default-item='defaultItem'
             @new-item-active='onNewItemActive'
@@ -14,15 +14,15 @@
         />
 
         <div class='sw-braintree-app-settings-page__save'>
-            <sw-button
+            <mt-button
                 variant='primary'
                 size='default'
                 @click='onSave'
             >
-                {{ $tc("settings.saveConfigButton") }}
-            </sw-button>
+                {{ $t("settings.saveConfigButton") }}
+            </mt-button>
         </div>
-    </sw-card>
+    </mt-card>
 
     <sw-braintree-app-settings-general
         v-if='isActiveTab("swBraintreeAppSettingsGeneral")'
@@ -39,34 +39,34 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { SwCard, SwButton, SwTabs } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtButton, MtTabs } from '@shopware-ag/meteor-component-library';
 import SwBraintreeAppSettingsGeneral from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-general.vue';
 import SwBraintreeAppSettingsCurrency from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-currency.vue';
 import SwSalesChannelSwitch from '@/component/base/sw-sales-channel-switch.vue';
 import SwCardViewContent from '@/component/base/sw-card-view-content.vue';
-import { registerSaveHandler } from '@/resources/inject-keys';
+import { registerSaveHandler, type RegisterSaveHandler } from '@/resources/inject-keys';
 
-type SaveHandler = () => void;
+type SaveHandler = Parameters<RegisterSaveHandler>[0];
 
 export default defineComponent({
     name: 'sw-braintree-app-settings-page',
 
     provide() {
         return {
-            [registerSaveHandler]: (handler: SaveHandler) => {
+            [registerSaveHandler as symbol]: (handler: SaveHandler) => {
                 this.saveHandler.push(handler);
             },
         };
     },
 
     components: {
-        SwCard,
+        MtCard,
         SwSalesChannelSwitch,
         SwCardViewContent,
         SwBraintreeAppSettingsGeneral,
         SwBraintreeAppSettingsCurrency,
-        SwButton,
-        SwTabs,
+        MtButton,
+        MtTabs,
     },
 
     data(): {
@@ -84,11 +84,11 @@ export default defineComponent({
             tabs: [
                 {
                     name: 'swBraintreeAppSettingsGeneral',
-                    label: this.$tc('settings.tabs.generalLabel'),
+                    label: this.$t('settings.tabs.generalLabel'),
                 },
                 {
                     name: 'swBraintreeAppSettingsCurrency',
-                    label: this.$tc('settings.tabs.currencyLabel'),
+                    label: this.$t('settings.tabs.currencyLabel'),
                 },
             ],
         };
@@ -105,7 +105,7 @@ export default defineComponent({
         },
 
         onSave(): void {
-            this.saveHandler.forEach((handler) => handler());
+            this.saveHandler.forEach((handler) => void handler());
         },
 
         onUpdateSalesChannel(salesChannelId: string): void {
