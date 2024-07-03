@@ -2,16 +2,16 @@
 
 namespace Swag\Braintree\Tests\Unit\Entity\Contract;
 
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Entity\Contract\EntityDateTrait;
 use Swag\Braintree\Entity\Contract\EntityIdTrait;
 use Swag\Braintree\Entity\Contract\EntityTrait;
 use Symfony\Component\Uid\Uuid;
 
-#[CoversClass(EntityTrait::class)]
-#[CoversClass(EntityIdTrait::class)]
-#[CoversClass(EntityDateTrait::class)]
+#[CoversTrait(EntityTrait::class)]
+#[CoversTrait(EntityIdTrait::class)]
+#[CoversTrait(EntityDateTrait::class)]
 class EntityTraitTest extends TestCase
 {
     public function testTrait(): void

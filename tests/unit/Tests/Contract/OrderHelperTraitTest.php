@@ -2,12 +2,12 @@
 
 namespace Swag\Braintree\Tests\Unit\Tests\Contract;
 
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Tests\Contract\OrderHelperTrait;
 use Swag\Braintree\Tests\IdsCollection;
 
-#[CoversClass(OrderHelperTrait::class)]
+#[CoversTrait(OrderHelperTrait::class)]
 class OrderHelperTraitTest extends TestCase
 {
     public function testTrait(): void

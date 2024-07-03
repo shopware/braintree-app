@@ -2,11 +2,11 @@
 
 namespace Swag\Braintree\Tests\Unit\Entity\Contract;
 
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Entity\Contract\SalesChannelAwareTrait;
 
-#[CoversClass(SalesChannelAwareTrait::class)]
+#[CoversTrait(SalesChannelAwareTrait::class)]
 class SalesChannelAwareTraitTest extends TestCase
 {
     public function testTrait(): void
