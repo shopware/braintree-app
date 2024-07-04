@@ -13,6 +13,8 @@ build:
 dependencies:
   php:
     composer/composer: '^2'
+  nodejs:
+    n: '*'
 
 runtime:
   extensions:
@@ -26,7 +28,7 @@ variables:
     APP_DEBUG: 0
     CORS_ALLOW_ORIGIN: '*'
     DATABASE_URL: mysql://user:@database.internal:3306/main
-    NODE_VERSION: v20.15.0
+    N_PREFIX: /app/.global
 
 crons:
     snapshot:
@@ -45,6 +47,8 @@ crons:
 hooks:
   build: |
     set -e
+    n auto
+    hash -r
     npm install
     npm run build
   deploy: |
