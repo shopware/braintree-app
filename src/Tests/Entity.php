@@ -5,6 +5,9 @@ namespace Swag\Braintree\Tests;
 use Swag\Braintree\Entity\Contract\EntityInterface;
 use Swag\Braintree\Entity\Contract\EntityTrait;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Entity implements EntityInterface
 {
     use EntityTrait;

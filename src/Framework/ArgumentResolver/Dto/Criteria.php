@@ -4,6 +4,9 @@ namespace Swag\Braintree\Framework\ArgumentResolver\Dto;
 
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Criteria
 {
     /**

@@ -2,6 +2,9 @@
 
 namespace Swag\Braintree\Braintree\Dto;
 
+/**
+ * @codeCoverageIgnore
+ */
 class BraintreeConfig
 {
     public ?string $merchantId = null;

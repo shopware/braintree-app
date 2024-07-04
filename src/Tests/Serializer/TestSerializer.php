@@ -15,6 +15,9 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class TestSerializer
 {
     public static function create(): Serializer

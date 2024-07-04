@@ -5,6 +5,8 @@ namespace Swag\Braintree\Tests;
 use Swag\Braintree\Repository\AbstractRepository;
 
 /**
+ * @codeCoverageIgnore
+ *
  * @extends AbstractRepository<Entity>
  */
 class Repository extends AbstractRepository
