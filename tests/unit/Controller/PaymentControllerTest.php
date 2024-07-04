@@ -73,7 +73,7 @@ class PaymentControllerTest extends TestCase
             ->willReturnCallback(function (ResponseInterface $response) {
                 $body = \json_decode($response->getBody()->getContents(), true);
                 static::assertNotNull($body);
-                static::assertSame('failed', $body['status']);
+                static::assertSame('fail', $body['status']);
                 static::assertStringContainsString('this-is-failed-msg', $body['message']);
 
                 return new Response();

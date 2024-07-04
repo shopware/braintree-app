@@ -2,10 +2,11 @@
 
 namespace Swag\Braintree\Framework\ArgumentResolver\Dto;
 
-use PHPUnit\Framework\Attributes\IgnoreClassForCodeCoverage;
 use Symfony\Component\Uid\Uuid;
 
-#[IgnoreClassForCodeCoverage(Criteria::class)]
+/**
+ * @codeCoverageIgnore
+ */
 class Criteria
 {
     /**

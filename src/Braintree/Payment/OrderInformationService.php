@@ -26,7 +26,7 @@ class OrderInformationService
      */
     public function extractShippingAddress(PaymentPayAction $payment): array
     {
-        $shippingAddress = $payment->order->getDeliveries()[0]->getShippingOrderAddress();
+        $shippingAddress = $payment->order->getDeliveries()->first()->getShippingOrderAddress();
 
         return [
             'id' => $shippingAddress->getId(),
@@ -73,7 +73,7 @@ class OrderInformationService
 
         // @infection-ignore-all - if 249 or 248, it really doesn't matter
         if (\count($orderLineItems) > 249) {
-            $orderLineItems = \array_slice($orderLineItems, 0, 249);
+            $orderLineItems = \array_slice($orderLineItems->all(), 0, 249);
         }
 
         foreach ($orderLineItems as $lineItem) {

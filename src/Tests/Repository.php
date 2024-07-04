@@ -2,13 +2,13 @@
 
 namespace Swag\Braintree\Tests;
 
-use PHPUnit\Framework\Attributes\IgnoreClassForCodeCoverage;
 use Swag\Braintree\Repository\AbstractRepository;
 
 /**
+ * @codeCoverageIgnore
+ *
  * @extends AbstractRepository<Entity>
  */
-#[IgnoreClassForCodeCoverage(Repository::class)]
 class Repository extends AbstractRepository
 {
 }

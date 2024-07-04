@@ -1,10 +1,14 @@
 <?php declare(strict_types=1);
 
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Symfony\Component\VarDumper\VarDumper;
+
+// https://github.com/symfony/symfony/issues/53812#issuecomment-1962311843
+ErrorHandler::register(null, false);
 
 require \dirname(__DIR__) . '/vendor/autoload.php';
 
