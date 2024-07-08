@@ -27,7 +27,7 @@
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@symfony/webpack-encore": "^4.6.1",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "core-js": "^3.37.1",
     "eslint": "^8.56.0",
@@ -39,7 +39,7 @@
     "sass-loader": "^14.2.1",
     "typescript": "^5.5.3",
     "vue-eslint-parser": "^9.3.1",
-    "vue-tsc": "^2.0.24",
+    "vue-tsc": "^2.0.26",
     "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
   },
