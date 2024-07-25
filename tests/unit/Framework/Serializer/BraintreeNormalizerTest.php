@@ -19,7 +19,19 @@ class BraintreeNormalizerTest extends TestCase
         $this->normalizer = new BraintreeNormalizer();
     }
 
-    public function testNormalize(): void
+    public function testNormalizeInstance(): void
+    {
+        $id = (string) Uuid::v7();
+
+        $instance = new TestInstance(['id' => $id]);
+
+        static::assertEquals(
+            ['id' => $id],
+            $this->normalizer->normalize($instance)
+        );
+    }
+
+    public function testNormalizeArray(): void
     {
         $id = (string) Uuid::v7();
 
@@ -36,12 +48,14 @@ class BraintreeNormalizerTest extends TestCase
         $instance = new TestInstance([]);
         $entity = new Entity();
 
+        static::assertTrue($this->normalizer->supportsNormalization($instance));
         static::assertTrue($this->normalizer->supportsNormalization([$instance]));
 
         static::assertFalse($this->normalizer->supportsNormalization([]));
         static::assertFalse($this->normalizer->supportsNormalization([$entity]));
         static::assertFalse($this->normalizer->supportsNormalization([$instance, $entity]));
         static::assertFalse($this->normalizer->supportsNormalization(null));
+        static::assertFalse($this->normalizer->supportsNormalization($entity));
     }
 
     public function testSupportedTypes(): void

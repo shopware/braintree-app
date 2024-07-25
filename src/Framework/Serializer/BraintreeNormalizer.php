@@ -10,29 +10,37 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class BraintreeNormalizer implements NormalizerInterface
 {
     /**
-     * @param Instance[] $object
+     * @param Instance[]|Instance $object
      * @param array<string, mixed> $context
      *
      * @return array<int, array<string, mixed>>
      */
     public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
-        return \array_map(fn (Instance $braintreeObject) => $braintreeObject->toArray(), $object);
+        if (\is_array($object)) {
+            return \array_map(fn (Instance $braintreeObject) => $braintreeObject->toArray(), $object);
+        }
+
+        return $object->toArray();
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
-        if (!\is_array($data) || \count($data) === 0) {
+        if (\is_array($data) && \count($data) === 0) {
             return false;
         }
 
-        foreach ($data as $braintreeObject) {
-            if (!\is_subclass_of($braintreeObject, Instance::class)) {
-                return false;
+        if (\is_array($data)) {
+            foreach ($data as $braintreeObject) {
+                if (!\is_subclass_of($braintreeObject, Instance::class)) {
+                    return false;
+                }
             }
+
+            return true;
         }
 
-        return true;
+        return \is_subclass_of($data, Instance::class);
     }
 
     public function getSupportedTypes(?string $format): array
