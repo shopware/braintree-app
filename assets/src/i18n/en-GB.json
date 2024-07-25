@@ -33,7 +33,10 @@
       "disconnected": "Disconnected"
     },
     "save": "Save configuration",
-    "test": "Test configuration"
+    "test": "Test configuration",
+    "missingCurrencyMappingTitle": "Missing currency mappings",
+    "missingCurrencyMapping": "Braintree will not be available during checkout, until you set currency mappings {link}",
+    "missingCurrencyMappingLink": "here"
   },
   "settings": {
     "title": "Braintree by PayPal",

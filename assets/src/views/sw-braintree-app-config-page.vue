@@ -1,5 +1,21 @@
 <template>
 <div class='sw-braintree-app-config-page'>
+    <mt-banner
+        v-if='missingCurrenyMappings'
+        variant='attention'
+        class='sw-braintree-app-config-page__missing-mappings'
+        :closable='false'
+        :title='$t("configuration.missingCurrencyMappingTitle")'
+    >
+        <i18n-t keypath='configuration.missingCurrencyMapping' tag='span'>
+            <template #link>
+                <mt-external-link @click='onSettingsLinkCicked'>
+                    {{ $t("configuration.missingCurrencyMappingLink") }}
+                </mt-external-link>
+            </template>
+        </i18n-t>
+    </mt-banner>
+
     <sw-braintree-app-merchant-details
         :connection='connection'
         :loading='!connection'
@@ -46,12 +62,19 @@ import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { defineComponent } from 'vue';
 import SwBraintreeAppConfig from '@/component/sw-braintree-app-config.vue';
 import SwBraintreeAppMerchantDetails from '@/component/sw-braintree-app-merchant-details.vue';
-import { MtButton, MtLoader } from '@shopware-ag/meteor-component-library';
+import { MtButton, MtBanner, MtExternalLink, MtLoader } from '@shopware-ag/meteor-component-library';
 
 export default defineComponent({
     name: 'sw-braintree-app-config-page',
 
-    components: { SwBraintreeAppMerchantDetails, SwBraintreeAppConfig, MtButton, MtLoader },
+    components: {
+        SwBraintreeAppMerchantDetails,
+        SwBraintreeAppConfig,
+        MtButton,
+        MtLoader,
+        MtBanner,
+        MtExternalLink,
+    },
 
     data(): {
         shop?: ShopEntity,
@@ -72,6 +95,9 @@ export default defineComponent({
     computed: {
         testable(): boolean {
             return !!this.shop?.braintreeMerchantId && !!this.shop?.braintreePublicKey && !!this.shop?.braintreePrivateKey;
+        },
+        missingCurrenyMappings(): boolean {
+            return !!this.shop && this.shop.currencyMappings.length === 0;
         },
     },
 
@@ -163,6 +189,16 @@ export default defineComponent({
         onUpdateLoading(loading: boolean) {
             this.loading = loading;
         },
+
+        async onSettingsLinkCicked() {
+            const { modules } = await sw.context.getModuleInformation();
+            void sw.window.routerPush({
+                name: 'sw.extension.sdk.index',
+                params: {
+                    id: modules[0].id,
+                },
+            });
+        },
     },
 });
 </script>
@@ -172,6 +208,10 @@ export default defineComponent({
     &__buttons {
         display: flex;
         gap: 8px;
+    }
+
+    &__missing-mappings {
+        margin-bottom: 32px;
     }
 }
 </style>
