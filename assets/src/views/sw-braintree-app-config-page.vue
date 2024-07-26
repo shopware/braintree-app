@@ -140,9 +140,10 @@ export default defineComponent({
             this.saving = true;
 
             return this.$api.patch<BraintreeConnection>('/entity/shop', this.shop)
-                .then((connection) => {
+                .then(async (connection) => {
                     this.connection = connection;
                     this.notifyConnectionStatus(connection.connectionStatus);
+                    await this.getShopConfig();
                 })
                 .catch((e) => this.$notify.error('save_config', e))
                 .finally(() => this.saving = false);

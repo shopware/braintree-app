@@ -5,6 +5,7 @@ namespace Swag\Braintree\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Swag\Braintree\Braintree\Gateway\BraintreeConnectionService;
 use Swag\Braintree\Braintree\Gateway\Connection\BraintreeConnectionStatus;
+use Swag\Braintree\Braintree\Util\CurrencyMappingValidator;
 use Swag\Braintree\Entity\ConfigEntity;
 use Swag\Braintree\Entity\CurrencyMappingEntity;
 use Swag\Braintree\Entity\ShopEntity;
@@ -27,6 +28,7 @@ class EntityController extends AbstractController
         private readonly ConfigRepository $configRepository,
         private readonly CurrencyMappingRepository $currencyMappingRepository,
         private readonly BraintreeConnectionService $connectionService,
+        private readonly CurrencyMappingValidator $currencyMappingValidator,
     ) {
     }
 
@@ -42,12 +44,16 @@ class EntityController extends AbstractController
         /** @var ShopEntity $shop */
         $shop = $this->shopRepository->deserializeInto($shop, $request->getContent());
 
-        $connectionService = $this->connectionService->fromShop($shop);
+        $connection = $this->connectionService->fromShop($shop)->testConnection();
 
         $this->entityManager->persist($shop);
         $this->entityManager->flush();
 
-        return $connectionService->testConnection();
+        if ($connection->connectionStatus === BraintreeConnectionStatus::STATUS_CONNECTED) {
+            $this->currencyMappingValidator->deleteInvalidCurrencyMappings($shop);
+        }
+
+        return $connection;
     }
 
     /**
