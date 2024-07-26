@@ -9,6 +9,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Braintree\Gateway\BraintreeConnectionService;
 use Swag\Braintree\Braintree\Gateway\Connection\BraintreeConnectionStatus;
+use Swag\Braintree\Braintree\Util\CurrencyMappingValidator;
 use Swag\Braintree\Controller\EntityController;
 use Swag\Braintree\Entity\ConfigEntity;
 use Swag\Braintree\Entity\ShopEntity;
@@ -32,6 +33,8 @@ class EntityControllerTest extends TestCase
 
     private MockObject&BraintreeConnectionService $connectionService;
 
+    private MockObject&CurrencyMappingValidator $currencyMappingValidator;
+
     private EntityController $entityController;
 
     protected function setUp(): void
@@ -41,8 +44,16 @@ class EntityControllerTest extends TestCase
         $this->configRepository = $this->createMock(ConfigRepository::class);
         $this->currencyMappingRepository = $this->createMock(CurrencyMappingRepository::class);
         $this->connectionService = $this->createMock(BraintreeConnectionService::class);
+        $this->currencyMappingValidator = $this->createMock(CurrencyMappingValidator::class);
 
-        $this->entityController = new EntityController($this->entityManager, $this->shopRepository, $this->configRepository, $this->currencyMappingRepository, $this->connectionService);
+        $this->entityController = new EntityController(
+            $this->entityManager,
+            $this->shopRepository,
+            $this->configRepository,
+            $this->currencyMappingRepository,
+            $this->connectionService,
+            $this->currencyMappingValidator,
+        );
     }
 
     public function testGetShopEntity(): void
@@ -81,6 +92,12 @@ class EntityControllerTest extends TestCase
         $this->entityManager
             ->expects(static::once())
             ->method('flush');
+
+
+        $this->currencyMappingValidator
+            ->expects(static::once())
+            ->method('deleteInvalidCurrencyMappings')
+            ->with($shop);
 
         $this->entityController->updateShopEntity($request, $shop);
     }
