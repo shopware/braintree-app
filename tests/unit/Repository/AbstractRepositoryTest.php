@@ -117,7 +117,7 @@ class AbstractRepositoryTest extends TestCase
 
     public function testUpsertWithSalesChannelAwareNull(): void
     {
-        $entity = new class() extends Entity {
+        $entity = new class extends Entity {
             use SalesChannelAwareTrait;
         };
 
@@ -154,7 +154,7 @@ class AbstractRepositoryTest extends TestCase
 
     public function testUpsertWithSalesChannelAwareMissing(): void
     {
-        $entity = new class() extends Entity {
+        $entity = new class extends Entity {
             use SalesChannelAwareTrait;
         };
 
@@ -190,7 +190,7 @@ class AbstractRepositoryTest extends TestCase
 
     public function testUpsertWithShopAware(): void
     {
-        $entity = new class() extends Entity {
+        $entity = new class extends Entity {
             use ShopAwareTrait;
         };
 

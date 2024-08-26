@@ -43,7 +43,7 @@ class SetupUrlCommand extends Command
         }
 
         if ($fromUrl === $toUrl) {
-            $io->warning(sprintf('Isn\'t it pointless to replace "%s" with itself?', $toUrl));
+            $io->warning(\sprintf('Isn\'t it pointless to replace "%s" with itself?', $toUrl));
 
             return Command::FAILURE;
         }
