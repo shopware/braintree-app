@@ -11,7 +11,7 @@ class SalesChannelAwareTraitTest extends TestCase
 {
     public function testTrait(): void
     {
-        $entity = new class() {
+        $entity = new class {
             use SalesChannelAwareTrait;
         };
 

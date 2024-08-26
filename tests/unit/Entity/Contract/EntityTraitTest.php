@@ -16,7 +16,7 @@ class EntityTraitTest extends TestCase
 {
     public function testTrait(): void
     {
-        $entity = new class() {
+        $entity = new class {
             use EntityTrait;
         };
 
@@ -50,7 +50,7 @@ class EntityTraitTest extends TestCase
 
     public function testDoctrineLifecycleMethods(): void
     {
-        $entity = new class() {
+        $entity = new class {
             use EntityTrait;
         };
 

@@ -12,7 +12,7 @@ class ShopAwareTraitTest extends TestCase
 {
     public function testTrait(): void
     {
-        $entity = new class() {
+        $entity = new class {
             use ShopAwareTrait;
         };
 

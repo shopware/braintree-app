@@ -12,7 +12,7 @@ class OrderHelperTraitTest extends TestCase
 {
     public function testTrait(): void
     {
-        $class = new class() {
+        $class = new class {
             use OrderHelperTrait;
         };
 

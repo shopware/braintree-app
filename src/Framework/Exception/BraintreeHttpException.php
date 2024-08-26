@@ -92,7 +92,7 @@ abstract class BraintreeHttpException extends HttpException
             $formattedKey = preg_replace('/[^a-z]/i', '', $key);
 
             /** @infection-ignore-all */
-            $regex[sprintf('/\{\{(\s+)?(%s)(\s+)?\}\}/', $formattedKey)] = $value;
+            $regex[\sprintf('/\{\{(\s+)?(%s)(\s+)?\}\}/', $formattedKey)] = $value;
         }
 
         /** @infection-ignore-all */

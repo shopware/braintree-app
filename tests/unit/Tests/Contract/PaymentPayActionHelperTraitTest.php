@@ -15,7 +15,7 @@ class PaymentPayActionHelperTraitTest extends TestCase
 {
     public function testTrait(): void
     {
-        $class = new class() {
+        $class = new class {
             use PaymentPayActionHelperTrait;
         };
 
