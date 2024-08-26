@@ -9,7 +9,7 @@
     "eslint-fix": "eslint ./assets --ext .vue,.ts --fix --ignore-path .gitignore",
     "tsc": "vue-tsc --noEmit"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "@shopware-ag/entity-schema-types": "6.4.0",
