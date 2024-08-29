@@ -16,7 +16,7 @@ class EntityNormalizer implements NormalizerInterface
     private const REGEX = '/.*(Swag.*)/';
 
     public function __construct(
-        private readonly NormalizerInterface $normalizer
+        private readonly NormalizerInterface $normalizer,
     ) {
     }
 

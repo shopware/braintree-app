@@ -167,8 +167,6 @@ class OrderInformationServiceTest extends TestCase
             'unitTaxAmount' => 19.0,
         ];
 
-
-
         $order = $this->createMock(Order::class);
         $order
             ->expects(static::once())

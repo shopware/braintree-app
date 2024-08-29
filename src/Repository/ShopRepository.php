@@ -9,7 +9,7 @@ use Swag\Braintree\Entity\ShopEntity;
 /**
  * @method ShopInterface|null find($id, $lockMode = null, $lockVersion = null)
  * @method ShopInterface|null findOneBy(array $criteria, array $orderBy = null)
- * @method ShopInterface[]    findAll()
+ * @method ShopInterface[] findAll()
  *
  * @extends AbstractRepository<ShopInterface>
  */
