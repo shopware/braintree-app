@@ -1,5 +1,7 @@
 name: PHP
+
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - '**/*.php'
@@ -8,7 +10,7 @@ on:
       - composer.lock
       - symfony.lock
       - infection.json5
-      - ecs.php
+      - .php-cs-fixer.dist.php
       - phpstan.neon
       - .github/workflows/php.yml
   push:
@@ -19,36 +21,18 @@ on:
       - composer.lock
       - symfony.lock
       - infection.json5
-      - ecs.php
+      - .php-cs-fixer.dist.php
       - phpstan.neon
       - .github/workflows/php.yml
     branches:
       - trunk
-  workflow_dispatch:
 
 jobs:
   ecs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+      - uses: ./.github/actions/setup-php
       - name: Run ECS
         run: composer ecs
 
@@ -56,24 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+      - uses: ./.github/actions/setup-php
       - name: Generate PHPStan cache
         run: php bin/console cache:clear
       - name: Run PHPStan
@@ -83,25 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          coverage: pcov
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+      - uses: ./.github/actions/setup-php
       - name: Run PHPUnit
         run: composer phpunit -- --coverage-clover=coverage.xml
       - name: Codecov
@@ -113,25 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          coverage: pcov
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+      - uses: ./.github/actions/setup-php
       - name: Run Infection
         run: composer infection -- --min-msi=95
         env:

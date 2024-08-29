@@ -1,11 +1,14 @@
 name: JS
+
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - '**/*.js'
       - '**/*.ts'
       - package.json
       - package-lock.json
+      - .github/actions/setup-node/action.yml
       - .github/workflows/js.yml
   push:
     paths:
@@ -13,6 +16,7 @@ on:
       - '**/*.ts'
       - package.json
       - package-lock.json
+      - .github/actions/setup-node/action.yml
       - .github/workflows/js.yml
     branches:
       - trunk
@@ -22,26 +26,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci --no-audit --prefer-offline
+      - uses: ./.github/actions/setup-node
       - name: Run ESLint
-        run: npm run eslint
+        run: npm run eslint -- --output-file eslint-report.json --format json
+        continue-on-error: true
+      - name: ESLint report to cli
+        run: node -p "require('./node_modules/eslint/lib/cli-engine/formatters/stylish.js')(require('./eslint-report.json'))"
+      - name: Annotate ESLint report
+        uses: ataylorme/eslint-annotate-action@v3
+        with:
+          report-json: eslint-report.json
 
   type-checking:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci --no-audit --prefer-offline
+      - uses: ./.github/actions/setup-node
       - name: Run ESLint
         run: npm run tsc
