@@ -27,7 +27,6 @@
   },
   "include": [
     "./assets/**/*.ts",
-    "./assets/**/*.vue",
-    "./.eslintrc.js"
+    "./assets/**/*.vue"
   ],
 }
