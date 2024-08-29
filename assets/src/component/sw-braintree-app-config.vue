@@ -6,7 +6,7 @@
 
     <div class='sw-braintree-payment-method__card'>
         <div class='sw-braintree-payment-method__card__method'>
-            <img class='sw-braintree-payment-method__card__method-image' src='build/img/braintree-logo.webp' alt='Braintree'>
+            <img class='sw-braintree-payment-method__card__method-image' src='/assets/img/braintree-logo.webp' alt='Braintree'>
 
             <div class='sw-braintree-payment-method__card__method-description'>
                 <span>{{ $t('configuration.payment.description') }}</span>

@@ -18,7 +18,7 @@
                 <div class='transaction__header__logo'>
                     <img
                         class='transaction__header__logo__image'
-                        src='build/img/braintree-logo.webp'
+                        src='/assets/img/braintree-logo.webp'
                         alt='Braintree'
                     >
                 </div>

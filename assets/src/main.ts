@@ -29,10 +29,14 @@ void Promise.all([
         throw new Error('Payment method not found');
 
     const i18n = createI18n(locale);
-    const pinia = createPinia();
+
+    if (sw.location.is(sw.location.MAIN_HIDDEN)) {
+        await addLocations(paymentMethod, i18n);
+        return;
+    }
 
     const app = createApp(App)
-        .use(pinia)
+        .use(createPinia())
         .use(i18n)
         .use(DeviceHelperPlugin)
         .directive('tooltip', TooltipDirective);
@@ -41,7 +45,6 @@ void Promise.all([
     app.config.globalProperties.$notify = new Notify(i18n);
     app.config.globalProperties.$filters = createFilters(locale);
 
-    await addLocations(paymentMethod, i18n);
 
     useStore().setPaymentMethod(paymentMethod);
 

@@ -97,7 +97,6 @@ in {
   };
 
   # Environment variables
-
   env.APP_URL = lib.mkDefault "http://localhost:8080";
   env.APP_SECRET = lib.mkDefault "devsecret";
   env.DATABASE_URL = lib.mkDefault "mysql://swagbraintree:swagbraintree@localhost:3307/swagbraintree";

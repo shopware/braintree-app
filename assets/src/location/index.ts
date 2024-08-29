@@ -2,9 +2,6 @@ import type { I18n } from '@/i18n';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
 
 export async function addLocations(paymentMethod: EntitySchema.Entity<'payment_method'>, i18n: I18n) {
-    if (!sw.location.is(sw.location.MAIN_HIDDEN))
-        return;
-
     await Promise.all([
         sw.ui.module.payment.overviewCard.add({
             positionId: 'swag-braintree-app-payment-overview-position',

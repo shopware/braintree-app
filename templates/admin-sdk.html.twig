@@ -6,12 +6,12 @@
 
     <title>Braintree</title>
 
-    {{ encore_entry_link_tags('admin') }}
-    {{ encore_entry_script_tags('admin') }}
+    <link rel="stylesheet" href="/build/admin.css">
+
+    <script type="module" src="/build/admin.js"></script>
+    <script type="module" src="/build/polyfills.js"></script>
 </head>
 <body>
-    <div id="app">
-        <sw-braintree-app-page-controller/>
-    </div>
+    <div id="app"></div>
 </body>
 </html>
