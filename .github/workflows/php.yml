@@ -67,3 +67,24 @@ jobs:
         run: composer infection -- --min-msi=95
         env:
           INFECTION_DASHBOARD_API_KEY: ${{ secrets.INFECTION_DASHBOARD_API_KEY }}
+
+  doctrine:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MARIADB_ROOT_PASSWORD: swagbraintree
+          MYSQL_DATABASE: swagbraintree
+        ports: ['3306:3306']
+    env:
+      DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-php
+
+      - name: Migrate database
+        run: bin/console doctrine:migrations:migrate --no-interaction
+
+      - name: Validate doctrine schema
+        run: bin/console doctrine:schema:validate --verbose
