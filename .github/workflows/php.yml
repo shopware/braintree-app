@@ -3,12 +3,24 @@ on:
   pull_request:
     paths:
       - '**/*.php'
+      - '*.dist'
       - composer.json
+      - composer.lock
+      - symfony.lock
+      - infection.json5
+      - ecs.php
+      - phpstan.neon
       - .github/workflows/php.yml
   push:
     paths:
       - '**/*.php'
+      - '*.dist'
       - composer.json
+      - composer.lock
+      - symfony.lock
+      - infection.json5
+      - ecs.php
+      - phpstan.neon
       - .github/workflows/php.yml
     branches:
       - trunk
