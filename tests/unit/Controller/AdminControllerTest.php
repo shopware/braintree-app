@@ -3,9 +3,11 @@
 namespace Swag\Braintree\Tests\Unit\Controller;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Controller\AdminController;
 use Swag\Braintree\Entity\ShopEntity;
+use Swag\Braintree\Framework\Service\HmrService;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -15,18 +17,26 @@ use Twig\Environment;
 #[CoversClass(AdminController::class)]
 class AdminControllerTest extends TestCase
 {
+    private HmrService&MockObject $hmrService;
+
     private AdminController $controller;
 
     private ShopEntity $shop;
 
     protected function setUp(): void
     {
-        $this->controller = new AdminController();
+        $this->hmrService = $this->createMock(HmrService::class);
+        $this->controller = new AdminController($this->hmrService);
         $this->shop = new ShopEntity('shop-id', '', 'secret');
     }
 
     public function testAdminSdk(): void
     {
+        $this->hmrService
+            ->expects(static::once())
+            ->method('isHmr')
+            ->willReturn(false);
+
         $twig = $this->createMock(Environment::class);
         $twig
             ->expects(static::once())

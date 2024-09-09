@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "NODE_ENV=development vite build --mode development",
     "build": "NODE_ENV=production vite build --mode production",
-    "watch": "NODE_ENV=development vite build --mode development --watch",
+    "watch": "NODE_ENV=development vite --mode development --base /_vite_",
     "eslint": "eslint ./assets --ext .vue,.ts --ignore-path .gitignore",
     "eslint-fix": "eslint ./assets --ext .vue,.ts --fix --ignore-path .gitignore",
     "tsc": "vue-tsc --noEmit"

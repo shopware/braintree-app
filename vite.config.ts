@@ -44,4 +44,11 @@ export default defineConfig(({ mode }) => ({
             },
         },
     },
+    server: {
+        strictPort: true,
+        port: Number(process.env.VITE_PORT) || 5173,
+        fs: {
+            allow: ['assets', 'node_modules'],
+        },
+    },
 }));

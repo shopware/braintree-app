@@ -4,6 +4,7 @@ namespace Swag\Braintree\Controller;
 
 use Swag\Braintree\Entity\ShopEntity;
 use Swag\Braintree\Framework\Request\ShopResolver;
+use Swag\Braintree\Framework\Service\HmrService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,11 @@ use Symfony\Component\Routing\Attribute\Route;
 #[AsController]
 class AdminController extends AbstractController
 {
+    public function __construct(
+        private readonly HmrService $hmrService,
+    ) {
+    }
+
     #[Route(
         path: '/admin-sdk',
         name: 'swag.braintree.admin-sdk',
@@ -30,7 +36,10 @@ class AdminController extends AbstractController
             ->withSecure()
             ->withPartitioned();
 
-        $response = $this->render('admin-sdk.html.twig');
+        $response = $this->render(
+            'admin-sdk.html.twig',
+            ['hmr' => $this->hmrService->isHmr()]
+        );
         $response->headers->setCookie($cookie);
 
         return $response;
