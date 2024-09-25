@@ -14,7 +14,7 @@
         "guzzlehttp/guzzle": "^7.8",
         "guzzlehttp/psr7": "^2.6",
         "nelmio/cors-bundle": "^2.3",
-        "shopware/app-bundle": "^3.0",
+        "shopware/app-bundle": "^4.0",
         "symfony/console": "^7.1",
         "symfony/dotenv": "^7.1",
         "symfony/http-foundation": "^7.1",
