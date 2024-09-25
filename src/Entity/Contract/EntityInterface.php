@@ -8,7 +8,7 @@ interface EntityInterface
 {
     public function getId(): ?Uuid;
 
-    public function setId(?Uuid $id): self;
+    public function setId(Uuid $id): self;
 
     public function getCreatedAt(): \DateTimeInterface;
 
