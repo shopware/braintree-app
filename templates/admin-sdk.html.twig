@@ -6,12 +6,17 @@
 
     <title>Braintree</title>
 
-    {{ encore_entry_link_tags('admin') }}
-    {{ encore_entry_script_tags('admin') }}
+    {% if hmr %}
+    <script type="module" rel="script" src="/_vite_/@vite/client"></script>
+    <script type="module" rel="script" src="/_vite_/assets/admin.ts"></script>
+    {% else %}
+    <link rel="stylesheet" href="/build/admin.css">
+
+    <script type="module" src="/build/admin.js"></script>
+    <script type="module" src="/build/polyfills.js"></script>
+    {% endif %}
 </head>
 <body>
-    <div id="app">
-        <sw-braintree-app-page-controller/>
-    </div>
+    <div id="app"></div>
 </body>
 </html>

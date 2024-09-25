@@ -24,13 +24,8 @@
         </div>
     </mt-card>
 
-    <sw-braintree-app-settings-general
-        v-if='isActiveTab("swBraintreeAppSettingsGeneral")'
-        :sales-channel-id='salesChannelId'
-    />
-
-    <sw-braintree-app-settings-currency
-        v-if='isActiveTab("swBraintreeAppSettingsCurrency")'
+    <component
+        :is='activeTabComponent'
         :sales-channel-id='salesChannelId'
     />
 </sw-card-view-content>
@@ -38,7 +33,7 @@
 
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
+import { type Component, defineComponent } from 'vue';
 import { MtCard, MtButton, MtTabs } from '@shopware-ag/meteor-component-library';
 import SwBraintreeAppSettingsGeneral from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-general.vue';
 import SwBraintreeAppSettingsCurrency from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-currency.vue';
@@ -47,6 +42,11 @@ import SwCardViewContent from '@/component/base/sw-card-view-content.vue';
 import { registerSaveHandler, type RegisterSaveHandler } from '@/resources/inject-keys';
 
 type SaveHandler = Parameters<RegisterSaveHandler>[0];
+
+const tabs: Record<string, Component> = {
+    swBraintreeAppSettingsGeneral: SwBraintreeAppSettingsGeneral,
+    swBraintreeAppSettingsCurrency: SwBraintreeAppSettingsCurrency,
+};
 
 export default defineComponent({
     name: 'sw-braintree-app-settings-page',
@@ -63,8 +63,6 @@ export default defineComponent({
         MtCard,
         SwSalesChannelSwitch,
         SwCardViewContent,
-        SwBraintreeAppSettingsGeneral,
-        SwBraintreeAppSettingsCurrency,
         MtButton,
         MtTabs,
     },
@@ -94,11 +92,13 @@ export default defineComponent({
         };
     },
 
-    methods: {
-        isActiveTab(tab: string): boolean {
-            return tab === this.activeTab;
+    computed: {
+        activeTabComponent(): Component {
+            return tabs[this.activeTab];
         },
+    },
 
+    methods: {
         onNewItemActive(item: string): void {
             this.activeTab = item;
             this.saveHandler = [];

@@ -21,6 +21,9 @@ framework:
     trusted_proxies: '%env(TRUSTED_PROXIES)%'
     trusted_headers: [ 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix', 'forwarded' ]
 
+parameters:
+    env(VITE_PORT): null
+
 when@test:
     framework:
         test: true

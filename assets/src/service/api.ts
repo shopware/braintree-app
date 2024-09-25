@@ -6,7 +6,7 @@ export class Api {
     readonly baseUrl: string;
     readonly prefix: string;
 
-    constructor(baseUrl: string = 'https://braintree.shopware.com', prefix: string = '/api') {
+    constructor(baseUrl: string = document.location.origin, prefix: string = '/api') {
         this.baseUrl = baseUrl;
         this.prefix = prefix;
     }

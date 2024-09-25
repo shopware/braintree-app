@@ -61,6 +61,16 @@ in {
 
     virtualHosts.":8080" = lib.mkDefault {
       extraConfig = lib.mkDefault ''
+        handle /_vite_* {
+          @websocket {
+            header Connection *Upgrade*
+            header Upgrade websocket
+          }
+
+          reverse_proxy localhost:${config.env.VITE_PORT}
+          reverse_proxy @websocket localhost:${config.env.VITE_PORT}
+        }
+
         @default {
           not path /theme/* /media/* /thumbnail/* /bundles/* /css/* /fonts/* /js/* /sitemap/*
         }
@@ -97,8 +107,8 @@ in {
   };
 
   # Environment variables
-
   env.APP_URL = lib.mkDefault "http://localhost:8080";
   env.APP_SECRET = lib.mkDefault "devsecret";
   env.DATABASE_URL = lib.mkDefault "mysql://swagbraintree:swagbraintree@localhost:3307/swagbraintree";
+  env.VITE_PORT = lib.mkDefault "5173";
 }
