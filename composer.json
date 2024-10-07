@@ -10,7 +10,7 @@
         "braintree/braintree_php": "^6.19",
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
-        "doctrine/orm": "^2.16",
+        "doctrine/orm": "^3.2",
         "guzzlehttp/guzzle": "^7.8",
         "guzzlehttp/psr7": "^2.6",
         "nelmio/cors-bundle": "^2.3",
@@ -109,6 +109,6 @@
         "symfony/web-profiler-bundle": "^7.1",
         "symplify/easy-coding-standard": "^12.0",
         "symplify/phpstan-rules": "13.0.1",
-        "tomasvotruba/type-coverage": "^0.3.1"
+        "tomasvotruba/type-coverage": "^1.0.0"
     }
 }
