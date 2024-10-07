@@ -41,7 +41,7 @@ class AdminControllerTest extends TestCase
         $twig
             ->expects(static::once())
             ->method('render')
-            ->with('admin-sdk.html.twig');
+            ->with('admin-sdk.html.twig', ['hmr' => false]);
 
         $container = $this->createMock(Container::class);
         $container->method('has')->with('twig')->willReturn(true);

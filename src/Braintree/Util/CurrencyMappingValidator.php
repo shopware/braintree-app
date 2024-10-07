@@ -27,7 +27,8 @@ class CurrencyMappingValidator
             ->delete()
             ->where($qb->expr()->notIn('currencyMapping.merchantAccountId', ':merchantAccountIds'))
             ->andWhere('currencyMapping.shop = :shop')
-            ->setParameters(['shop' => $shop, 'merchantAccountIds' => $merchantAccountIds])
+            ->setParameter('shop', $shop)
+            ->setParameter('merchantAccountIds', $merchantAccountIds)
             ->getQuery()
             ->execute();
     }
