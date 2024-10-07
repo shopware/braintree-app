@@ -17,7 +17,6 @@ export class Notify {
         const clone = response.clone();
         const message = await response
             .json()
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             .then((json) => String(json?.message || json))
             .catch(() => clone.text());
 
