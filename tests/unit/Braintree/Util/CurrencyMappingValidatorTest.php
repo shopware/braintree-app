@@ -71,10 +71,17 @@ class CurrencyMappingValidatorTest extends TestCase
             ->willReturn($queryBuilder);
 
         $queryBuilder
-            ->expects(static::once())
-            ->method('setParameters')
-            ->with(['shop' => $shop, 'merchantAccountIds' => ['merchant-id-1', 'merchant-id-2']])
-            ->willReturn($queryBuilder);
+            ->expects(static::exactly(2))
+            ->method('setParameter')
+            ->willReturnCallback(static function (string $key, mixed $value) use ($shop, $queryBuilder) {
+                match ($key) {
+                    'shop' => static::assertSame($shop, $value),
+                    'merchantAccountIds' => static::assertEquals(['merchant-id-1', 'merchant-id-2'], $value),
+                    default => static::fail('Unexpected parameter key: ' . $key),
+                };
+
+                return $queryBuilder;
+            });
 
         $query = $this->createMock(\Doctrine\ORM\Query::class);
 

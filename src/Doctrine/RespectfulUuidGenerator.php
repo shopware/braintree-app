@@ -9,7 +9,7 @@ use Symfony\Component\Uid\Uuid;
 
 class RespectfulUuidGenerator extends AbstractIdGenerator
 {
-    public function generateId(EntityManagerInterface $em, $entity): ?Uuid
+    public function generateId(EntityManagerInterface $em, mixed $entity): ?Uuid
     {
         if (!$entity) {
             return null;

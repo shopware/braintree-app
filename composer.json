@@ -80,7 +80,7 @@
         "setup": [
             "bin/console doctrine:database:drop --force",
             "bin/console doctrine:database:create",
-            "bin/console doctrine:migrations:migrate --force",
+            "bin/console doctrine:migrations:migrate -n",
             "@setup:url"
         ],
         "setup:url": [
