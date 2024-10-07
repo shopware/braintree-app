@@ -8,8 +8,8 @@
     "dev": "NODE_ENV=development vite build --mode development",
     "build": "NODE_ENV=production vite build --mode production",
     "watch": "NODE_ENV=development vite --mode development --base /_vite_",
-    "eslint": "eslint ./assets --ext .vue,.ts --ignore-path .gitignore",
-    "eslint-fix": "eslint ./assets --ext .vue,.ts --fix --ignore-path .gitignore",
+    "eslint": "eslint ./assets",
+    "eslint-fix": "eslint ./assets --fix",
     "tsc": "vue-tsc --noEmit"
   },
   "dependencies": {
@@ -21,13 +21,13 @@
     "vue-i18n": "^10.0.4"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.10.4",
+    "@stylistic/eslint-plugin": "^2.9.0",
     "@types/node": "^22.7.4",
     "@vitejs/plugin-legacy": "^5.4.2",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-typescript": "^14.0.0",
     "core-js": "^3.37.1",
-    "eslint": "^8.56.0",
+    "eslint": "^9.12.0",
     "eslint-plugin-vue": "^9.27.0",
     "sass": "^1.79.4",
     "typescript": "^5.5.3",
