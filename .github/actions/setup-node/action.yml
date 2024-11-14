@@ -1,0 +1,22 @@
+name: Setup node
+description: ''
+
+inputs:
+  node-version-file:
+    description: Node version file for setup-node
+    required: false
+    default: package.json
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: npm
+    - name: Install dependencies
+      shell: bash
+      run: npm ci --no-audit --prefer-offline
+      env:
+        CI: TRUE

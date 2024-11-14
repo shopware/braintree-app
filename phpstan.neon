@@ -13,6 +13,7 @@ parameters:
         return_type: 99
         param_type: 98
         property_type: 55
+        constant_type: 0
 
     bootstrapFiles:
         - tests/bootstrap.php
