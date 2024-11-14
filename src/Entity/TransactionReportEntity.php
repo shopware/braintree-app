@@ -11,7 +11,7 @@ use Swag\Braintree\Repository\TransactionReportRepository;
 #[ORM\HasLifecycleCallbacks]
 class TransactionReportEntity
 {
-    #[ORM\Id, ORM\OneToOne(targetEntity: TransactionEntity::class)]
+    #[ORM\Id, ORM\OneToOne(targetEntity: TransactionEntity::class, inversedBy: 'transactionReport')]
     private TransactionEntity $transaction;
 
     #[ORM\Column(type: Types::STRING, length: 3)]

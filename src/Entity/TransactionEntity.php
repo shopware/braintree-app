@@ -14,6 +14,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: '`transaction`')]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\UniqueConstraint(name: 'uniq_braintree_transaction_id_order_transaction_id', columns: ['braintree_transaction_id', 'order_transaction_id'])]
+#[ORM\AssociationOverrides(overrides: [
+    new ORM\AssociationOverride(name: 'shop', inversedBy: 'transactions'),
+])]
 class TransactionEntity implements EntityInterface
 {
     use EntityTrait;

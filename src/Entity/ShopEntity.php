@@ -15,6 +15,9 @@ use Symfony\Contracts\Service\ResetInterface;
 #[ORM\Entity(repositoryClass: ShopRepository::class)]
 #[ORM\Table(name: 'shop')]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\AttributeOverrides(overrides: [
+    new ORM\AttributeOverride(name: 'shopId', column: new ORM\Column(length: 255)),
+])]
 class ShopEntity extends AbstractShop implements ResetInterface
 {
     use EntityDateTrait;

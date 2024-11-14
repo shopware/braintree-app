@@ -15,6 +15,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'config')]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\UniqueConstraint(name: 'uniq_sales_channel_id_shop_id', columns: ['sales_channel_id', 'shop_id'])]
+#[ORM\AssociationOverrides(overrides: [
+    new ORM\AssociationOverride(name: 'shop', inversedBy: 'configs'),
+])]
 class ConfigEntity implements EntityInterface
 {
     use EntityTrait;

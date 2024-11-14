@@ -16,6 +16,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\HasLifecycleCallbacks]
 #[ORM\UniqueConstraint(name: 'uniq_config_id', columns: ['shop_id', 'sales_channel_id', 'currency_id', 'currency_iso'])]
 #[ORM\UniqueConstraint(name: 'uniq_config_id', columns: ['shop_id', 'sales_channel_id', 'merchant_account_id', 'currency_iso'])]
+#[ORM\AssociationOverrides(overrides: [
+    new ORM\AssociationOverride(name: 'shop', inversedBy: 'currencyMappings'),
+])]
 class CurrencyMappingEntity implements EntityInterface
 {
     use EntityTrait;
