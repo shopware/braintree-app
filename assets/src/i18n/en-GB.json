@@ -55,7 +55,11 @@
       "threeDSecureEnforced": {
         "label": "Only accept transactions with 3D Secure"
       },
-      "threeDSecureToolTip": "Transaction will not be accepted, if 3D Secure is not available"
+      "threeDSecureToolTip": "Transaction will not be accepted, if 3D Secure is not available",
+      "shipsFromPostalCode": {
+        "label": "Sender shipping address postal code",
+        "placeholder": "e.g. 48268"
+      }
     },
     "currency": {
       "missingAccountTitle": "Missing information",

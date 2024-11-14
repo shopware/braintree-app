@@ -277,4 +277,134 @@ class SalesChannelConfigServiceTest extends TestCase
 
         static::assertFalse($enforcement);
     }
+
+    public function testGetShipsFromPostalBothButSeperateIsNull(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setShipsFromPostalCode(null);
+
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setShipsFromPostalCode('48268');
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config, $defaultConfig]);
+
+        $postalCode = $this->salesChannelConfigService->getShipsFromPostalCode(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertSame('48268', $postalCode);
+    }
+
+    public function testGetShipsFromPostalCodeBothReturnsSeperate(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setShipsFromPostalCode('48268');
+
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setShipsFromPostalCode(null);
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config, $defaultConfig]);
+
+        $postalCode = $this->salesChannelConfigService->getShipsFromPostalCode(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertSame('48268', $postalCode);
+    }
+
+    public function testGetShipsFromPostalCodeOnlySeperate(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setShipsFromPostalCode('48268');
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config]);
+
+        $postalCode = $this->salesChannelConfigService->getShipsFromPostalCode(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertSame('48268', $postalCode);
+    }
+
+    public function testGetShipsFromPostalCodeOnlyDefault(): void
+    {
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setShipsFromPostalCode('48268');
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$defaultConfig]);
+
+        $postalCode = $this->salesChannelConfigService->getShipsFromPostalCode(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertSame('48268', $postalCode);
+    }
+
+    public function testShipsFromPostalCodeWithNone(): void
+    {
+        $shop = $this->shop;
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->with(static::callback(static function (array $criteria) use ($shop): bool {
+                static::assertContains('this-is-sales-channel-id', $criteria['salesChannelId']);
+                static::assertContains(null, $criteria['salesChannelId']);
+                static::assertEquals($shop, $criteria['shop']);
+
+                return true;
+            }))
+            ->willReturn([]);
+
+        $postalCode = $this->salesChannelConfigService->getShipsFromPostalCode(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertSame('', $postalCode);
+    }
+
+    public function testGetShipsFromPostalCodeWithBothNull(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setShipsFromPostalCode(null);
+
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setShipsFromPostalCode(null);
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config, $defaultConfig]);
+
+        $postalCode = $this->salesChannelConfigService->getShipsFromPostalCode(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertSame('', $postalCode);
+    }
 }

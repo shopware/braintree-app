@@ -114,6 +114,12 @@ class OrderInformationServiceTest extends TestCase
             'totalAmount' => 10,
             'unitAmount' => 10,
             'unitTaxAmount' => 2,
+            'commodityCode' => '1234567890AB',
+            'description' => \str_repeat('F', 127),
+            'discountAmount' => 0.0,
+            'productCode' => 'product-10',
+            'taxAmount' => 2.0,
+            'unitOfMeasure' => 'unit',
         ], [
             'kind' => 'debit',
             'name' => 'Product -10€',
@@ -121,6 +127,12 @@ class OrderInformationServiceTest extends TestCase
             'totalAmount' => -10,
             'unitAmount' => -10,
             'unitTaxAmount' => 0,
+            'commodityCode' => '1234567890',
+            'description' => 'Product that costs -10€',
+            'discountAmount' => 0.0,
+            'productCode' => 'product--10',
+            'taxAmount' => 0.0,
+            'unitOfMeasure' => 'unit',
         ], [
             'kind' => 'debit',
             'name' => 'Product 220€',
@@ -128,6 +140,12 @@ class OrderInformationServiceTest extends TestCase
             'totalAmount' => 220,
             'unitAmount' => 220,
             'unitTaxAmount' => 22,
+            'commodityCode' => null,
+            'description' => null,
+            'discountAmount' => 0.0,
+            'productCode' => 'product-220',
+            'taxAmount' => 22.0,
+            'unitOfMeasure' => 'unit',
         ], [
             'kind' => 'debit',
             'name' => 'Product 4.456€',
@@ -135,11 +153,53 @@ class OrderInformationServiceTest extends TestCase
             'totalAmount' => 4.46,
             'unitAmount' => 4.46,
             'unitTaxAmount' => 0.45,
+            'commodityCode' => null,
+            'description' => null,
+            'discountAmount' => 0.0,
+            'productCode' => 'product-4456',
+            'taxAmount' => 0.45,
+            'unitOfMeasure' => 'unit',
         ]];
 
         $customer = $this->orderInformationService->extractLineItems($this->paymentPayAction);
 
         static::assertEquals($excepted, $customer);
+    }
+
+    public function testExtractDiscountLineItem(): void
+    {
+        $ids = new IdsCollection();
+
+        $action = new PaymentPayAction(
+            $this->shop,
+            new ActionSource('this-is-url', 'this-is-app-version'),
+            $this->createOrderWithDiscount($ids),
+            $this->createOrderTransaction($ids),
+            null,
+            null,
+            [],
+        );
+
+        $lineItems = $this->orderInformationService->extractLineItems($action);
+
+        static::assertCount(1, $lineItems);
+
+        $expected = [
+            'kind' => 'debit',
+            'name' => 'Discount 20-4567€',
+            'quantity' => 2,
+            'totalAmount' => -40.91,
+            'unitAmount' => -20.46,
+            'unitTaxAmount' => 5.0,
+            'commodityCode' => '1234567890',
+            'description' => null,
+            'discountAmount' => -40.91,
+            'productCode' => 'discount-20-',
+            'taxAmount' => 10.0,
+            'unitOfMeasure' => 'unit',
+        ];
+
+        static::assertEquals($expected, $lineItems[0]);
     }
 
     public function testExtractLineItemsWithMoreThan249(): void
@@ -148,6 +208,14 @@ class OrderInformationServiceTest extends TestCase
             'label' => 'Aerodynamic Bronze Loungerie',
             'good' => true,
             'quantity' => 1,
+            'description' => 'foo',
+            'type' => 'product',
+            'referencedId' => 'product-id',
+            'payload' => [
+                'customFields' => [
+                    'commodityCode' => '123456789',
+                ],
+            ],
             'price' => [
                 'totalPrice' => 100,
                 'unitPrice' => 100,
@@ -165,9 +233,13 @@ class OrderInformationServiceTest extends TestCase
             'totalAmount' => 100.0,
             'unitAmount' => 100.0,
             'unitTaxAmount' => 19.0,
+            'commodityCode' => null,
+            'description' => 'foo',
+            'discountAmount' => 0,
+            'productCode' => 'product-id',
+            'taxAmount' => 19.0,
+            'unitOfMeasure' => 'unit',
         ];
-
-
 
         $order = $this->createMock(Order::class);
         $order
@@ -205,5 +277,11 @@ class OrderInformationServiceTest extends TestCase
     {
         $salesChannelId = $this->orderInformationService->extractSalesChannelId($this->paymentPayAction);
         static::assertEquals($this->orderIds->get('order-sales-channel-id'), $salesChannelId);
+    }
+
+    public function testExtractShippingTaxAmount(): void
+    {
+        $shippingTaxAmount = $this->orderInformationService->extractShippingTaxAmount($this->paymentPayAction);
+        static::assertSame(1.46, $shippingTaxAmount);
     }
 }

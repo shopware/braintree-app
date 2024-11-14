@@ -48,20 +48,23 @@ class BraintreePaymentService
         $shipping = $this->orderInformationService->extractShippingAddress($payment);
 
         $response = $this->gateway->transaction()->sale([
-            'merchantAccountId' => $merchantId,
             'amount' => $payment->orderTransaction->getAmount()->getTotalPrice(),
             'billing' => $billing['address'],
+            'channel' => BraintreePaymentService::BRAINTREE_BN_CODE,
             'customer' => $this->orderInformationService->extractCustomer($payment),
-            'shippingAmount' => $payment->order->getShippingCosts()->getTotalPrice(),
             'deviceData' => $payment->requestData[self::BRAINTREE_DEVICE_DATA] ?? null,
             'discountAmount' => $this->orderInformationService->extractDiscountAmount($payment),
             'lineItems' => $this->orderInformationService->extractLineItems($payment),
-            'shipping' => $shipping['address'],
+            'merchantAccountId' => $merchantId,
             'options' => ['submitForSettlement' => true],
             'paymentMethodNonce' => $nonce,
             'purchaseOrderNumber' => $payment->order->getOrderNumber(),
+            'shipping' => $shipping['address'],
+            'shippingAmount' => $payment->order->getShippingCosts()->getTotalPrice(),
+            'shipsFromPostalCode' => $this->salesChannelConfigService->getShipsFromPostalCode($salesChannelId, $payment->shop),
+            'shippingTaxAmount' => $this->orderInformationService->extractShippingTaxAmount($payment),
             'taxAmount' => $this->orderInformationService->extractTaxAmount($payment),
-            'channel' => BraintreePaymentService::BRAINTREE_BN_CODE,
+            'taxExempt' => $payment->order->getTaxStatus() === 'tax-free',
         ]);
 
         if (!$response->success) {

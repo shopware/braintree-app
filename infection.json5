@@ -7,6 +7,8 @@
         excludes: [
             "Command/SetupUrlCommand.php", // internal utility command, that needs no testing
             "Command/ReportTurnoverCommand.php", // wrapper around tested ReportService.php
+            "Framework/Service/HmrService.php", // Hot Module Reload Helper
+            "Framework/Doctrine/DoctrineSchemaSubscriber.php", // Doctrine event subscriber
             "Entity/",
             "Tests/" // changes that doesn't break tests are fine
         ]

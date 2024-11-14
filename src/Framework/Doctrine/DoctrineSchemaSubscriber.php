@@ -11,8 +11,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * @codeCoverageIgnore
- *
  * @see https://github.com/doctrine/migrations/issues/1406
  */
 #[AsDoctrineListener(event: ToolEvents::postGenerateSchema)]
