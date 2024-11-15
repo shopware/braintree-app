@@ -4,16 +4,16 @@
     :title='$t("settings.general.title")'
     :is-loading='loading'
 >
-    <div class='sw-braintree-app-settings-general__container'>
+    <div class='sw-braintree-app-settings-general__threeDSecuredEnforced'>
         <mt-switch
-            class='sw-braintree-app-settings-general__threeDSecureEnforced'
+            class='sw-braintree-app-settings-general__threeDSecureEnforced__input'
             :label='$t("settings.general.threeDSecureEnforced.label")'
             :checked='activeConfig?.threeDSecureEnforced ?? undefined'
-            :is-inherited='isThreeDSecureEnforcedInherited'
+            :is-inherited='isFieldInherited("threeDSecureEnforced")'
             :is-inheritance-field='!!salesChannelId'
-            @change='onChanceThreeDSecureEnforcedInherited'
-            @inheritance-remove='onRemoveInheritance'
-            @inheritance-restore='onRestoreInheritance'
+            @change='activeConfig.threeDSecureEnforced = !activeConfig.threeDSecureEnforced'
+            @inheritance-remove='onRemoveInheritance("threeDSecureEnforced")'
+            @inheritance-restore='onRestoreInheritance("threeDSecureEnforced")'
         />
 
         <mt-icon
@@ -23,13 +23,27 @@
             name='solid-question-circle-s'
         />
     </div>
+    <div class='sw-braintree-app-settings-general__shipsFromPostalCode'>
+        <mt-text-field
+            class='sw-braintree-app-settings-general__shipsFromPostalCode__input'
+            :label='$t("settings.general.shipsFromPostalCode.label")'
+            :placeholder='$t("settings.general.shipsFromPostalCode.placeholder")'
+            :value='activeConfig?.shipsFromPostalCode ?? undefined'
+            :is-inherited='isFieldInherited("shipsFromPostalCode")'
+            :is-inheritance-field='!!salesChannelId'
+            :model-value='activeConfig.shipsFromPostalCode ?? undefined'
+            @update:model-value='activeConfig.shipsFromPostalCode = $event ?? null'
+            @inheritance-remove='onRemoveInheritance("shipsFromPostalCode")'
+            @inheritance-restore='onRestoreInheritance("shipsFromPostalCode")'
+        />
+    </div>
 </mt-card>
 </template>
 
 <script lang='ts'>
 import type { PropType } from 'vue';
 import { defineComponent } from 'vue';
-import { MtCard, MtSwitch, MtIcon } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtSwitch, MtIcon, MtTextField } from '@shopware-ag/meteor-component-library';
 import { registerSaveHandler } from '@/resources/inject-keys';
 import { DefaultConfigEntity } from '@/resources/entities';
 import { inject } from 'vue';
@@ -37,7 +51,7 @@ import { inject } from 'vue';
 export default defineComponent({
     name: 'sw-braintree-app-settings-general',
 
-    components: { MtCard, MtSwitch, MtIcon },
+    components: { MtTextField, MtCard, MtSwitch, MtIcon },
 
     props: {
         salesChannelId: {
@@ -70,13 +84,6 @@ export default defineComponent({
 
         activeConfig(): ConfigEntity {
             return this.config[this.stringifySalesChannelId] ?? DefaultConfigEntity(this.salesChannelId);
-        },
-
-        isThreeDSecureEnforcedInherited(){
-            if(this.salesChannelId === null)
-                return false;
-
-            return this.activeConfig.threeDSecureEnforced === null;
         },
     },
 
@@ -116,16 +123,21 @@ export default defineComponent({
                 .catch((e) => this.$notify.error('save_settings', e));
         },
 
-        onChanceThreeDSecureEnforcedInherited(){
-            this.activeConfig.threeDSecureEnforced = !this.activeConfig.threeDSecureEnforced;
+        isFieldInherited(key: keyof ConfigEntity): boolean {
+            if (this.salesChannelId === null)
+                return false;
+
+            return this.activeConfig[key] === null;
         },
 
-        onRemoveInheritance(){
-            this.activeConfig.threeDSecureEnforced = this.config['null']?.threeDSecureEnforced ?? false;
+        onRemoveInheritance(key: keyof ConfigEntity): void {
+            // @ts-expect-error - TS does not know that the value of key is a valid assignment
+            this.activeConfig[key] = this.config['null']?.[key]?? DefaultConfigEntity(this.salesChannelId)[key];
         },
 
-        onRestoreInheritance(){
-            this.activeConfig.threeDSecureEnforced = null;
+        onRestoreInheritance(key: keyof ConfigEntity): void {
+            // @ts-expect-error - TS does not know that the value of key is a valid assignment
+            this.activeConfig[key] = null;
         },
     },
 });
@@ -133,14 +145,21 @@ export default defineComponent({
 
 <style lang='scss'>
 .sw-braintree-app-settings-general {
-    &__container {
+    display: flex;
+    flex-direction: column;
+
+    &__threeDSecuredEnforced {
         display: flex;
         align-items: center;
         gap: 8px;
+
+        .mt-field--switch__container .mt-field--switch {
+            margin: 0;
+        }
     }
 
-    .mt-field--switch__container .mt-field--switch {
-        margin: 0;
+    &__shipsFromPostalCode {
+        margin-top: 24px;
     }
 }
 </style>

@@ -51,4 +51,23 @@ class SalesChannelConfigService
 
         return false;
     }
+
+    public function getShipsFromPostalCode(string $salesChannelId, ShopInterface $shop): string
+    {
+        $configs = $this->configRepository->findBy(['salesChannelId' => [null, $salesChannelId], 'shop' => $shop]);
+
+        foreach ($configs as $config) {
+            $configs[$config->getSalesChannelId()] = $config;
+        }
+
+        if (isset($configs[$salesChannelId]) && $configs[$salesChannelId]->getShipsFromPostalCode() !== null) {
+            return $configs[$salesChannelId]->getShipsFromPostalCode();
+        }
+
+        if (isset($configs[null]) && $configs[null]->getShipsFromPostalCode() !== null) {
+            return $configs[null]->getShipsFromPostalCode();
+        }
+
+        return '';
+    }
 }

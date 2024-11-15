@@ -117,6 +117,7 @@ class BraintreePaymentServiceTest extends TestCase
                 static::assertEquals('this-is-device-data', $sale['deviceData']);
                 static::assertEquals('this-is-nonce', $sale['paymentMethodNonce']);
                 static::assertEquals('10068', $sale['purchaseOrderNumber']);
+                static::assertFalse($sale['taxExempt']);
 
                 return true;
             }))

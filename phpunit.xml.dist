@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.2/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.4/phpunit.xsd"
          backupGlobals="false"
          colors="true"
          bootstrap="tests/bootstrap.php"
@@ -16,7 +16,7 @@
         <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
     </php>
 
-    <coverage disableCodeCoverageIgnore="true" includeUncoveredFiles="false"/>
+    <coverage disableCodeCoverageIgnore="true" />
 
     <source>
         <include>
@@ -27,6 +27,8 @@
             <directory suffix="Entity.php">src/Entity</directory>
             <file>src/Command/SetupUrlCommand.php</file>
             <file>src/Command/ReportTurnoverCommand.php</file>
+            <file>src/Framework/Service/HmrService.php</file>
+            <file>src/Framework/Doctrine/DoctrineSchemaSubscriber.php</file>
         </exclude>
     </source>
 

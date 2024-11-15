@@ -22,10 +22,13 @@ declare global {
         id: string | null,
         shop: string,
         threeDSecureEnforced: boolean | null,
+        shipsFromPostalCode: string | null,
         salesChannelId: string | null,
         createdAt: string,
         updatedAt: string | null,
     }
+
+    type ConfigEntityProperties = keyof Omit<ConfigEntity, 'shop' | 'createdAt' | 'updatedAt' | 'id' | 'salesChannelId'>;
 
     interface CurrencyMappingEntity {
         id: string | null,
