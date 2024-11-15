@@ -1,3 +1,7 @@
+# 2.2.0
+
++ Improved support for (advanced) fraud protection
+
 # 2.0.0
 
 * Shopware 6.6 compatible release
