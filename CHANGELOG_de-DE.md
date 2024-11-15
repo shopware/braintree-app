@@ -1,3 +1,7 @@
+# 2.2.0
+
+* Verbesserte Integration der (erweiterten) Betrugsprävention
+
 # 2.0.0
 
 * Shopware 6.6 kompatibler Release
