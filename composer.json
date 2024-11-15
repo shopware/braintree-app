@@ -78,8 +78,7 @@
         "eslint": "npm run eslint",
         "eslint-fix": "npm run eslint-fix",
         "setup": [
-            "bin/console doctrine:database:drop --force",
-            "bin/console doctrine:database:create",
+            "bin/console doctrine:schema:drop --force --full-database",
             "bin/console doctrine:migrations:migrate -n",
             "@setup:url"
         ],
