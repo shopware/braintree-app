@@ -93,7 +93,6 @@ class EntityControllerTest extends TestCase
             ->expects(static::once())
             ->method('flush');
 
-
         $this->currencyMappingValidator
             ->expects(static::once())
             ->method('deleteInvalidCurrencyMappings')

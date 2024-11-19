@@ -8,7 +8,7 @@ use Swag\Braintree\Entity\CurrencyMappingEntity;
 /**
  * @method CurrencyMappingEntity|null find($id, $lockMode = null, $lockVersion = null)
  * @method CurrencyMappingEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method CurrencyMappingEntity[]    findAll()
+ * @method CurrencyMappingEntity[] findAll()
  *
  * @extends AbstractRepository<CurrencyMappingEntity>
  */

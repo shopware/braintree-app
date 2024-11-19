@@ -12,5 +12,5 @@ return static function (ContainerConfigurator $container): void {
         ->load('Swag\\Braintree\\', '../src/*')
         ->exclude('../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}');
 
-    $container->import(__DIR__.'/services/braintree.xml', 'xml');
+    $container->import(__DIR__ . '/services/braintree.xml', 'xml');
 };

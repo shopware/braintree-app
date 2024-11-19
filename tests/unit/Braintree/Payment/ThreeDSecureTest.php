@@ -17,7 +17,7 @@ class ThreeDSecureTest extends TestCase
         bool $liabilityShiftPossible,
         bool $liabilityShifted,
         bool $rejectIfEnforced,
-        ?string $enrolled
+        ?string $enrolled,
     ): void {
         $info = ThreeDSecureInfo::factory([
             'status' => $status,
@@ -35,7 +35,7 @@ class ThreeDSecureTest extends TestCase
         bool $liabilityShiftPossible,
         bool $liabilityShifted,
         bool $rejectIfEnforced,
-        ?string $enrolled
+        ?string $enrolled,
     ): void {
         $info = ThreeDSecureInfo::factory([
             'status' => $status,

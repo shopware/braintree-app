@@ -9,7 +9,7 @@ use Swag\Braintree\Entity\TransactionEntity;
 /**
  * @method TransactionEntity|null find($id, $lockMode = null, $lockVersion = null)
  * @method TransactionEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method TransactionEntity[]    findAll()
+ * @method TransactionEntity[] findAll()
  *
  * @extends AbstractRepository<TransactionEntity>
  */
