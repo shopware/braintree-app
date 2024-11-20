@@ -28,6 +28,10 @@ parameters:
                 message: '#Multiple class/interface/trait is not allowed in single file#'
                 path: tests/unit
 
+            - # don't want to prefix this
+                message: '#Only abstract classes can be extended#'
+                path: tests/integration/DoctrineUuidTest.php
+
 rules:
     # rules from https://github.com/symplify/phpstan-rules
     # domain
