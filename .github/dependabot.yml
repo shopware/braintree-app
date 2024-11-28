@@ -20,6 +20,9 @@ updates:
       all:
         patterns:
           - '*'
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-patch"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
