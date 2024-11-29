@@ -14,11 +14,11 @@ trait OrderTransactionHelperTrait
     {
         return new OrderTransaction([
             'amount' => [
-                'unitPrice' => 200,
+                'unitPrice' => 119,
                 'quantity' => 1,
-                'totalPrice' => 200,
-                'calculatedTaxes' => [['tax' => 20.456, 'taxRate' => 10, 'price' => 200]],
-                'taxRules' => [['taxRate' => 10, 'percentage' => 100]],
+                'totalPrice' => 119,
+                'calculatedTaxes' => [['tax' => 19, 'taxRate' => 19, 'price' => 100]],
+                'taxRules' => [['taxRate' => 19, 'percentage' => 100]],
             ],
             'id' => Ids::get('order-transaction-id'),
         ]);

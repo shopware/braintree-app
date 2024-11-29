@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+    https://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <parameters>
+        <parameter key="BRAINTREE_TEST_MERCHANT_ACCOUNT_ID">%env(BRAINTREE_TEST_MERCHANT_ACCOUNT_ID)%</parameter>
+        <parameter key="BRAINTREE_TEST_MERCHANT_ID">%env(BRAINTREE_TEST_MERCHANT_ID)%</parameter>
+        <parameter key="BRAINTREE_TEST_ENVIRONMENT">%env(BRAINTREE_TEST_ENVIRONMENT)%</parameter>
+        <parameter key="BRAINTREE_TEST_PUBLIC_KEY">%env(BRAINTREE_TEST_PUBLIC_KEY)%</parameter>
+        <parameter key="BRAINTREE_TEST_PRIVATE_KEY">%env(BRAINTREE_TEST_PRIVATE_KEY)%</parameter>
+    </parameters>
+
+    <services>
+        <service id="Swag\Braintree\Tests\Braintree\Gateway\BraintreeTestGatewayFactory">
+            <argument>%env(BRAINTREE_TEST_ENVIRONMENT)%</argument>
+            <argument>%env(BRAINTREE_TEST_MERCHANT_ID)%</argument>
+            <argument>%env(BRAINTREE_TEST_PUBLIC_KEY)%</argument>
+            <argument>%env(BRAINTREE_TEST_PRIVATE_KEY)%</argument>
+        </service>
+
+        <service id="Braintree\Gateway">
+            <factory service="Swag\Braintree\Tests\Braintree\Gateway\BraintreeTestGatewayFactory" method="createBraintreeGateway"/>
+        </service>
+    </services>
+</container>

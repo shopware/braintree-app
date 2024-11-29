@@ -416,4 +416,141 @@ trait OrderHelperTrait
             'id' => Ids::get('order-discount-id'),
         ]);
     }
+
+    private function createOrderForApplication(): Order
+    {
+        return new Order([
+            'orderNumber' => '10068',
+            'salesChannelId' => Ids::get('order-sales-channel-id'),
+            'price' => [
+                'netPrice' => 100,
+                'totalPrice' => 119,
+                'calculatedTaxes' => [['tax' => 19, 'taxRate' => 19, 'price' => 100]],
+                'taxRules' => [['taxRate' => 19, 'percentage' => 100]],
+                'positionPrice' => 119,
+                'taxStatus' => 'gross',
+                'rawTotal' => 100,
+            ],
+            'amountTotal' => 119,
+            'amountNet' => 100,
+            'positionPrice' => 100,
+            'taxStatus' => 'gross',
+            'shippingTotal' => 0,
+            'shippingCosts' => [
+                'unitPrice' => 0,
+                'quantity' => 0,
+                'totalPrice' => 0,
+                'calculatedTaxes' => [['tax' => 19, 'taxRate' => 19, 'price' => 100]],
+                'taxRules' => [['taxRate' => 19, 'percentage' => 100]],
+            ],
+            'orderCustomer' => [
+                'email' => 'test@example.com',
+                'orderId' => Ids::get('order-id'),
+                'firstName' => 'Application',
+                'lastName' => 'Tester',
+                'title' => null,
+                'company' => 'shopware AG',
+                'customerNumber' => '1337',
+                'customerId' => Ids::get('order-customer-id'),
+                'id' => Ids::get('order-order-customer-id'),
+            ],
+            'currency' => [
+                'isoCode' => 'EUR',
+                'symbol' => '€',
+                'shortName' => 'EUR',
+                'name' => 'Euro',
+                'itemRounding' => ['decimals' => 2, 'interval' => 0.01, 'roundForNet' => true],
+                'totalRounding' => ['decimals' => 2, 'interval' => 0.01, 'roundForNet' => true],
+                'id' => Ids::get('currency-id'),
+            ],
+            'billingAddress' => [
+                'firstName' => 'Application',
+                'lastName' => 'Tester',
+                'street' => 'Bahnhofstraße 27',
+                'zipcode' => '10332',
+                'city' => 'Berlin',
+                'company' => null,
+                'title' => null,
+                'additionalAddressLine1' => null,
+                'additionalAddressLine2' => null,
+                'country' => [
+                    'name' => 'Haiti',
+                    'iso' => 'HT',
+                    'iso3' => 'HTI',
+                    'id' => Ids::get('order-country-id'),
+                ],
+                'id' => Ids::get('order-billing-address-id'),
+            ],
+            'deliveries' => [[
+                'shippingCosts' => [
+                    'unitPrice' => 0,
+                    'quantity' => 0,
+                    'totalPrice' => 0,
+                    'calculatedTaxes' => [[
+                        'tax' => 0,
+                        'taxRate' => 0,
+                        'price' => 0,
+                    ]],
+                ],
+                'shippingOrderAddress' => [
+                    'firstName' => 'Application',
+                    'lastName' => 'Tester',
+                    'street' => 'Ebbinghoff 10',
+                    'zipcode' => '1234567890',
+                    'city' => 'Schöppingen',
+                    'company' => 'company',
+                    'title' => null,
+                    'additionalAddressLine1' => 'additionalAddressLine1',
+                    'additionalAddressLine2' => null,
+                    'country' => [
+                        'name' => 'Hungary',
+                        'iso' => 'HU',
+                        'iso3' => 'HUN',
+                        'id' => Ids::get('order-country-id'),
+                    ],
+                    'countryState' => [
+                        'name' => 'countryState',
+                    ],
+                    'id' => Ids::get('order-shipping-address-id'),
+                ],
+                'id' => Ids::get('order-delivery-id'),
+            ]],
+            'lineItems' => [[
+                'quantity' => 1,
+                'unitPrice' => 100,
+                'totalPrice' => 100,
+                'label' => 'Product 1 - Application test',
+                'description' => 'Product description 1 from application test',
+                'good' => true,
+                'type' => 'product',
+                'referencedId' => 'product-1',
+                'payload' => [
+                    'customFields' => [
+                        OrderInformationService::LINE_ITEM_COMMODITY_CODE_CUSTOM_FIELD => '1234567890',
+                    ],
+                ],
+                'price' => [
+                    'unitPrice' => 100,
+                    'quantity' => 1,
+                    'totalPrice' => 100,
+                    'calculatedTaxes' => [['tax' => 19, 'taxRate' => 19, 'price' => 100]],
+                    'taxRules' => [['taxRate' => 19, 'percentage' => 100]],
+                ],
+                'id' => Ids::get('order-line-item-id'),
+            ]],
+            'transactions' => [[
+                'amount' => [
+                    'unitPrice' => 100,
+                    'quantity' => 1,
+                    'totalPrice' => 100,
+                    'calculatedTaxes' => [['tax' => 19, 'taxRate' => 10, 'price' => 100]],
+                    'taxRules' => [['taxRate' => 19, 'percentage' => 100]],
+                ],
+                'id' => Ids::get('order-discount-transaction-id'),
+            ]],
+            'itemRounding' => ['decimals' => 2, 'interval' => 0.01, 'roundForNet' => true],
+            'totalRounding' => ['decimals' => 2, 'interval' => 0.01, 'roundForNet' => true],
+            'id' => Ids::get('order-discount-id'),
+        ]);
+    }
 }
