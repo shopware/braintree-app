@@ -21,6 +21,7 @@
     },
     "tmpDir": "var/cache",
     "testFramework":"phpunit",
+    "testFrameworkOptions": "--testsuite=SwagBraintreeUnitTest,SwagBraintreeIntegrationTest",
     "mutators": {
         "@default": true,
         "LessThan": {
@@ -30,17 +31,17 @@
         },
         "PlusEqual": {
             "ignore": [
-                "Swag\\Braintree\\Braintree\\Payment\\OrderInformationService::extractDiscountAmount",
+                "Swag\\Braintree\\Braintree\\Payment\\OrderInformationService::extractDiscountAmount"
             ]
         },
         "GreaterThan": {
             "ignore": [
-                "Swag\\Braintree\\Braintree\\Payment\\OrderInformationService::extractDiscountAmount",
+                "Swag\\Braintree\\Braintree\\Payment\\OrderInformationService::extractDiscountAmount"
             ]
         },
         "ArrayItem": {
             "ignore": [
-                "Swag\\Braintree\\Braintree\\Payment\\BraintreePaymentService::handleTransaction",
+                "Swag\\Braintree\\Braintree\\Payment\\BraintreePaymentService::handleTransaction"
             ]
         }
     }

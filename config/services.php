@@ -13,4 +13,8 @@ return static function (ContainerConfigurator $container): void {
         ->exclude('../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}');
 
     $container->import(__DIR__ . '/services/braintree.xml', 'xml');
+
+    if ($container->env() === 'test') {
+        $container->import(__DIR__ . '/services/braintree_test.xml', 'xml');
+    }
 };

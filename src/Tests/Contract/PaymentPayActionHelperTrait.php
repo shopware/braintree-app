@@ -29,4 +29,22 @@ trait PaymentPayActionHelperTrait
             $requestData,
         );
     }
+
+    /**
+     * @param array<mixed> $requestData
+     */
+    private function createPaymentPayActionForApplication(ShopInterface $shop, array $requestData = []): PaymentPayAction
+    {
+        $actionSource = new ActionSource('this-is-url', 'this-is-app-version', new Collection());
+
+        return new PaymentPayAction(
+            $shop,
+            $actionSource,
+            $this->createOrderForApplication(),
+            $this->createOrderTransaction(),
+            null,
+            null,
+            $requestData,
+        );
+    }
 }

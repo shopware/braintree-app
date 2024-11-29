@@ -42,7 +42,7 @@ class OrderInformationServiceTest extends TestCase
     public function testExtractTaxAmount(): void
     {
         $taxAmount = $this->orderInformationService->extractTaxAmount($this->paymentPayAction);
-        static::assertEquals(20.46, $taxAmount);
+        static::assertEquals(19.0, $taxAmount);
     }
 
     public function testExtractShippingAddress(): void

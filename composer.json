@@ -47,7 +47,8 @@
     "autoload-dev": {
         "psr-4": {
             "Swag\\Braintree\\Tests\\Unit\\": "tests/unit/",
-            "Swag\\Braintree\\Tests\\Integration\\": "tests/integration/"
+            "Swag\\Braintree\\Tests\\Integration\\": "tests/integration/",
+            "Swag\\Braintree\\Tests\\Application\\": "tests/application/"
         }
     },
     "replace": {
@@ -93,7 +94,8 @@
             "bin/console doctrine:migrations:migrate --env=test -n"
         ],
         "phpunit:unit": "@phpunit --testsuite=SwagBraintreeUnitTest",
-        "phpunit:integration": "@phpunit --testsuite=SwagBraintreeIntegrationTest"
+        "phpunit:integration": "@phpunit --testsuite=SwagBraintreeIntegrationTest",
+        "phpunit:application": "@phpunit --testsuite=SwagBraintreeApplicationTest"
     },
     "conflict": {
         "symfony/symfony": "*"
