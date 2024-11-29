@@ -9,15 +9,13 @@ use Swag\Braintree\Entity\Contract\EntityInterface;
 use Swag\Braintree\Entity\ShopEntity;
 use Swag\Braintree\Framework\Serializer\EntityNormalizer;
 use Swag\Braintree\Tests\Entity;
-use Swag\Braintree\Tests\IdsCollection;
+use Swag\Braintree\Tests\Ids;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[CoversClass(EntityNormalizer::class)]
 class EntityNormalizerTest extends TestCase
 {
-    private IdsCollection $ids;
-
     private EntityNormalizer $normalizer;
 
     protected function setUp(): void
@@ -29,7 +27,6 @@ class EntityNormalizerTest extends TestCase
             ->willReturnCallback(fn (mixed $object) => [$object]);
 
         $this->normalizer = new EntityNormalizer($objectNormalizer);
-        $this->ids = new IdsCollection();
     }
 
     public function testSupportsNormalization(): void
@@ -42,33 +39,33 @@ class EntityNormalizerTest extends TestCase
     public function testNormalizeWithEntity(): void
     {
         $entity = new Entity();
-        $entity->setId($this->ids->getUuid('entity'));
+        $entity->setId(Ids::getUuid('entity'));
 
         static::assertSame([$entity], $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => $entity]));
         static::assertSame([$entity], $this->normalizer->normalize($entity));
 
-        static::assertSame($this->ids->get('entity'), $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => new ShopEntity('', '', '')]));
+        static::assertSame(Ids::get('entity'), $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => new ShopEntity('', '', '')]));
     }
 
     public function testNormalizeWithShop(): void
     {
-        $shop = new ShopEntity($this->ids->get('shop'), '', '');
+        $shop = new ShopEntity(Ids::get('shop'), '', '');
 
         static::assertSame([$shop], $this->normalizer->normalize($shop, null, [EntityNormalizer::ORIGINAL_DATA => $shop]));
         static::assertSame([$shop], $this->normalizer->normalize($shop));
 
-        static::assertSame($this->ids->get('shop'), $this->normalizer->normalize($shop, null, [EntityNormalizer::ORIGINAL_DATA => new Entity()]));
+        static::assertSame(Ids::get('shop'), $this->normalizer->normalize($shop, null, [EntityNormalizer::ORIGINAL_DATA => new Entity()]));
     }
 
     public function testNormalizeWithException(): void
     {
         $entity = new Entity();
-        $entity->setId($this->ids->getUuid('entity'));
+        $entity->setId(Ids::getUuid('entity'));
 
         static::expectException(InvalidArgumentException::class);
         static::expectExceptionMessage('The class must be in namespace "Swag".');
 
-        static::assertSame($this->ids->get('entity'), $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => new \stdClass()]));
+        static::assertSame(Ids::get('entity'), $this->normalizer->normalize($entity, null, [EntityNormalizer::ORIGINAL_DATA => new \stdClass()]));
     }
 
     public function testNormalizeSwagNamespaceWithException(): void

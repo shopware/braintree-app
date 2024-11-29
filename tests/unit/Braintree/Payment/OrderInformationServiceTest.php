@@ -15,7 +15,7 @@ use Swag\Braintree\Entity\ShopEntity;
 use Swag\Braintree\Tests\Contract\OrderHelperTrait;
 use Swag\Braintree\Tests\Contract\OrderTransactionHelperTrait;
 use Swag\Braintree\Tests\Contract\PaymentPayActionHelperTrait;
-use Swag\Braintree\Tests\IdsCollection;
+use Swag\Braintree\Tests\Ids;
 
 #[CoversClass(OrderInformationService::class)]
 #[CoversClass(PaymentPayActionHelperTrait::class)]
@@ -25,8 +25,6 @@ class OrderInformationServiceTest extends TestCase
 {
     use PaymentPayActionHelperTrait;
 
-    private IdsCollection $orderIds;
-
     private OrderInformationService $orderInformationService;
 
     private ShopEntity $shop;
@@ -35,11 +33,10 @@ class OrderInformationServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->orderIds = new IdsCollection();
         $this->orderInformationService = new OrderInformationService(new TaxService());
         $this->shop = new ShopEntity('this-is-shop-id', '', 'this-is-shop-secret');
 
-        $this->paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop);
+        $this->paymentPayAction = $this->createPaymentPayAction($this->shop);
     }
 
     public function testExtractTaxAmount(): void
@@ -51,7 +48,7 @@ class OrderInformationServiceTest extends TestCase
     public function testExtractShippingAddress(): void
     {
         $expected = [
-            'id' => $this->orderIds->get('order-shipping-address-id'),
+            'id' => Ids::get('order-shipping-address-id'),
             'address' => [
                 'company' => \str_repeat('company', 36) . 'com',
                 'countryCodeAlpha3' => 'HUN',
@@ -72,7 +69,7 @@ class OrderInformationServiceTest extends TestCase
     public function testExtractBillingAddress(): void
     {
         $expected = [
-            'id' => $this->orderIds->get('order-billing-address-id'),
+            'id' => Ids::get('order-billing-address-id'),
             'address' => [
                 'company' => null,
                 'countryCodeAlpha3' => 'HTI',
@@ -93,7 +90,7 @@ class OrderInformationServiceTest extends TestCase
     public function testExtractCustomer(): void
     {
         $excepted = [
-            'id' => $this->orderIds->get('order-order-customer-id'),
+            'id' => Ids::get('order-order-customer-id'),
             'company' => \str_repeat('company', 36) . 'com',
             'email' => \str_repeat('test@example.com', 15) . 'test@example.co',
             'firstName' => \str_repeat('Max', 85),
@@ -168,7 +165,7 @@ class OrderInformationServiceTest extends TestCase
 
     public function testExtractDiscountLineItem(): void
     {
-        $ids = new IdsCollection();
+        $ids = new Ids();
 
         $action = new PaymentPayAction(
             $this->shop,
@@ -251,7 +248,7 @@ class OrderInformationServiceTest extends TestCase
             $this->shop,
             $this->createMock(ActionSource::class),
             $order,
-            $this->createOrderTransaction($this->orderIds),
+            $this->createOrderTransaction(),
             null,
         );
 
@@ -270,13 +267,13 @@ class OrderInformationServiceTest extends TestCase
     public function testExtractCurrencyId(): void
     {
         $currencyId = $this->orderInformationService->extractCurrencyId($this->paymentPayAction);
-        static::assertEquals($this->orderIds->get('order-currency-id'), $currencyId);
+        static::assertEquals(Ids::get('order-currency-id'), $currencyId);
     }
 
     public function testExtractSalesChannelId(): void
     {
         $salesChannelId = $this->orderInformationService->extractSalesChannelId($this->paymentPayAction);
-        static::assertEquals($this->orderIds->get('order-sales-channel-id'), $salesChannelId);
+        static::assertEquals(Ids::get('order-sales-channel-id'), $salesChannelId);
     }
 
     public function testExtractShippingTaxAmount(): void

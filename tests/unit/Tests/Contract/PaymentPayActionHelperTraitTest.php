@@ -8,7 +8,7 @@ use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\Braintree\Tests\Contract\OrderHelperTrait;
 use Swag\Braintree\Tests\Contract\OrderTransactionHelperTrait;
 use Swag\Braintree\Tests\Contract\PaymentPayActionHelperTrait;
-use Swag\Braintree\Tests\IdsCollection;
+use Swag\Braintree\Tests\Ids;
 
 #[CoversTrait(PaymentPayActionHelperTrait::class)]
 class PaymentPayActionHelperTraitTest extends TestCase
@@ -29,7 +29,7 @@ class PaymentPayActionHelperTraitTest extends TestCase
         $paramType2 = $params[1]->getType();
         static::assertInstanceOf(\ReflectionNamedType::class, $paramType1);
         static::assertInstanceOf(\ReflectionNamedType::class, $paramType2);
-        static::assertEquals(IdsCollection::class, $paramType1->getName());
+        static::assertEquals(Ids::class, $paramType1->getName());
         static::assertEquals(ShopInterface::class, $paramType2->getName());
 
         $traits = \class_uses(PaymentPayActionHelperTrait::class);
