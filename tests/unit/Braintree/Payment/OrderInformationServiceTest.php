@@ -170,8 +170,8 @@ class OrderInformationServiceTest extends TestCase
         $action = new PaymentPayAction(
             $this->shop,
             new ActionSource('this-is-url', 'this-is-app-version'),
-            $this->createOrderWithDiscount($ids),
-            $this->createOrderTransaction($ids),
+            $this->createOrderWithDiscount(),
+            $this->createOrderTransaction(),
             null,
             null,
             [],
