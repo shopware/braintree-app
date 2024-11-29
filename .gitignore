@@ -32,3 +32,4 @@ public/build
 ###< vite ###
 
 Resources/app/storefront/dist
+manifest.xml

@@ -1,20 +1,22 @@
-name: App Release
+name: App Zip
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Resources/**/*'
+      - 'templates/manifest.xml.twig'
+      - '.shopware-extension.yml'
+      - .github/workflows/app-zip.yml
 
 jobs:
-  release:
+  zip:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-php
       - name: Generate manifest.xml
         run: composer setup:manifest -- -f --env=prod
-      - uses: shopware/github-actions/store-release@main
+      - uses: shopware/github-actions/build-zip@main
         with:
           extensionName: SwagBraintreeApp
-          publishOnly: 'true'
           skipCheckout: 'true'
-          accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
-          accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
-          ghToken: ${{ secrets.GITHUB_TOKEN }}

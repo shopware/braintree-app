@@ -81,12 +81,13 @@
             "bin/console doctrine:schema:drop --force --full-database",
             "bin/console doctrine:migrations:migrate -n",
             "@setup:url",
-            "@setup:test"
+            "@setup:manifest"
         ],
         "setup:url": [
             "bin/console setup:url",
             "npm run dev"
         ],
+        "setup:manifest": "bin/console manifest:generate",
         "setup:test": [
             "bin/console doctrine:schema:drop --env=test --force --full-database",
             "bin/console doctrine:migrations:migrate --env=test -n"
