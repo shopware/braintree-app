@@ -5,7 +5,6 @@ namespace Swag\Braintree\Tests\Unit\Tests\Contract;
 use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Tests\Contract\OrderHelperTrait;
-use Swag\Braintree\Tests\Ids;
 
 #[CoversTrait(OrderHelperTrait::class)]
 class OrderHelperTraitTest extends TestCase
@@ -19,11 +18,8 @@ class OrderHelperTraitTest extends TestCase
         $method = new \ReflectionMethod($class, 'createOrder');
         $params = $method->getParameters();
 
-        static::assertTrue($method->isPrivate());
-        static::assertCount(1, $params);
-
-        $paramType = $params[0]->getType();
-        static::assertInstanceOf(\ReflectionNamedType::class, $paramType);
-        static::assertEquals(Ids::class, $paramType->getName());
+        static::assertTrue($method->isProtected());
+        static::assertTrue($method->isStatic());
+        static::assertCount(0, $params);
     }
 }
