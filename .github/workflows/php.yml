@@ -46,13 +46,36 @@ jobs:
       - name: Run PHPStan
         run: composer phpstan
 
-  phpunit:
+  phpunit-unit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-php
       - name: Run PHPUnit
-        run: composer phpunit -- --coverage-clover=coverage.xml
+        run: composer phpunit:unit -- --coverage-clover=coverage.xml
+      - name: Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+
+  phpunit-integration:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MARIADB_ROOT_PASSWORD: swagbraintree
+          MYSQL_DATABASE: swagbraintree_test
+        ports: ['3306:3306']
+    env:
+      DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-php
+      - name: Setup database
+        run: composer setup:test
+      - name: Run PHPUnit
+        run: composer phpunit:integration -- --coverage-clover=coverage.xml
       - name: Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -60,9 +83,20 @@ jobs:
 
   infection:
     runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MARIADB_ROOT_PASSWORD: swagbraintree
+          MYSQL_DATABASE: swagbraintree_test
+        ports: ['3306:3306']
+    env:
+      DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-php
+      - name: Setup database
+        run: composer setup:test
       - name: Run Infection
         run: composer infection -- --min-msi=95
         env:

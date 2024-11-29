@@ -80,12 +80,19 @@
         "setup": [
             "bin/console doctrine:schema:drop --force --full-database",
             "bin/console doctrine:migrations:migrate -n",
-            "@setup:url"
+            "@setup:url",
+            "@setup:test"
         ],
         "setup:url": [
             "bin/console setup:url",
             "npm run dev"
-        ]
+        ],
+        "setup:test": [
+            "bin/console doctrine:schema:drop --env=test --force --full-database",
+            "bin/console doctrine:migrations:migrate --env=test -n"
+        ],
+        "phpunit:unit": "@phpunit --testsuite=SwagBraintreeUnitTest",
+        "phpunit:integration": "@phpunit --testsuite=SwagBraintreeIntegrationTest"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -97,6 +104,7 @@
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.2",
         "friendsofphp/php-cs-fixer": "^3.63",
         "infection/infection": "^0.29.6",
         "kubawerlos/php-cs-fixer-custom-fixers": "^3.16",
