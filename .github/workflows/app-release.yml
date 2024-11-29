@@ -3,17 +3,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  zip:
-    uses: shopware/github-actions/.github/workflows/build-zip.yml@main
-    with:
-      extensionName: SwagBraintreeApp
-
   release:
-    uses: shopware/github-actions/.github/workflows/store-release.yml@main
-    with:
-      extensionName: SwagBraintreeApp
-      publishOnly: true
-    secrets:
-      accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
-      accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
-      ghToken: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/check-manifest
+      - uses: shopware/github-actions/store-release@main
+        with:
+          extensionName: SwagBraintreeApp
+          publishOnly: 'true'
+          accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
+          accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
+          ghToken: ${{ secrets.GITHUB_TOKEN }}

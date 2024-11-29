@@ -1,0 +1,33 @@
+name: App Zip
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Resources/**/*'
+      - 'templates/manifest.xml.twig'
+      - '.shopware-extension.yml'
+      - .github/workflows/app-zip.yml
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/check-manifest
+      - uses: shopware/github-actions/build-zip@main
+        with:
+          extensionName: SwagBraintreeApp
+
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-php
+      - uses: ./.github/actions/check-manifest
+      - name: Generate manifest.xml
+        run: composer setup:manifest -- -f --env=prod
+      - uses: ./.github/actions/check-manifest
+      - name: Check manifest.xml
+        run: |
+          git update-index --refresh || printf ''
+          git diff-index "${{ github.sha }}" --quiet -- manifest.xml || (echo "Please run 'composer setup:manifest' to sync the manifest.xml" && exit 1)
