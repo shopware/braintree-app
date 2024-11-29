@@ -46,5 +46,6 @@
 
     <extensions>
         <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
+        <bootstrap class="Swag\Braintree\Tests\Extension\IdsExtension" />
     </extensions>
 </phpunit>

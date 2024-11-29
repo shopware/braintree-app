@@ -5,7 +5,7 @@ namespace Swag\Braintree\Tests\Unit\Tests\Contract;
 use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Tests\Contract\OrderTransactionHelperTrait;
-use Swag\Braintree\Tests\IdsCollection;
+use Swag\Braintree\Tests\Ids;
 
 #[CoversTrait(OrderTransactionHelperTrait::class)]
 class OrderTransactionHelperTraitTest extends TestCase
@@ -24,6 +24,6 @@ class OrderTransactionHelperTraitTest extends TestCase
 
         $paramType = $params[0]->getType();
         static::assertInstanceOf(\ReflectionNamedType::class, $paramType);
-        static::assertEquals(IdsCollection::class, $paramType->getName());
+        static::assertEquals(Ids::class, $paramType->getName());
     }
 }
