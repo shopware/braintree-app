@@ -22,7 +22,7 @@ updates:
           - '*'
     ignore:
       - dependency-name: typescript
-        update-types: ["version-update:semver-patch"]
+        update-types: ["version-update:semver-minor"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
