@@ -32,6 +32,16 @@ parameters:
                 message: '#Service "test\.client" is not registered in the container\.#'
                 path: tests
 
+            # Test classes can explicitly replace services, etc.
+            -
+                message: '#Only abstract classes can be extended#'
+                path: src/Tests
+
+            # SimpleXML foo
+            -
+                message: '#Use explicit names over dynamic ones#'
+                path: tests/integration/Command/ManifestGenerateCommandTest.php
+
 rules:
     # rules from https://github.com/symplify/phpstan-rules
     # domain
