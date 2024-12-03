@@ -70,6 +70,17 @@ class ManifestGenerateCommandTest extends TestCase
         yield 'all missing' => [null, null, null, null];
     }
 
+    /**
+     * Not sure why, but this test has to be here explicitly to satisfy infection php,
+     * however this should've been covered through the data provider above.
+     */
+    public function testInfectionFailingEdgeCase(): void
+    {
+        $command = new ManifestGenerateCommand(null, 'foo', 'bar', 'baz', $this->twig);
+
+        static::assertSame(ManifestGenerateCommand::FAILURE, $command->run($this->input, $this->output));
+    }
+
     public function testRender(): void
     {
         $this->output
@@ -192,7 +203,8 @@ class ManifestGenerateCommandTest extends TestCase
         ?string $environment = 'dev',
         ?string $projectDir = 'projectDir',
     ): ManifestGenerateCommand&MockObject {
-        return $this->getMockBuilder(ManifestGenerateCommand::class)
+        return $this
+            ->getMockBuilder(ManifestGenerateCommand::class)
             ->onlyMethods(['manifestExists', 'writeManifest'])
             ->setConstructorArgs([$appUrl, $appSecret, $environment, $projectDir, $this->twig])
             ->getMock();

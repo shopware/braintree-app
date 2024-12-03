@@ -23,5 +23,14 @@
         <service id="Braintree\Gateway">
             <factory service="Swag\Braintree\Tests\Braintree\Gateway\BraintreeTestGatewayFactory" method="createBraintreeGateway"/>
         </service>
+
+        <service id="Swag\Braintree\Command\ManifestGenerateCommand" class="Swag\Braintree\Tests\Command\TestManifestGenerateCommand">
+            <tag name="console.command"/>
+            <argument>%env(APP_URL)%</argument>
+            <argument>%env(APP_SECRET)%</argument>
+            <argument>%kernel.environment%</argument>
+            <argument>%kernel.project_dir%</argument>
+            <argument type="service" id="twig"/>
+        </service>
     </services>
 </container>

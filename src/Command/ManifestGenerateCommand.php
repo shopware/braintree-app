@@ -13,17 +13,19 @@ use Twig\Environment;
 #[AsCommand(name: 'manifest:generate')]
 class ManifestGenerateCommand extends Command
 {
+    public const BASE_URL_PROD = 'https://braintree.shopware.com';
+
     public function __construct(
         #[Autowire(env: 'APP_URL')]
-        private readonly ?string $appUrl,
+        protected readonly ?string $appUrl,
         #[Autowire(env: 'APP_SECRET')]
-        private readonly ?string $appSecret,
+        protected readonly ?string $appSecret,
         #[Autowire(param: 'kernel.environment')]
-        private readonly ?string $environment,
+        protected readonly ?string $environment,
         #[Autowire(param: 'kernel.project_dir')]
-        private readonly ?string $projectDir,
+        protected readonly ?string $projectDir,
         #[Autowire(service: 'twig')]
-        private readonly Environment $twig,
+        protected readonly Environment $twig,
     ) {
         parent::__construct();
     }
@@ -32,14 +34,14 @@ class ManifestGenerateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if ($this->appUrl === null || $this->appSecret === null || $this->environment === null || $this->projectDir === null) {
+        if (\in_array(null, [$this->appUrl, $this->appSecret, $this->environment, $this->projectDir], true)) {
             $io->error('Missing environment variables');
 
             return Command::FAILURE;
         }
 
         $manifest = $this->twig->render('manifest.xml.twig', [
-            'appUrl' => $this->environment === 'prod' ? 'https://braintree.shopware.com' : $this->appUrl,
+            'appUrl' => $this->environment === 'prod' ? self::BASE_URL_PROD : $this->appUrl,
             'appSecret' => $this->appSecret,
             'isProd' => $this->environment === 'prod',
         ]);
@@ -66,14 +68,21 @@ class ManifestGenerateCommand extends Command
     protected function configure(): void
     {
         $this->setDescription('Generate the manifest.xml');
+        $this->setHelp('Generates a manifest.xml from template, which is helpful during releases');
         $this->addOption('force', 'f', null, 'Force overwrite');
     }
 
+    /**
+     * @infection-ignore-all - not testable
+     */
     protected function manifestExists(): bool
     {
         return \file_exists($this->projectDir . '/manifest.xml');
     }
 
+    /**
+     * @infection-ignore-all - not testable
+     */
     protected function writeManifest(string $manifest): bool
     {
         return \file_put_contents($this->projectDir . '/manifest.xml', $manifest) !== false;

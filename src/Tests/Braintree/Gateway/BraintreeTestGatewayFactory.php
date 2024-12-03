@@ -5,6 +5,13 @@ namespace Swag\Braintree\Tests\Braintree\Gateway;
 use Braintree\Configuration;
 use Braintree\Gateway;
 
+/**
+ * Replaces the Braintree gateway with test information to use during application/e2e tests
+ *
+ * @internal
+ *
+ * @infection-ignore-all
+ */
 class BraintreeTestGatewayFactory
 {
     public function __construct(

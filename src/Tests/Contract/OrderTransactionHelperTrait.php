@@ -17,7 +17,7 @@ trait OrderTransactionHelperTrait
                 'unitPrice' => 119,
                 'quantity' => 1,
                 'totalPrice' => 119,
-                'calculatedTaxes' => [['tax' => 19, 'taxRate' => 19, 'price' => 100]],
+                'calculatedTaxes' => [['tax' => 19.078, 'taxRate' => 19.078, 'price' => 100]],
                 'taxRules' => [['taxRate' => 19, 'percentage' => 100]],
             ],
             'id' => Ids::get('order-transaction-id'),
