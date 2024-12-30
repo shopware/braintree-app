@@ -18,21 +18,21 @@
     "@shopware-ag/meteor-component-library": "3.14.0",
     "pinia": "^2.3.0",
     "vue": "3.4.31",
-    "vue-i18n": "^10.0.5"
+    "vue-i18n": "^11.0.1"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.12.1",
     "@types/node": "^22.10.2",
     "@vitejs/plugin-legacy": "^6.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/eslint-config-typescript": "^14.1.4",
+    "@vue/eslint-config-typescript": "^14.2.0",
     "eslint": "^9.16.0",
     "eslint-plugin-vue": "^9.32.0",
     "sass": "^1.83.0",
     "typescript": "~5.6.3",
-    "vite": "^6.0.3",
+    "vite": "^6.0.6",
     "vite-plugin-vue-devtools": "^7.6.8",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "^2.2.0"
   },
   "overrides": {
     "vue": "3.4.31"
