@@ -38,7 +38,7 @@ class GatewayControllerTest extends TestCase
 
         $action = new CheckoutGatewayAction(
             $shop,
-            new ActionSource('https://example.com', '1.0.0'),
+            new ActionSource('https://example.com', '1.0.0', new Collection()),
             new Cart([]),
             $context,
             $paymentMethods,
@@ -91,7 +91,7 @@ class GatewayControllerTest extends TestCase
 
         $action = new CheckoutGatewayAction(
             $shop,
-            new ActionSource('https://example.com', '1.0.0'),
+            new ActionSource('https://example.com', '1.0.0', new Collection()),
             new Cart([]),
             $context,
             $paymentMethods,
@@ -135,7 +135,7 @@ class GatewayControllerTest extends TestCase
 
         $action = new CheckoutGatewayAction(
             $shop,
-            new ActionSource('https://example.com', '1.0.0'),
+            new ActionSource('https://example.com', '1.0.0', new Collection()),
             new Cart([]),
             $context,
             $paymentMethods,
@@ -198,7 +198,7 @@ class GatewayControllerTest extends TestCase
 
         $action = new CheckoutGatewayAction(
             $shop,
-            new ActionSource('https://example.com', '1.0.0'),
+            new ActionSource('https://example.com', '1.0.0', new Collection()),
             new Cart([]),
             $context,
             $paymentMethods,
