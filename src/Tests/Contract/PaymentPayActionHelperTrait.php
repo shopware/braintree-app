@@ -4,6 +4,7 @@ namespace Swag\Braintree\Tests\Contract;
 
 use Shopware\App\SDK\Context\ActionSource;
 use Shopware\App\SDK\Context\Payment\PaymentPayAction;
+use Shopware\App\SDK\Framework\Collection;
 use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\Braintree\Tests\IdsCollection;
 
@@ -17,7 +18,7 @@ trait PaymentPayActionHelperTrait
      */
     private function createPaymentPayAction(IdsCollection $orderIds, ShopInterface $shop, array $requestData = []): PaymentPayAction
     {
-        $actionSource = new ActionSource('this-is-url', 'this-is-app-version');
+        $actionSource = new ActionSource('this-is-url', 'this-is-app-version', new Collection());
 
         return new PaymentPayAction(
             $shop,
