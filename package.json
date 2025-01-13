@@ -21,7 +21,7 @@
     "vue-i18n": "^11.0.1"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.12.1",
+    "@stylistic/eslint-plugin": "^2.13.0",
     "@types/node": "^22.10.5",
     "@vitejs/plugin-legacy": "^6.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
@@ -31,7 +31,7 @@
     "sass": "^1.83.1",
     "typescript": "~5.6.3",
     "vite": "^6.0.7",
-    "vite-plugin-vue-devtools": "^7.6.8",
+    "vite-plugin-vue-devtools": "^7.7.0",
     "vue-tsc": "^2.2.0"
   },
   "overrides": {
