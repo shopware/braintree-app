@@ -2,7 +2,6 @@
 <mt-select
     v-if='!loading'
     class='sw-braintree-sales-channel-switch__select'
-    :label='$t("settings.salesChannelSwitch.label")'
     :options='salesChannelOptions'
     :model-value='value ?? undefined'
     :is-loading='isLoading || loading'

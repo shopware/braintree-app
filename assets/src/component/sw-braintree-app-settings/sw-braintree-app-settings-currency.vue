@@ -9,9 +9,9 @@
     >
         <i18n-t keypath='settings.currency.missingAccount' tag='span'>
             <template #link>
-                <mt-external-link @click='onPaymentMethodOverview'>
+                <mt-link type='internal' @click='onPaymentMethodOverview'>
                     {{ $t("settings.currency.missingAccountLink") }}
-                </mt-external-link>
+                </mt-link>
             </template>
         </i18n-t>
     </mt-banner>
@@ -62,7 +62,7 @@ import type { PropType } from 'vue';
 import { defineComponent, inject } from 'vue';
 import SwBraintreeAppTable from '../base/sw-braintree-app-table.vue';
 import SwBraintreeAppCurrencyMappingSelect from './sw-braintree-app-settings-currency-mapping-select.vue';
-import { MtCard, MtBanner, MtExternalLink } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtBanner, MtLink } from '@shopware-ag/meteor-component-library';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { DefaultCurrencyMappingEntity } from '@/resources/entities';
 import { registerSaveHandler } from '@/resources/inject-keys';
@@ -81,7 +81,7 @@ export default defineComponent({
         MtCard,
         SwBraintreeAppCurrencyMappingSelect,
         MtBanner,
-        MtExternalLink,
+        MtLink,
     },
 
     props: {
