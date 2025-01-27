@@ -1,5 +1,5 @@
 import 'vite/modulepreload-polyfill';
-import '@shopware-ag/meteor-component-library/dist/style.css';
+import '@shopware-ag/meteor-component-library/styles.css';
 import './css/shopware-reboot.scss';
 import './src/main';
 

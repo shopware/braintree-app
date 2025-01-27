@@ -11,7 +11,6 @@ export function createI18n(locale: { locale: string; fallbackLocale: string }) {
         messages: {
             'en-GB': enGB,
         },
-        // meteor depends on it
-        legacy: true,
+        legacy: false,
     });
 }

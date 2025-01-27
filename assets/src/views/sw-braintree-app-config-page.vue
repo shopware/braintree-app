@@ -9,9 +9,9 @@
     >
         <i18n-t keypath='configuration.missingCurrencyMapping' tag='span'>
             <template #link>
-                <mt-external-link @click='onSettingsLinkCicked'>
+                <mt-link type='internal' @click='onSettingsLinkCicked'>
                     {{ $t("configuration.missingCurrencyMappingLink") }}
-                </mt-external-link>
+                </mt-link>
             </template>
         </i18n-t>
     </mt-banner>
@@ -62,7 +62,7 @@ import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { defineComponent } from 'vue';
 import SwBraintreeAppConfig from '@/component/sw-braintree-app-config.vue';
 import SwBraintreeAppMerchantDetails from '@/component/sw-braintree-app-merchant-details.vue';
-import { MtButton, MtBanner, MtExternalLink, MtLoader } from '@shopware-ag/meteor-component-library';
+import { MtButton, MtBanner, MtLink, MtLoader } from '@shopware-ag/meteor-component-library';
 
 export default defineComponent({
     name: 'sw-braintree-app-config-page',
@@ -73,7 +73,7 @@ export default defineComponent({
         MtButton,
         MtLoader,
         MtBanner,
-        MtExternalLink,
+        MtLink,
     },
 
     data(): {
