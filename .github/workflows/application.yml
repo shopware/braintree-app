@@ -1,0 +1,70 @@
+name: Application tests
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**/*.php'
+      - '*.dist'
+      - composer.json
+      - composer.lock
+      - symfony.lock
+      - infection.json5
+      - .php-cs-fixer.dist.php
+      - phpstan.neon
+      - .github/workflows/php.yml
+
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MYSQL_DATABASE: swagbraintree_test
+        ports: ['3306:3306']
+    steps:
+      - name: Setup Shopware
+        uses: shopware/setup-shopware@main
+        env:
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/shopware
+        with:
+          shopware-version: trunk
+          mysql-version: skip # will use a service
+          install: true
+          install-admin: true
+          install-storefront: true
+          path: shopware
+      - uses: actions/checkout@v4
+        with:
+          path: braintree
+      - name: Setup Braintree (PHP)
+        uses: ./braintree/.github/actions/setup-php
+        with:
+          path: braintree
+      - name: Setup Braintree (Node)
+        uses: ./braintree/.github/actions/setup-node
+        with:
+          path: braintree
+      - name: Setup Braintree (Database)
+        env:
+          APP_URL: http://localhost:8001
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/swagbraintree
+        run: composer -d braintree setup
+      - name: Start Braintree
+        working-directory: braintree
+        env:
+          APP_URL: http://localhost:8001
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/swagbraintree
+          SYMFONY_DAEMON: '1'
+          SYMFONY_NO_TLS: '1'
+          SYMFONY_ALLOW_HTTP: '1'
+          SYMFONY_PORT: '8001'
+          SYMFONY_ALLOW_ALL_IP: '1'
+        run: symfony server:start
+      - name: Install Braintree
+        env:
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/shopware
+        run: |
+          ln -s braintree shopware/custom/apps/SwagBraintreeApp
+          shopware/bin/console app:install --activate SwagBraintreeApp
