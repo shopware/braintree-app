@@ -72,7 +72,7 @@
     "scripts": {
         "ecs": "php-cs-fixer fix --dry-run --diff",
         "ecs-fix": "php-cs-fixer fix",
-        "phpstan": "phpstan analyze --memory-limit=2G",
+        "phpstan": "phpstan analyze --memory-limit=512M",
         "phpunit": "phpunit",
         "infection": "infection -j10 -s",
         "eslint": "npm run eslint",
