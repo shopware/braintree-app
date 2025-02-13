@@ -1,15 +1,10 @@
-name: App Zip
+name: Meta
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'Resources/**/*'
-      - 'templates/manifest.xml.twig'
-      - '.shopware-extension.yml'
-      - .github/workflows/app-zip.yml
 
 jobs:
-  zip:
+  app-zip:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,3 +26,24 @@ jobs:
         run: |
           git update-index --refresh || printf ''
           git diff-index "${{ github.sha }}" --quiet -- manifest.xml || (echo "Please run 'composer setup:manifest' to sync the manifest.xml" && exit 1)
+
+  doctrine:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MARIADB_ROOT_PASSWORD: swagbraintree
+          MYSQL_DATABASE: swagbraintree
+        ports: ['3306:3306']
+    env:
+      DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-php
+
+      - name: Migrate database
+        run: bin/console doctrine:migrations:migrate --no-interaction
+
+      - name: Validate doctrine schema
+        run: bin/console doctrine:schema:validate --verbose
