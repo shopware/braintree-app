@@ -9,7 +9,7 @@ class Ids
     /**
      * @var array<string, string>
      */
-    protected static $ids = [];
+    protected static array $ids = [];
 
     public static function create(string $key): string
     {

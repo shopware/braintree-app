@@ -10,8 +10,6 @@ use Swag\Braintree\Entity\ShopEntity;
  */
 trait IntegrationHelperTrait
 {
-    use IntegrationHelperTrait;
-
     protected static function getEntityManager(): EntityManagerInterface
     {
         return self::getContainer()->get('doctrine.orm.default_entity_manager');
