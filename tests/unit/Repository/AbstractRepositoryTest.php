@@ -14,7 +14,7 @@ use Swag\Braintree\Entity\Contract\ShopAwareTrait;
 use Swag\Braintree\Entity\ShopEntity;
 use Swag\Braintree\Repository\AbstractRepository;
 use Swag\Braintree\Tests\Entity;
-use Swag\Braintree\Tests\IdsCollection;
+use Swag\Braintree\Tests\Ids;
 use Swag\Braintree\Tests\Repository;
 use Swag\Braintree\Tests\Serializer\TestSerializer;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -25,8 +25,6 @@ use Symfony\Component\Uid\Uuid;
 #[CoversClass(AbstractRepository::class)]
 class AbstractRepositoryTest extends TestCase
 {
-    private IdsCollection $ids;
-
     private MockObject&EntityManagerInterface $entityManager;
 
     private MockObject&ManagerRegistry $registry;
@@ -35,8 +33,6 @@ class AbstractRepositoryTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->ids = new IdsCollection();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         $this->registry = $this->createMock(ManagerRegistry::class);
@@ -50,8 +46,8 @@ class AbstractRepositoryTest extends TestCase
     public function testUpsert(): void
     {
         $upsertData = [
-            ['id' => $this->ids->get('foo')],
-            ['id' => $this->ids->get('bar')],
+            ['id' => Ids::get('foo')],
+            ['id' => Ids::get('bar')],
         ];
 
         $entity = new Entity();

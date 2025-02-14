@@ -25,7 +25,6 @@ use Swag\Braintree\Entity\TransactionEntity;
 use Swag\Braintree\Entity\TransactionReportEntity;
 use Swag\Braintree\Repository\TransactionRepository;
 use Swag\Braintree\Tests\Contract\PaymentPayActionHelperTrait;
-use Swag\Braintree\Tests\IdsCollection;
 
 #[CoversClass(BraintreePaymentService::class)]
 class BraintreePaymentServiceTest extends TestCase
@@ -35,8 +34,6 @@ class BraintreePaymentServiceTest extends TestCase
     private BraintreePaymentService $paymentService;
 
     private OrderInformationService $orderInformationService;
-
-    private IdsCollection $orderIds;
 
     private ShopEntity $shop;
 
@@ -67,7 +64,6 @@ class BraintreePaymentServiceTest extends TestCase
 
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
-        $this->orderIds = new IdsCollection();
         $this->orderInformationService = new OrderInformationService(new TaxService());
         $this->paymentService = new BraintreePaymentService(
             $this->gateway,
@@ -123,7 +119,7 @@ class BraintreePaymentServiceTest extends TestCase
             }))
             ->willReturn($resultSuccess);
 
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [
             BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce',
             BraintreePaymentService::BRAINTREE_DEVICE_DATA => 'this-is-device-data',
         ]);
@@ -185,7 +181,7 @@ class BraintreePaymentServiceTest extends TestCase
             ->method('sale')
             ->willReturn($resultError);
 
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         static::expectException(BraintreePaymentException::class);
         static::expectExceptionMessage('Braintree payment process failed: ');
@@ -216,7 +212,7 @@ class BraintreePaymentServiceTest extends TestCase
             ->method('sale')
             ->willReturn($resultSuccess);
 
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         static::expectException(BraintreePaymentException::class);
         static::expectExceptionMessage('Braintree payment process failed: No transaction provided');
@@ -244,7 +240,7 @@ class BraintreePaymentServiceTest extends TestCase
             ->expects(static::never())
             ->method('sale');
 
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         static::expectException(BraintreePaymentException::class);
         static::expectExceptionMessage('Braintree payment process failed: 3D secure validation failed');
@@ -270,7 +266,7 @@ class BraintreePaymentServiceTest extends TestCase
             ->expects(static::never())
             ->method('sale');
 
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         static::expectException(BraintreePaymentException::class);
         static::expectExceptionMessage('Braintree payment process failed: 3D secure validation failed');
@@ -290,7 +286,7 @@ class BraintreePaymentServiceTest extends TestCase
             ->expects(static::never())
             ->method('sale');
 
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         static::expectException(BraintreePaymentException::class);
         static::expectExceptionMessage('Braintree payment process failed: 3D secure validation failed');
@@ -319,7 +315,7 @@ class BraintreePaymentServiceTest extends TestCase
             ->expects(static::never())
             ->method('sale');
 
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         static::expectException(BraintreePaymentException::class);
         static::expectExceptionMessage('Braintree payment process failed: Braintree is not supported for the selected currency');
@@ -329,7 +325,7 @@ class BraintreePaymentServiceTest extends TestCase
 
     public function testExtractNonce(): void
     {
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         $nonce = $this->paymentService->extractNonce($paymentPayAction);
 
@@ -338,7 +334,7 @@ class BraintreePaymentServiceTest extends TestCase
 
     public function testExtractNonceWithoutRequestData(): void
     {
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop);
 
         static::expectException(\RuntimeException::class);
 
@@ -347,7 +343,7 @@ class BraintreePaymentServiceTest extends TestCase
 
     public function testExtractNonceWithoutNonceKey(): void
     {
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, ['foo' => 'bar']);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, ['foo' => 'bar']);
 
         static::expectException(BraintreePaymentException::class);
 
@@ -356,7 +352,7 @@ class BraintreePaymentServiceTest extends TestCase
 
     public function testExtractNonceWithNonStringNonce(): void
     {
-        $paymentPayAction = $this->createPaymentPayAction($this->orderIds, $this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 123]);
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 123]);
 
         static::expectException(\RuntimeException::class);
 

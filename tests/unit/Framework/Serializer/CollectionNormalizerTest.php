@@ -9,18 +9,15 @@ use PHPUnit\Framework\TestCase;
 use Shopware\AppBundle\Entity\AbstractShop;
 use Swag\Braintree\Entity\Contract\EntityInterface;
 use Swag\Braintree\Framework\Serializer\CollectionNormalizer;
-use Swag\Braintree\Tests\IdsCollection;
+use Swag\Braintree\Tests\Ids;
 
 #[CoversClass(CollectionNormalizer::class)]
 class CollectionNormalizerTest extends TestCase
 {
-    private IdsCollection $ids;
-
     private CollectionNormalizer $normalizer;
 
     protected function setUp(): void
     {
-        $this->ids = new IdsCollection();
         $this->normalizer = new CollectionNormalizer();
     }
 
@@ -30,13 +27,13 @@ class CollectionNormalizerTest extends TestCase
         $entity
             ->expects(static::once())
             ->method('getId')
-            ->willReturn($this->ids->getUuid('entity'));
+            ->willReturn(Ids::getUuid('entity'));
 
         $shop = $this->createMock(AbstractShop::class);
         $shop
             ->expects(static::once())
             ->method('getShopId')
-            ->willReturn($this->ids->get('shop'));
+            ->willReturn(Ids::get('shop'));
 
         /** @var Collection<string, EntityInterface|AbstractShop> $collection */
         $collection = new ArrayCollection([
@@ -45,7 +42,7 @@ class CollectionNormalizerTest extends TestCase
         ]);
 
         static::assertSame(
-            [$this->ids->get('entity'), $this->ids->get('shop')],
+            [Ids::get('entity'), Ids::get('shop')],
             $this->normalizer->normalize($collection)
         );
     }

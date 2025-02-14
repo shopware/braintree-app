@@ -1,0 +1,11 @@
+name: Check manifest
+description: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Check for non-production manifest.xml
+      shell: bash
+      run: |
+        grep -q 'braintree.shopware.com' manifest.xml || (echo "Provided manifest.xml contains no production URL" && exit 1)
+        grep -q -z -v '<secret>' manifest.xml || (echo "Provided manifest.xml contains a secret" && exit 1)

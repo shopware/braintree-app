@@ -72,7 +72,7 @@
     "scripts": {
         "ecs": "php-cs-fixer fix --dry-run --diff",
         "ecs-fix": "php-cs-fixer fix",
-        "phpstan": "phpstan analyze --memory-limit=2G",
+        "phpstan": "phpstan analyze --memory-limit=512M",
         "phpunit": "phpunit",
         "infection": "infection -j10 -s",
         "eslint": "npm run eslint",
@@ -80,12 +80,20 @@
         "setup": [
             "bin/console doctrine:schema:drop --force --full-database",
             "bin/console doctrine:migrations:migrate -n",
-            "@setup:url"
+            "@setup:url",
+            "@setup:manifest"
         ],
         "setup:url": [
             "bin/console setup:url",
             "npm run dev"
-        ]
+        ],
+        "setup:manifest": "bin/console manifest:generate",
+        "setup:test": [
+            "bin/console doctrine:schema:drop --env=test --force --full-database",
+            "bin/console doctrine:migrations:migrate --env=test -n"
+        ],
+        "phpunit:unit": "@phpunit --testsuite=SwagBraintreeUnitTest",
+        "phpunit:integration": "@phpunit --testsuite=SwagBraintreeIntegrationTest"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -97,6 +105,7 @@
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.2",
         "friendsofphp/php-cs-fixer": "^3.63",
         "infection/infection": "^0.29.6",
         "kubawerlos/php-cs-fixer-custom-fixers": "^3.16",

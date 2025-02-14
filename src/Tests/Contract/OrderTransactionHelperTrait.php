@@ -3,14 +3,14 @@
 namespace Swag\Braintree\Tests\Contract;
 
 use Shopware\App\SDK\Context\Order\OrderTransaction;
-use Swag\Braintree\Tests\IdsCollection;
+use Swag\Braintree\Tests\Ids;
 
 /**
- * @infection-ignore-all - besides $ids, this is static data
+ * @infection-ignore-all - this is static data
  */
 trait OrderTransactionHelperTrait
 {
-    private function createOrderTransaction(IdsCollection $ids): OrderTransaction
+    protected static function createOrderTransaction(): OrderTransaction
     {
         return new OrderTransaction([
             'amount' => [
@@ -20,7 +20,7 @@ trait OrderTransactionHelperTrait
                 'calculatedTaxes' => [['tax' => 20.456, 'taxRate' => 10, 'price' => 200]],
                 'taxRules' => [['taxRate' => 10, 'percentage' => 100]],
             ],
-            'id' => $ids->get('order-transaction-id'),
+            'id' => Ids::get('order-transaction-id'),
         ]);
     }
 }
