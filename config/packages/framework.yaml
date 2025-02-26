@@ -23,6 +23,7 @@ framework:
 
 parameters:
     env(VITE_PORT): null
+    app_manifest: '%kernel.project_dir%/manifest.xml'
 
 when@test:
     framework:

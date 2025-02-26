@@ -22,8 +22,8 @@ class ManifestGenerateCommand extends Command
         protected readonly ?string $appSecret,
         #[Autowire(param: 'kernel.environment')]
         protected readonly ?string $environment,
-        #[Autowire(param: 'kernel.project_dir')]
-        protected readonly ?string $projectDir,
+        #[Autowire(param: 'app_manifest')]
+        protected readonly ?string $appManifest,
         #[Autowire(service: 'twig')]
         protected readonly Environment $twig,
     ) {
@@ -34,16 +34,18 @@ class ManifestGenerateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (\in_array(null, [$this->appUrl, $this->appSecret, $this->environment, $this->projectDir], true)) {
+        if (\in_array(null, [$this->appUrl, $this->appSecret, $this->environment, $this->appManifest], true)) {
             $io->error('Missing environment variables');
 
             return Command::FAILURE;
         }
 
+        $isProd = ($input->getOption('env') ?? $this->environment) === 'prod';
+
         $manifest = $this->twig->render('manifest.xml.twig', [
-            'appUrl' => $this->environment === 'prod' ? self::BASE_URL_PROD : $this->appUrl,
+            'appUrl' => $isProd ? self::BASE_URL_PROD : $this->appUrl,
             'appSecret' => $this->appSecret,
-            'isProd' => $this->environment === 'prod',
+            'isProd' => $isProd,
         ]);
 
         $write = true;
@@ -77,7 +79,7 @@ class ManifestGenerateCommand extends Command
      */
     protected function manifestExists(): bool
     {
-        return \file_exists($this->projectDir . '/manifest.xml');
+        return \file_exists($this->appManifest);
     }
 
     /**
@@ -85,6 +87,6 @@ class ManifestGenerateCommand extends Command
      */
     protected function writeManifest(string $manifest): bool
     {
-        return \file_put_contents($this->projectDir . '/manifest.xml', $manifest) !== false;
+        return \file_put_contents($this->appManifest, $manifest) !== false;
     }
 }

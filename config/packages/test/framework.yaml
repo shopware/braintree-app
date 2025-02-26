@@ -1,0 +1,2 @@
+parameters:
+  app_manifest: '%kernel.project_dir%/var/cache/test/test_manifest.xml'

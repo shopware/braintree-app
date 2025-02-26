@@ -19,9 +19,9 @@
     </meta>
 
     <setup>
-        <registrationUrl>{{ appUrl }}/app/lifecycle/register</registrationUrl>
+        <registrationUrl>{{- appUrl -}}/app/lifecycle/register</registrationUrl>
 {% if not isProd %}
-        <secret>{{ appSecret }}</secret>
+        <secret>{{- appSecret -}}</secret>
 {% endif %}
     </setup>
 

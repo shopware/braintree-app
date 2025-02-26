@@ -151,10 +151,15 @@ class ManifestGenerateCommandTest extends TestCase
     public function testManifestExists(): void
     {
         $this->input
-            ->expects(static::once())
+            ->expects(static::exactly(2))
             ->method('getOption')
-            ->with('force')
-            ->willReturn(false);
+            ->willReturnCallback(static function (string $option): mixed {
+                return match ($option) {
+                    'force' => false,
+                    'env' => 'dev',
+                    default => static::fail('Unexpected option: ' . $option),
+                };
+            });
 
         $command = $this->createCommand();
 
@@ -167,10 +172,15 @@ class ManifestGenerateCommandTest extends TestCase
     public function testManifestExistsWithForce(): void
     {
         $this->input
-            ->expects(static::once())
+            ->expects(static::exactly(2))
             ->method('getOption')
-            ->with('force')
-            ->willReturn(true);
+            ->willReturnCallback(static function (string $option): mixed {
+                return match ($option) {
+                    'force' => true,
+                    'env' => 'dev',
+                    default => static::fail('Unexpected option: ' . $option),
+                };
+            });
 
         $this->output
             ->expects(static::never())
@@ -194,6 +204,7 @@ class ManifestGenerateCommandTest extends TestCase
         $command = $this->createCommand();
 
         static::assertSame('Generate the manifest.xml', $command->getDescription());
+        static::assertSame('Generates a manifest.xml from template, which is helpful during development', $command->getHelp());
         static::assertSame('force', $command->getDefinition()->getOption('force')->getName());
     }
 

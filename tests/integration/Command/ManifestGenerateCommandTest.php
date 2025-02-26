@@ -2,12 +2,11 @@
 
 namespace Swag\Braintree\Tests\Integration\Command;
 
-use Swag\Braintree\Tests\Command\TestManifestGenerateCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ManifestGenerateCommandTest extends WebTestCase
+class ManifestGenerateCommandTest extends KernelTestCase
 {
     protected function setUp(): void
     {
@@ -17,25 +16,21 @@ class ManifestGenerateCommandTest extends WebTestCase
     protected function tearDown(): void
     {
         $this->cleanup();
+        parent::tearDown();
     }
 
     public function testExecute(): void
     {
-        self::bootKernel();
+        static::bootKernel();
 
-        $application = new Application(self::$kernel);
-
-        $command = $application->find('manifest:generate');
+        $command = (new Application(self::$kernel))->find('manifest:generate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--force' => false]);
 
         $commandTester->assertCommandIsSuccessful();
 
-        $path = $this->getManifest();
-
-        if (!\file_exists($path)) {
-            static::fail('Manifest file was not created');
-        }
+        $path = static::getContainer()->getParameter('app_manifest');
+        static::assertFileExists($path);
 
         $manifest = \simplexml_load_file($path);
         $appUrl = $_ENV['APP_URL'];
@@ -80,11 +75,9 @@ class ManifestGenerateCommandTest extends WebTestCase
 
     public function testCommandStructure(): void
     {
-        self::bootKernel();
+        static::bootKernel();
 
-        $application = new Application(self::$kernel);
-
-        $command = $application->find('manifest:generate');
+        $command = (new Application(self::$kernel))->find('manifest:generate');
 
         static::assertSame('manifest:generate', $command->getName());
         static::assertSame('Generate the manifest.xml', $command->getDescription());
@@ -94,17 +87,13 @@ class ManifestGenerateCommandTest extends WebTestCase
 
     public function testWithoutForce(): void
     {
-        self::bootKernel();
-
-        $application = new Application(self::$kernel);
-
-        $command = $application->find('manifest:generate');
+        $command = (new Application(self::$kernel))->find('manifest:generate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--force' => false]);
 
         $commandTester->assertCommandIsSuccessful();
 
-        $path = $this->getManifest();
+        $path = static::getContainer()->getParameter('app_manifest');
 
         static::assertFileExists($path);
 
@@ -123,22 +112,17 @@ class ManifestGenerateCommandTest extends WebTestCase
 
     public function testProdEnvironment(): void
     {
+        $_ENV['APP_URL'] = 'https://foo-bar.com';
+        $_ENV['APP_SECRET'] = '$ecretf0rt3st';
         self::bootKernel();
 
-        $command = new TestManifestGenerateCommand(
-            'https://foo-bar.com',
-            '$ecretf0rt3st',
-            'prod',
-            static::getContainer()->getParameter('kernel.project_dir'),
-            static::getContainer()->get('twig')
-        );
-
+        $command = (new Application(self::$kernel))->find('manifest:generate');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['--force' => false]);
+        $commandTester->execute(['--force' => false, '--env' => 'prod']);
 
         $commandTester->assertCommandIsSuccessful();
 
-        $path = $this->getManifest();
+        $path = static::getContainer()->getParameter('app_manifest');
 
         static::assertFileExists($path);
 
@@ -152,16 +136,9 @@ class ManifestGenerateCommandTest extends WebTestCase
         static::assertSame('https://braintree.shopware.com/api/gateway/checkout', (string) $manifest->gateways->checkout);
     }
 
-    private function getManifest(): string
-    {
-        $projectDir = static::getContainer()->getParameter('kernel.project_dir');
-
-        return $projectDir . '/var/cache/test/test_manifest.xml';
-    }
-
     private function cleanup(): void
     {
-        $manifest = $this->getManifest();
+        $manifest = static::getContainer()->getParameter('app_manifest');
 
         if (\file_exists($manifest)) {
             \unlink($manifest);
