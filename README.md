@@ -25,7 +25,6 @@
 >   - [ Replace hardcoded urls](#replace-hardcoded-urls)
 >   - [ Develop locally](#develop-locally)
 >   - [ Tests](#tests)
-> - [ Repository Structure](#repository-structure)
 > - [ Contributing](#contributing)
 > - [ License](#license)
 
@@ -62,14 +61,18 @@ If you are a merchant and want to install the app to your shop, you can find it 
    ```sh
    git clone https://github.com/shopware/braintree-app
    ```
-3. [Replace urls](#replace-hardcoded-urls)
-4. Run
+3. Install dependencies
    ```sh
-   devenv up
+   composer install
+   npm install
+   ```
+4. Setup database, manifest and hardcoded urls
+   ```sh
+   composer setup
    ```
 5. Run
    ```sh
-   composer setup
+   devenv up
    ```
 6. Install and activate the app
 7. Rebuild shopware's storefront js
@@ -78,13 +81,14 @@ If you are a merchant and want to install the app to your shop, you can find it 
 
 #### Via command
 
+Run `composer setup:manifest` to generate a manifest setup with the current `APP_URL`
 Run `composer setup:url` to replace hardcoded urls with your `APP_URL`, e.g. `http://localhost:8080`.
 
 #### Manually
 
 There are several hardcoded urls that need to be replaced when developing locally:
-- `manifest.xml`
-- `assets/src/service/api.ts`
+- ~~`manifest.xml`~~ (Replaced by manifest templating with `composer setup:manifest`)
+- ~~`assets/src/service/api.ts`~~ (Replaced by origin url)
 - `Resources/app/storefront/src/checkout/swag-braintree.hosted-fields.js`
   
 Replace `https://braintree.shopware.com` with your `APP_URL`, e.g. `http://localhost:8080`
@@ -118,129 +122,6 @@ To test for mutations, run:
 ```sh
 composer infection
 ```
-
----
-
-##  Repository Structure
-
-<details>
-  <summary><b>Repository structure</b></summary>
-
-```sh
-└── braintree-app/
-    ├── .env
-    ├── .env.test
-    ├── .envrc
-    ├── .eslintrc.js
-    ├── .github
-    │   ├── dependabot.yml
-    │   └── workflows
-    │       ├── js.yml
-    │       └── php.yml
-    ├── .gitlab-ci.yml
-    ├── .php-cs-fixer.dist.php
-    ├── .platform
-    │   ├── routes.yaml
-    │   └── services.yaml
-    ├── .platform.app.yaml
-    ├── Resources
-    │   ├── app
-    │   │   └── storefront
-    │   ├── snippet
-    │   │   ├── braintree.de-DE.json
-    │   │   └── braintree.en-GB.json
-    │   └── views
-    │       └── storefront
-    ├── bin
-    │   └── console
-    ├── composer.json
-    ├── config
-    │   ├── bundles.php
-    │   ├── packages
-    │   │   ├── cache.yaml
-    │   │   ├── debug.yaml
-    │   │   ├── dev
-    │   │   ├── doctrine.yaml
-    │   │   ├── doctrine_migrations.yaml
-    │   │   ├── framework.yaml
-    │   │   ├── http_discovery.yaml
-    │   │   ├── monolog.yaml
-    │   │   ├── nelmio_cors.yaml
-    │   │   ├── routing.yaml
-    │   │   ├── shopware_app.yaml
-    │   │   ├── twig.yaml
-    │   │   ├── uid.yaml
-    │   │   └── webpack_encore.yaml
-    │   ├── preload.php
-    │   ├── routes
-    │   │   ├── framework.yaml
-    │   │   ├── shopware_app.yaml
-    │   │   └── web_profiler.yaml
-    │   ├── routes.yaml
-    │   └── services.php
-    ├── devenv.nix
-    ├── devenv.yaml
-    ├── ecs.php
-    ├── infection.json5
-    ├── migrations
-    │   ├── Version20230920084343AddShop.php
-    │   ├── Version20231002072740AddConfig.php
-    │   ├── Version20231002130113AddCurrencyMapping.php
-    │   └── Version20231024121459AddTransaction.php
-    ├── package-lock.json
-    ├── package.json
-    ├── phpstan.neon
-    ├── phpunit.xml.dist
-    ├── public
-    │   └── index.php
-    ├── src
-    │   ├── Braintree
-    │   │   ├── Dto
-    │   │   ├── Exception
-    │   │   ├── Gateway
-    │   │   ├── Payment
-    │   │   └── Util
-    │   ├── Command
-    │   │   └── SetupUrlCommand.php
-    │   ├── Controller
-    │   │   ├── AdminController.php
-    │   │   ├── BraintreeConfigurationController.php
-    │   │   ├── EntityController.php
-    │   │   ├── PaymentController.php
-    │   │   └── StorefrontController.php
-    │   ├── Doctrine
-    │   │   └── RespectfulUuidGenerator.php
-    │   ├── Entity
-    │   │   ├── ConfigEntity.php
-    │   │   ├── Contract
-    │   │   ├── CurrencyMappingEntity.php
-    │   │   ├── ShopEntity.php
-    │   │   └── TransactionEntity.php
-    │   ├── Framework
-    │   │   ├── ArgumentResolver
-    │   │   ├── Exception
-    │   │   ├── Request
-    │   │   ├── Response
-    │   │   └── Serializer
-    │   ├── Kernel.php
-    │   ├── Repository
-    │   │   ├── AbstractRepository.php
-    │   │   ├── ConfigRepository.php
-    │   │   ├── CurrencyMappingRepository.php
-    │   │   ├── ShopRepository.php
-    │   │   └── TransactionRepository.php
-    │   └── Tests
-    │       ├── Contract
-    │       ├── Entity.php
-    │       ├── IdsCollection.php
-    │       ├── Repository.php
-    │       └── Serializer
-    ├── templates
-    │   └── admin-sdk.html.twig
-    ├── tsconfig.json
-    └── webpack.config.js
-```
-</details>
 
 ---
 

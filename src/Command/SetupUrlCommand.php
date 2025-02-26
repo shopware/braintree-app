@@ -15,8 +15,6 @@ class SetupUrlCommand extends Command
 {
     // relative to %kernel.project_dir%
     public const FILES = [
-        'manifest.xml',
-        'assets/src/service/api.ts',
         'Resources/app/storefront/{src/checkout,dist/storefront/js/swag-braintree-app}/*',
     ];
 
