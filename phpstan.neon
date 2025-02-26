@@ -27,6 +27,10 @@ parameters:
             -
                 message: '#Multiple class/interface/trait is not allowed in single file#'
                 path: tests/unit
+            # PHPStan does not know of symfony browser component
+            -
+                message: '#Service "test\.client" is not registered in the container\.#'
+                path: tests
 
 rules:
     # rules from https://github.com/symplify/phpstan-rules

@@ -42,6 +42,10 @@
         <testsuite name="SwagBraintreeIntegrationTest">
             <directory>tests/integration</directory>
         </testsuite>
+
+        <testsuite name="SwagBraintreeApplicationTest">
+            <directory>tests/application</directory>
+        </testsuite>
     </testsuites>
 
     <extensions>
