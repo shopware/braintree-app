@@ -1,19 +1,9 @@
 { pkgs, lib, config, ... }:
 
-let
-  pcov = config.languages.php.package.buildEnv {
-    extensions = { all, enabled }: with all; (builtins.filter (e: e.extensionName != "xdebug") enabled) ++ [config.languages.php.package.extensions.pcov];
-    extraConfig = config.languages.php.ini;
-  };
-in {
+{
   packages = [
     pkgs.gnupatch
-    pkgs.nodePackages_latest.yalc
     pkgs.gnused
-    ( pkgs.writeShellScriptBin "php-pcov" ''
-      export PHP_INI_SCAN_DIR=''${PHP_INI_SCAN_DIR-'${pcov}/lib'}
-      exec -a "$0" "${pcov}/bin/.php-wrapped"  "$@"
-    '')
   ];
 
   dotenv.disableHint = true;
