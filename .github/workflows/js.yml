@@ -37,10 +37,18 @@ jobs:
         with:
           report-json: eslint-report.json
 
-  type-checking:
+  type-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
       - name: Run ESLint
         run: npm run tsc
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
+      - name: Run vite
+        run: npm run build
