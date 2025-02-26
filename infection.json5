@@ -21,6 +21,7 @@
     },
     "tmpDir": "var/cache",
     "testFramework":"phpunit",
+    "testFrameworkOptions": "--testsuite=SwagBraintreeUnitTest",
     "mutators": {
         "@default": true,
         "LessThan": {
