@@ -17,7 +17,7 @@
     "@shopware-ag/meteor-admin-sdk": "5.7.2",
     "@shopware-ag/meteor-component-library": "4.3.0",
     "pinia": "^3.0.1",
-    "vue": "3.4.31",
+    "vue": "3.5.13",
     "vue-i18n": "^11.1.1"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "vue-tsc": "^2.2.4"
   },
   "overrides": {
-    "vue": "3.4.31"
+    "vue": "3.5.13"
   },
   "engines": {
     "node": ">=20.9.0 <21"
