@@ -23,14 +23,17 @@ parameters:
             containerXmlPath: 'var/cache/dev/Swag_Braintree_KernelDevDebugContainer.xml'
 
     ignoreErrors:
-            # TestException
-            -
+            - # TestException
                 message: '#Multiple class/interface/trait is not allowed in single file#'
                 path: tests/unit
-            # PHPStan does not know of symfony browser component
-            -
+
+            - # PHPStan does not know of symfony browser component
                 message: '#Service "test\.client" is not registered in the container\.#'
                 path: tests
+
+            - # SimpleXML foo
+                message: '#Use explicit names over dynamic ones#'
+                path: tests/integration/Command/ManifestGenerateCommandTest.php
 
 rules:
     # rules from https://github.com/symplify/phpstan-rules

@@ -19,24 +19,24 @@
     </meta>
 
     <setup>
-        <registrationUrl>{{ appUrl }}/app/lifecycle/register</registrationUrl>
+        <registrationUrl>{{- appUrl -}}/app/lifecycle/register</registrationUrl>
 {% if not isProd %}
-        <secret>{{ appSecret }}</secret>
+        <secret>{{- appSecret -}}</secret>
 {% endif %}
     </setup>
 
     <webhooks>
-        <webhook name="appActivated" url="{{ appUrl }}/app/lifecycle/activate" event="app.activated"/>
-        <webhook name="appDeactivated" url="{{ appUrl }}/app/lifecycle/deactivate" event="app.deactivated"/>
-        <webhook name="appDeleted" url="{{ appUrl }}/app/lifecycle/delete" event="app.deleted"/>
+        <webhook name="appActivated" url="{{- appUrl -}}/app/lifecycle/activate" event="app.activated"/>
+        <webhook name="appDeactivated" url="{{- appUrl -}}/app/lifecycle/deactivate" event="app.deactivated"/>
+        <webhook name="appDeleted" url="{{- appUrl -}}/app/lifecycle/delete" event="app.deleted"/>
     </webhooks>
 
     <admin>
-        <base-app-url>{{ appUrl }}/admin-sdk</base-app-url>
+        <base-app-url>{{- appUrl -}}/admin-sdk</base-app-url>
     </admin>
 
     <gateways>
-        <checkout>{{ appUrl }}/api/gateway/checkout</checkout>
+        <checkout>{{- appUrl -}}/api/gateway/checkout</checkout>
     </gateways>
 
     <payments>
@@ -44,7 +44,7 @@
             <identifier>credit_card</identifier>
             <name>Credit or Debit Card (by Braintree)</name>
             <name lang="de-DE">Kredit- oder Debitkarte (von Braintree)</name>
-            <pay-url>{{ appUrl }}/api/pay</pay-url>
+            <pay-url>{{- appUrl -}}/api/pay</pay-url>
             <icon>Resources/config/plugin.jpg</icon>
         </payment-method>
     </payments>

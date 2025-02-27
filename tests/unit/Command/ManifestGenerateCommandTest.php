@@ -70,6 +70,17 @@ class ManifestGenerateCommandTest extends TestCase
         yield 'all missing' => [null, null, null, null];
     }
 
+    /**
+     * Not sure why, but this test has to be here explicitly to satisfy infection php,
+     * however this should've been covered through the data provider above.
+     */
+    public function testInfectionFailingEdgeCase(): void
+    {
+        $command = new ManifestGenerateCommand(null, 'foo', 'bar', 'baz', $this->twig);
+
+        static::assertSame(ManifestGenerateCommand::FAILURE, $command->run($this->input, $this->output));
+    }
+
     public function testRender(): void
     {
         $this->output
@@ -140,10 +151,15 @@ class ManifestGenerateCommandTest extends TestCase
     public function testManifestExists(): void
     {
         $this->input
-            ->expects(static::once())
+            ->expects(static::exactly(2))
             ->method('getOption')
-            ->with('force')
-            ->willReturn(false);
+            ->willReturnCallback(static function (string $option): mixed {
+                return match ($option) {
+                    'force' => false,
+                    'env' => 'dev',
+                    default => static::fail('Unexpected option: ' . $option),
+                };
+            });
 
         $command = $this->createCommand();
 
@@ -156,10 +172,15 @@ class ManifestGenerateCommandTest extends TestCase
     public function testManifestExistsWithForce(): void
     {
         $this->input
-            ->expects(static::once())
+            ->expects(static::exactly(2))
             ->method('getOption')
-            ->with('force')
-            ->willReturn(true);
+            ->willReturnCallback(static function (string $option): mixed {
+                return match ($option) {
+                    'force' => true,
+                    'env' => 'dev',
+                    default => static::fail('Unexpected option: ' . $option),
+                };
+            });
 
         $this->output
             ->expects(static::never())
@@ -183,6 +204,7 @@ class ManifestGenerateCommandTest extends TestCase
         $command = $this->createCommand();
 
         static::assertSame('Generate the manifest.xml', $command->getDescription());
+        static::assertSame('Generates a manifest.xml from template, which is helpful during development', $command->getHelp());
         static::assertSame('force', $command->getDefinition()->getOption('force')->getName());
     }
 
@@ -192,7 +214,8 @@ class ManifestGenerateCommandTest extends TestCase
         ?string $environment = 'dev',
         ?string $projectDir = 'projectDir',
     ): ManifestGenerateCommand&MockObject {
-        return $this->getMockBuilder(ManifestGenerateCommand::class)
+        return $this
+            ->getMockBuilder(ManifestGenerateCommand::class)
             ->onlyMethods(['manifestExists', 'writeManifest'])
             ->setConstructorArgs([$appUrl, $appSecret, $environment, $projectDir, $this->twig])
             ->getMock();
