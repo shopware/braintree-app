@@ -1,9 +1,10 @@
-{ pkgs, lib, config, ... }:
-
-{
+{ pkgs, lib, config, ... }: let
+  frankenphp = config.env.FRANKENPHP == "1";
+in {
   packages = [
     pkgs.gnupatch
     pkgs.gnused
+    config.services.caddy.package
   ];
 
   dotenv.disableHint = true;
@@ -48,9 +49,21 @@
 
   services.caddy = {
     enable = lib.mkDefault true;
+    package = lib.mkIf frankenphp (pkgs.frankenphp.override {
+      php = config.languages.php.package;
+    });
 
-    virtualHosts.":8080" = lib.mkDefault {
-      extraConfig = lib.mkDefault ''
+    config = ''
+      {
+        ${lib.optionalString frankenphp "frankenphp"}
+        auto_https disable_redirects
+        skip_install_trust
+      }
+
+      :8080 {
+        root * public
+        file_server
+
         handle /_vite_* {
           @websocket {
             header Connection *Upgrade*
@@ -62,16 +75,15 @@
         }
 
         @default {
-          not path /theme/* /media/* /thumbnail/* /bundles/* /css/* /fonts/* /js/* /sitemap/*
+          not path /build/*
         }
 
-        root * public
-        php_fastcgi @default unix/${config.languages.php.fpm.pools.web.socket} {
-            trusted_proxies private_ranges
+        ${if frankenphp
+          then "php_server @default { trusted_proxies private_ranges; file_server off }"
+          else "php_fastcgi @default unix/${config.languages.php.fpm.pools.web.socket} { trusted_proxies private_ranges }"
         }
-        file_server
-      '';
-    };
+      }
+    '';
   };
 
   services.mysql = {
@@ -104,4 +116,6 @@
   env.APP_SECRET = lib.mkDefault "devsecret";
   env.DATABASE_URL = lib.mkDefault "mysql://swagbraintree:swagbraintree@localhost:3307/swagbraintree";
   env.VITE_PORT = lib.mkDefault "5173";
+
+  env.FRANKENPHP = lib.mkDefault "1";
 }
