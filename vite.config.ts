@@ -30,7 +30,10 @@ export default defineConfig(({ mode }) => ({
         copyPublicDir: false,
         sourcemap: mode === 'development',
         rollupOptions: {
-            input: './assets/admin.ts',
+            input: {
+                admin: './assets/admin.ts',
+                fonts: './assets/fonts.ts',
+            },
             output: {
                 entryFileNames: '[name].js',
                 assetFileNames: '[name].[ext]',
