@@ -7,12 +7,17 @@ use Swag\Braintree\Framework\Request\ShopResolver;
 use Symfony\Bundle\FrameworkBundle\Test\BrowserKitAssertionsTrait;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\BrowserKit\Request;
+use Symfony\Component\BrowserKit\Response;
 
 trait ApplicationHelperTrait
 {
     use BrowserKitAssertionsTrait;
     use IntegrationHelperTrait;
 
+    /**
+     * @return AbstractBrowser<Request, Response>
+     */
     protected static function createClientForShop(?ShopInterface $shop = null): AbstractBrowser
     {
         $client = static::getContainer()->get('test.client');
