@@ -17,6 +17,13 @@ use Symfony\Contracts\Service\Attribute\Required;
 /**
  * @template T of EntityInterface|ShopInterface
  *
+ * @phpstan-type CriteriaType array<string, mixed>
+ * @phpstan-type OrderByType array<string, mixed>
+ *
+ * @method T|null find($id, $lockMode = null, $lockVersion = null)
+ * @method T|null findOneBy(CriteriaType $criteria, OrderByType $orderBy = null)
+ * @method T[] findAll()
+ *
  * @template-extends ServiceEntityRepository<T>
  */
 abstract class AbstractRepository extends ServiceEntityRepository

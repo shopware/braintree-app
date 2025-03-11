@@ -7,10 +7,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use Swag\Braintree\Entity\TransactionReportEntity;
 
 /**
- * @method TransactionReportEntity|null find($id, $lockMode = null, $lockVersion = null)
- * @method TransactionReportEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method TransactionReportEntity[] findAll()
- *
  * @extends ServiceEntityRepository<TransactionReportEntity>
  */
 class TransactionReportRepository extends ServiceEntityRepository

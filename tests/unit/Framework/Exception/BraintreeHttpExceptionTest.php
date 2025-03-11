@@ -56,7 +56,6 @@ class BraintreeHttpExceptionTest extends TestCase
         $e = $this->getException('test message', ['foo' => 'bar']);
 
         $errors = $e->getErrors(true);
-        static::assertIsIterable($errors);
 
         $errors = \iterator_to_array($errors);
         static::assertCount(1, $errors);
@@ -78,7 +77,6 @@ class BraintreeHttpExceptionTest extends TestCase
         $e = $this->getException('test message', ['foo' => 'bar']);
 
         $errors = $e->getErrors();
-        static::assertIsIterable($errors);
 
         $errors = \iterator_to_array($errors);
         static::assertCount(1, $errors);

@@ -242,8 +242,6 @@ class AbstractRepositoryTest extends TestCase
             ->willReturn(new Entity());
 
         $this->repository->delete([$id]);
-
-        static::assertTrue(true);
     }
 
     public function testDeserializeInto(): void

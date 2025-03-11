@@ -16,7 +16,6 @@ class IdsTest extends TestCase
         $id = Ids::create($key);
 
         static::assertNotEmpty($id);
-        static::assertIsString($id);
         static::assertSame($id, Ids::get($key));
     }
 

@@ -27,7 +27,7 @@ class ManifestGenerateCommandTest extends TestCase
         $this->output = $this->createMock(OutputInterface::class);
     }
 
-    #[DataProvider(methodName: 'provideFailOnAnyParameterMissing')]
+    #[DataProvider('provideFailOnAnyParameterMissing')]
     public function testFailOnAnyParameterMissing(
         ?string $appUrl,
         ?string $appSecret,
