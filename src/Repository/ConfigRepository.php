@@ -9,10 +9,6 @@ use Swag\Braintree\Framework\Exception\EntityPropertyRequiredException;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @method ConfigEntity|null find($id, $lockMode = null, $lockVersion = null)
- * @method ConfigEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method ConfigEntity[] findAll()
- *
  * @extends AbstractRepository<ConfigEntity>
  */
 class ConfigRepository extends AbstractRepository

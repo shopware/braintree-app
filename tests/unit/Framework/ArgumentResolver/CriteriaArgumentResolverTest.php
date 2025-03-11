@@ -27,13 +27,11 @@ class CriteriaArgumentResolverTest extends TestCase
 
         $result = $resolver->resolve($request, $argument);
 
-        static::assertIsIterable($result);
         $result = \iterator_to_array($result);
 
         static::assertCount(1, $result);
 
         $criteria = $result[0];
-        static::assertNotNull($criteria);
         static::assertInstanceOf(Criteria::class, $criteria);
         static::assertCount(1, $criteria->ids);
         static::assertSame(self::UUID, (string) $criteria->ids[0]);
@@ -53,7 +51,6 @@ class CriteriaArgumentResolverTest extends TestCase
 
         $result = $resolver->resolve($request, $argument);
 
-        static::assertIsIterable($result);
         $result = \iterator_to_array($result);
 
         static::assertCount(0, $result);
@@ -73,7 +70,6 @@ class CriteriaArgumentResolverTest extends TestCase
 
         $result = $resolver->resolve($request, $argument);
 
-        static::assertIsIterable($result);
         $result = \iterator_to_array($result);
 
         static::assertCount(0, $result);

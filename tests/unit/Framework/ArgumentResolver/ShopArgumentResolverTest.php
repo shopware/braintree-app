@@ -33,8 +33,6 @@ class ShopArgumentResolverTest extends TestCase
 
         $result = $resolver->resolve($request, $argument);
 
-        static::assertIsIterable($result);
-
         $result = \iterator_to_array($result);
 
         static::assertCount(1, $result);
@@ -60,8 +58,6 @@ class ShopArgumentResolverTest extends TestCase
 
         $result = $resolver->resolve($request, $argument);
 
-        static::assertIsIterable($result);
-
         $result = \iterator_to_array($result);
 
         static::assertCount(0, $result);
@@ -83,8 +79,6 @@ class ShopArgumentResolverTest extends TestCase
         $resolver = new ShopArgumentResolver($shopResolver);
 
         $result = $resolver->resolve($request, $argument);
-
-        static::assertIsIterable($result);
 
         $result = \iterator_to_array($result);
 

@@ -9,6 +9,7 @@ use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 trait ApplicationHelperTrait
 {
@@ -26,6 +27,7 @@ trait ApplicationHelperTrait
             $shop = static::createShop(persist: false);
         }
 
+        /** @var SessionInterface $session */
         $session = $client->getContainer()->get('session.factory')->createSession();
         $session->set(ShopResolver::SHOP_ID, $shop->getShopId());
         $session->save();

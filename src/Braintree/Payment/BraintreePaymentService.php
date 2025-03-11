@@ -69,7 +69,7 @@ class BraintreePaymentService
 
         if (!$response->success) {
             // @infection-ignore-all - As if that line isn't painful enough
-            throw new BraintreePaymentException($response->errors->deepAll()[0]?->message ?? 'Unknown error occured', shop: $payment->shop);
+            throw new BraintreePaymentException($response->errors->deepAll()[0]->message ?? 'Unknown error occured', shop: $payment->shop);
         }
 
         if (!isset($response->transaction)) {

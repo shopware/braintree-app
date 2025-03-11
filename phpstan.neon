@@ -35,6 +35,12 @@ parameters:
                 message: '#Use explicit names over dynamic ones#'
                 path: tests/integration/Command/ManifestGenerateCommandTest.php
 
+            - # Trait tests
+                message: '#^Call to function property_exists\(\) with class@anonymous/tests/.*#'
+
+            - # Trait tests
+                message: '#^Call to function method_exists\(\) with class@anonymous/tests/.*#'
+
 rules:
     # rules from https://github.com/symplify/phpstan-rules
     # domain
@@ -51,4 +57,3 @@ rules:
 
     # naming rules
     - Symplify\PHPStanRules\Rules\UppercaseConstantRule
-    - Symplify\PHPStanRules\Rules\CheckClassNamespaceFollowPsr4Rule

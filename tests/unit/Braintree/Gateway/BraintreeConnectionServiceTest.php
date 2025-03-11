@@ -37,7 +37,6 @@ class BraintreeConnectionServiceTest extends TestCase
         $gateway = $gatewayProperty->getValue($service);
         $config = $gateway->config;
 
-        static::assertNotNull($config);
         static::assertSame('production', $config->getEnvironment());
         static::assertSame($shop->getBraintreeMerchantId(), $config->getMerchantId());
         static::assertSame($shop->getBraintreePrivateKey(), $config->getPrivateKey());

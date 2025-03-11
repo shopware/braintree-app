@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Twig\Environment;
 
 #[CoversClass(AdminController::class)]
@@ -67,10 +68,9 @@ class AdminControllerTest extends TestCase
 
         $this->controller->setContainer($container);
 
-        $session = new Session();
+        $session = new Session(new MockArraySessionStorage());
         $response = $this->controller->adminSdk($session, $this->shop);
 
-        static::assertNotNull($response->headers->getCookies());
         static::assertCount(1, $response->headers->getCookies());
 
         $cookie = $response->headers->getCookies()[0];
