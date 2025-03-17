@@ -14,25 +14,25 @@
   },
   "dependencies": {
     "@shopware-ag/entity-schema-types": "6.9.0",
-    "@shopware-ag/meteor-admin-sdk": "5.7.2",
-    "@shopware-ag/meteor-component-library": "4.3.0",
+    "@shopware-ag/meteor-admin-sdk": "5.7.8",
+    "@shopware-ag/meteor-component-library": "4.6.0",
     "pinia": "^3.0.1",
     "vue": "3.5.13",
-    "vue-i18n": "^11.1.1"
+    "vue-i18n": "^11.1.2"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^4.0.1",
-    "@types/node": "^22.13.5",
-    "@vitejs/plugin-legacy": "^6.0.1",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/eslint-config-typescript": "^14.4.0",
+    "@stylistic/eslint-plugin": "^4.2.0",
+    "@types/node": "^22.13.10",
+    "@vitejs/plugin-legacy": "^6.0.2",
+    "@vitejs/plugin-vue": "^5.2.2",
+    "@vue/eslint-config-typescript": "^14.5.0",
     "eslint": "^9.16.0",
-    "eslint-plugin-vue": "^9.32.0",
-    "sass": "^1.85.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "sass": "^1.85.1",
     "typescript": "~5.6.3",
-    "vite": "^6.1.1",
+    "vite": "^6.2.2",
     "vite-plugin-vue-devtools": "^7.7.2",
-    "vue-tsc": "^2.2.4"
+    "vue-tsc": "^2.2.8"
   },
   "engines": {
     "node": ">=20.9.0 <21"
