@@ -11,16 +11,10 @@
             :checked='activeConfig?.threeDSecureEnforced ?? undefined'
             :is-inherited='isFieldInherited("threeDSecureEnforced")'
             :is-inheritance-field='!!salesChannelId'
+            :help-text='$t("settings.general.threeDSecureToolTip")'
             @change='activeConfig.threeDSecureEnforced = !activeConfig.threeDSecureEnforced'
             @inheritance-remove='onRemoveInheritance("threeDSecureEnforced")'
             @inheritance-restore='onRestoreInheritance("threeDSecureEnforced")'
-        />
-
-        <mt-icon
-            v-tooltip.top='$t("settings.general.threeDSecureToolTip")'
-            style='position: relative; top: -1px'
-            :color="'#189EFF'"
-            name='solid-question-circle-s'
         />
     </div>
     <div class='sw-braintree-app-settings-general__shipsFromPostalCode'>
@@ -43,7 +37,7 @@
 <script lang='ts'>
 import type { PropType } from 'vue';
 import { defineComponent } from 'vue';
-import { MtCard, MtSwitch, MtIcon, MtTextField } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtSwitch, MtTextField } from '@shopware-ag/meteor-component-library';
 import { registerSaveHandler } from '@/resources/inject-keys';
 import { DefaultConfigEntity } from '@/resources/entities';
 import { inject } from 'vue';
@@ -51,7 +45,7 @@ import { inject } from 'vue';
 export default defineComponent({
     name: 'sw-braintree-app-settings-general',
 
-    components: { MtTextField, MtCard, MtSwitch, MtIcon },
+    components: { MtTextField, MtCard, MtSwitch },
 
     props: {
         salesChannelId: {
@@ -147,16 +141,6 @@ export default defineComponent({
 .sw-braintree-app-settings-general {
     display: flex;
     flex-direction: column;
-
-    &__threeDSecuredEnforced {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        .mt-field--switch__container .mt-field--switch {
-            margin: 0;
-        }
-    }
 
     &__shipsFromPostalCode {
         margin-top: 24px;

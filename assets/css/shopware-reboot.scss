@@ -11,8 +11,12 @@ body {
     margin: 0;
 }
 
-.mt-field--switch__container .mt-field--switch {
+.mt-switch {
     margin: 0;
+}
+
+.mt-switch--not-bordered {
+    min-height: 0;
 }
 
 .mt-select--small {

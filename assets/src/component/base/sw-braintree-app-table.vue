@@ -4,26 +4,28 @@
 </div>
 <div v-else-if='!loading && items.length > 0'>
     <table class='sw-braintree-app-table'>
-        <tr class='sw-braintree-app-table__headers'>
-            <th v-for='column in columns' :key='column.property' class='sw-braintree-app-table__header'>
-                <slot :name='"column-" + column.property' :column='column'>
-                    {{ column.label }}
-                </slot>
-            </th>
-        </tr>
+        <tbody>
+            <tr class='sw-braintree-app-table__headers'>
+                <th v-for='column in columns' :key='column.property' class='sw-braintree-app-table__header'>
+                    <slot :name='"column-" + column.property' :column='column'>
+                        {{ column.label }}
+                    </slot>
+                </th>
+            </tr>
 
-        <tr v-for='(item, c_idx) in items' :key='c_idx' class='sw-braintree-app-table__columns'>
-            <td v-for='column in columns' :key='column.property + c_idx' class='sw-braintree-app-table__column'>
-                <slot
-                    :name='"cell-" + column.property.replace(".", "-")'
-                    :row='deepFind(item, column.property)'
-                    :column='column'
-                    :item='item'
-                >
-                    {{ deepFind(item, column.property) }}
-                </slot>
-            </td>
-        </tr>
+            <tr v-for='(item, c_idx) in items' :key='c_idx' class='sw-braintree-app-table__columns'>
+                <td v-for='column in columns' :key='column.property + c_idx' class='sw-braintree-app-table__column'>
+                    <slot
+                        :name='"cell-" + column.property.replace(".", "-")'
+                        :row='deepFind(item, column.property)'
+                        :column='column'
+                        :item='item'
+                    >
+                        {{ deepFind(item, column.property) }}
+                    </slot>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </div>
 <div v-else class='sw-braintree-app-table__empty'>
