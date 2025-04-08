@@ -5,15 +5,26 @@ namespace Swag\Braintree\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Shopware\App\SDK\Context\Cart\Error;
 use Shopware\App\SDK\Context\Gateway\Checkout\CheckoutGatewayAction;
+use Shopware\App\SDK\Context\Gateway\Context\ContextGatewayAction;
+use Shopware\App\SDK\Context\Response\Customer\AddressResponseStruct;
+use Shopware\App\SDK\Context\Response\Customer\CustomerResponseStruct;
+use Shopware\App\SDK\Context\SalesChannelContext\SalesChannelContext;
 use Shopware\App\SDK\Framework\Collection;
 use Shopware\App\SDK\Gateway\Checkout\CheckoutGatewayCommand;
 use Shopware\App\SDK\Gateway\Checkout\Command\AddCartErrorCommand;
 use Shopware\App\SDK\Gateway\Checkout\Command\RemovePaymentMethodCommand;
+use Shopware\App\SDK\Gateway\Context\Command\ChangeCurrencyCommand;
+use Shopware\App\SDK\Gateway\Context\Command\ChangeLanguageCommand;
+use Shopware\App\SDK\Gateway\Context\Command\ChangePaymentMethodCommand;
+use Shopware\App\SDK\Gateway\Context\Command\ChangeShippingLocationCommand;
+use Shopware\App\SDK\Gateway\Context\Command\ChangeShippingMethodCommand;
+use Shopware\App\SDK\Gateway\Context\Command\RegisterCustomerCommand;
 use Shopware\App\SDK\Response\GatewayResponse;
 use Swag\Braintree\Braintree\Gateway\BraintreeConnectionService;
 use Swag\Braintree\Braintree\Gateway\Connection\BraintreeConnectionStatus;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -59,4 +70,49 @@ class GatewayController extends AbstractController
 
         return GatewayResponse::createCheckoutGatewayResponse($commands);
     }
+
+    #[Route(path: '/context', name: 'context', methods: [Request::METHOD_POST])]
+    public function context(ContextGatewayAction $action): ResponseInterface
+    {
+        dump($action);
+
+        /** @var Collection<ContextGatewayAction> $commands */
+        $commands = new Collection();
+        $commands->add(new ChangeShippingLocationCommand('GB', 'GB-ENG'));
+        $commands->add(new ChangeShippingLocationCommand('GB', 'GB-ENG'));
+        $commands->add(new ChangePaymentMethodCommand('payment_debitpayment'));
+        $commands->add(new ChangeShippingMethodCommand('shipping_express'));
+
+        return GatewayResponse::createContextGatewayResponse($commands);
+    }
+
+    private function createMinimalCustomer(SalesChannelContext $context): CustomerResponseStruct
+    {
+        $customer = new CustomerResponseStruct();
+        $customer->firstName = 'John';
+        $customer->lastName = 'Doe';
+        // random string
+        $customer->email = bin2hex(random_bytes(5)) . '@example.com';
+        $customer->billingAddress = $this->createMinimalAddress();
+        $customer->storefrontUrl = $context->getSalesChannel()->getDomains()->first()->getUrl();
+        $customer->acceptedDataProtection = true;
+        $customer->password = 'michelistdoof';
+        $customer->guest = false;
+
+        return $customer;
+    }
+
+    private function createMinimalAddress(): AddressResponseStruct
+    {
+        $address = new AddressResponseStruct();
+        $address->firstName = 'John';
+        $address->lastName = 'Doe';
+        $address->street = '123 Test Street';
+        $address->zipcode = '12345';
+        $address->city = 'Testville';
+        $address->countryId = '0195d707eeb4708ca1823b8dce5c9ac2';
+
+        return $address;
+    }
+
 }

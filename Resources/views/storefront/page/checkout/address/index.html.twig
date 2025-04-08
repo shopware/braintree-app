@@ -1,0 +1,19 @@
+{% sw_extends '@Storefront/storefront/page/checkout/address/index.html.twig' %}
+
+{% block page_checkout_main_content %}
+    <h1 class="address-main-header">
+        Express Buttons
+    </h1>
+
+    <div class="card mb-5">
+        <div class="card-title">Braintree</div>
+
+        <div class="card-body">
+            <button class="btn btn-primary btn-lg" type="button" data-swag-braintree-express>
+                Braintree Express
+            </button>
+        </div>
+    </div>
+
+    {{ parent() }}
+{% endblock %}
