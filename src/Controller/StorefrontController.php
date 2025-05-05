@@ -37,7 +37,6 @@ class StorefrontController extends AbstractController
     ): Response {
         $merchantAccount = $this->salesChannelConfigService->getMerchantId($salesChannelId, $currencyId, $shop);
 
-        /** @phpstan-ignore-next-line */
         $token = $this->gateway->clientToken()->generate([
             'merchantAccountId' => $merchantAccount,
         ]);
