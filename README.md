@@ -66,13 +66,13 @@ If you are a merchant and want to install the app to your shop, you can find it 
    composer install
    npm install
    ```
-4. Setup database, manifest and hardcoded urls
-   ```sh
-   composer setup
-   ```
-5. Run
+4. Start devenv
    ```sh
    devenv up
+   ```
+5. Setup database, manifest and hardcoded urls
+   ```sh
+   composer setup
    ```
 6. Install and activate the app
 7. Rebuild shopware's storefront js
