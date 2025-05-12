@@ -13,7 +13,7 @@
             :is-inheritance-field='!!salesChannelId'
             :help-text='$t("settings.general.threeDSecureToolTip")'
             @change='activeConfig.threeDSecureEnforced = !activeConfig.threeDSecureEnforced'
-            @inheritance-remove='onRemoveInheritance("threeDSecureEnforced")'
+            @inheritance-remove='onRemove3DSInheritance()'
             @inheritance-restore='onRestoreInheritance("threeDSecureEnforced")'
         />
     </div>
@@ -22,12 +22,11 @@
             class='sw-braintree-app-settings-general__shipsFromPostalCode__input'
             :label='$t("settings.general.shipsFromPostalCode.label")'
             :placeholder='$t("settings.general.shipsFromPostalCode.placeholder")'
-            :value='activeConfig?.shipsFromPostalCode ?? undefined'
             :is-inherited='isFieldInherited("shipsFromPostalCode")'
             :is-inheritance-field='!!salesChannelId'
-            :model-value='activeConfig.shipsFromPostalCode ?? undefined'
-            @update:model-value='activeConfig.shipsFromPostalCode = $event ?? null'
-            @inheritance-remove='onRemoveInheritance("shipsFromPostalCode")'
+            :model-value='activeConfig.shipsFromPostalCode ?? ""'
+            @update:model-value='activeConfig.shipsFromPostalCode = $event'
+            @inheritance-remove='onRemovePostalCodeInheritance()'
             @inheritance-restore='onRestoreInheritance("shipsFromPostalCode")'
         />
     </div>
@@ -124,9 +123,17 @@ export default defineComponent({
             return this.activeConfig[key] === null;
         },
 
+        onRemove3DSInheritance() {
+            this.activeConfig['threeDSecureEnforced'] = this.config['null']?.['threeDSecureEnforced'] ?? DefaultConfigEntity(this.salesChannelId)['threeDSecureEnforced'];
+        },
+
+        onRemovePostalCodeInheritance() {
+            this.activeConfig['shipsFromPostalCode'] = this.config['null']?.['shipsFromPostalCode'] ?? '';
+        },
+
         onRemoveInheritance(key: keyof ConfigEntity): void {
             // @ts-expect-error - TS does not know that the value of key is a valid assignment
-            this.activeConfig[key] = this.config['null']?.[key]?? DefaultConfigEntity(this.salesChannelId)[key];
+            this.activeConfig[key] = this.config['null']?.[key] ?? DefaultConfigEntity(this.salesChannelId)[key];
         },
 
         onRestoreInheritance(key: keyof ConfigEntity): void {
