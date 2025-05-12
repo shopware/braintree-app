@@ -58,6 +58,7 @@
 
         <div>
             <mt-switch
+                class='sw-braintree-payment-method__card__content__sandboxToggle'
                 :label="$t('configuration.payment.isBraintreeSandbox')"
                 :disabled='loading'
                 :checked='shop?.braintreeSandbox'
@@ -206,6 +207,11 @@ export default defineComponent({
             &__braintreeMerchantId {
                 grid-column-start: 1;
                 grid-column-end: 3;
+            
+            }
+
+            &__sandboxToggle {
+                margin-bottom: 8px;
             }
         }
     }
