@@ -25,7 +25,7 @@ jobs:
       - name: Check manifest.xml
         run: |
           git update-index --refresh || printf ''
-          git diff-index "${{ github.sha }}" --quiet -- manifest.xml || (echo "Please run 'composer setup:manifest' to sync the manifest.xml" && exit 1)
+          git diff-index "${{ github.sha }}" --quiet -- manifest.xml || (echo "Please run 'APP_ENV=prod composer setup:manifest' to sync the manifest.xml" && exit 1)
 
   doctrine:
     runs-on: ubuntu-latest
