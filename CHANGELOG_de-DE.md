@@ -1,3 +1,7 @@
+# 3.0.0
+
+* Shopware 6.7 Kompatibilität
+
 # 2.2.0
 
 * Verbesserte Integration der (erweiterten) Betrugsprävention
