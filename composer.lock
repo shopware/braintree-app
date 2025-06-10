@@ -2692,22 +2692,22 @@
         },
         {
             "name": "shopware/app-bundle",
-            "version": "4.1.2",
+            "version": "4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/app-bundle-symfony.git",
-                "reference": "1d6fbfe0c7ebe706f4bc3472fe2eaf7539e395e7"
+                "reference": "724c4fdcbc5f30872366a880e76ea8d4dc0594f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/app-bundle-symfony/zipball/1d6fbfe0c7ebe706f4bc3472fe2eaf7539e395e7",
-                "reference": "1d6fbfe0c7ebe706f4bc3472fe2eaf7539e395e7",
+                "url": "https://api.github.com/repos/shopware/app-bundle-symfony/zipball/724c4fdcbc5f30872366a880e76ea8d4dc0594f6",
+                "reference": "724c4fdcbc5f30872366a880e76ea8d4dc0594f6",
                 "shasum": ""
             },
             "require": {
                 "nyholm/psr7": "^1.8",
                 "php": ">=8.1",
-                "shopware/app-php-sdk": ">=4.0.1",
+                "shopware/app-php-sdk": ">=4.1.0",
                 "symfony/http-client": "^6.4 || ^7.0",
                 "symfony/psr-http-message-bridge": "2.* || ^7.0",
                 "symfony/routing": "^6.4 || ^7.0"
@@ -2750,22 +2750,22 @@
             "description": "Symfony bundle to develop shopware apps easy",
             "support": {
                 "issues": "https://github.com/shopware/app-bundle-symfony/issues",
-                "source": "https://github.com/shopware/app-bundle-symfony/tree/4.1.2"
+                "source": "https://github.com/shopware/app-bundle-symfony/tree/4.2.0"
             },
-            "time": "2025-01-20T09:35:36+00:00"
+            "time": "2025-06-03T09:20:27+00:00"
         },
         {
             "name": "shopware/app-php-sdk",
-            "version": "4.0.6",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/app-php-sdk.git",
-                "reference": "64a929980b0e0f75384fcc0851fd474f11e703f8"
+                "reference": "324bef9e1667fc0d604b899ffafcdeada3726abf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/app-php-sdk/zipball/64a929980b0e0f75384fcc0851fd474f11e703f8",
-                "reference": "64a929980b0e0f75384fcc0851fd474f11e703f8",
+                "url": "https://api.github.com/repos/shopware/app-php-sdk/zipball/324bef9e1667fc0d604b899ffafcdeada3726abf",
+                "reference": "324bef9e1667fc0d604b899ffafcdeada3726abf",
                 "shasum": ""
             },
             "require": {
@@ -2820,10 +2820,10 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/app-php-sdk/tree/4.0.6",
+                "source": "https://github.com/shopware/app-php-sdk/tree/4.1.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2025-02-25T07:36:15+00:00"
+            "time": "2025-06-03T07:47:48+00:00"
         },
         {
             "name": "strobotti/php-jwk",
@@ -4140,16 +4140,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v7.2.4",
+            "version": "v7.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "78981a2ffef6437ed92d4d7e2a86a82f256c6dc6"
+                "reference": "57e4fb86314015a695a750ace358d07a7e37b8a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/78981a2ffef6437ed92d4d7e2a86a82f256c6dc6",
-                "reference": "78981a2ffef6437ed92d4d7e2a86a82f256c6dc6",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/57e4fb86314015a695a750ace358d07a7e37b8a9",
+                "reference": "57e4fb86314015a695a750ace358d07a7e37b8a9",
                 "shasum": ""
             },
             "require": {
@@ -4215,7 +4215,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v7.2.4"
+                "source": "https://github.com/symfony/http-client/tree/v7.3.0"
             },
             "funding": [
                 {
@@ -4231,20 +4231,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-02-13T10:27:23+00:00"
+            "time": "2025-05-02T08:23:16+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
-            "version": "v3.5.2",
+            "version": "v3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client-contracts.git",
-                "reference": "ee8d807ab20fcb51267fdace50fbe3494c31e645"
+                "reference": "75d7043853a42837e68111812f4d964b01e5101c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/ee8d807ab20fcb51267fdace50fbe3494c31e645",
-                "reference": "ee8d807ab20fcb51267fdace50fbe3494c31e645",
+                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/75d7043853a42837e68111812f4d964b01e5101c",
+                "reference": "75d7043853a42837e68111812f4d964b01e5101c",
                 "shasum": ""
             },
             "require": {
@@ -4257,7 +4257,7 @@
                     "name": "symfony/contracts"
                 },
                 "branch-alias": {
-                    "dev-main": "3.5-dev"
+                    "dev-main": "3.6-dev"
                 }
             },
             "autoload": {
@@ -4293,7 +4293,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client-contracts/tree/v3.5.2"
+                "source": "https://github.com/symfony/http-client-contracts/tree/v3.6.0"
             },
             "funding": [
                 {
@@ -4309,7 +4309,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-12-07T08:49:48+00:00"
+            "time": "2025-04-29T11:18:49+00:00"
         },
         {
             "name": "symfony/http-foundation",
