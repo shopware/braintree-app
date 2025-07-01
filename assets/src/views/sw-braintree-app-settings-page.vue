@@ -1,11 +1,13 @@
 <template>
 <sw-card-view-content class='sw-braintree-app-settings-page'>
     <mt-card class='sw-braintree-app-settings-page__navigation'>
-        <mt-tabs
-            :items='tabs'
-            :default-item='defaultItem'
-            @new-item-active='onNewItemActive'
-        />
+        <template #tabs>
+            <mt-tabs
+                :items='tabs'
+                :default-item='defaultItem'
+                @new-item-active='onNewItemActive'
+            />
+        </template>
 
         <sw-sales-channel-switch
             class='sw-braintree-app-settings-page__sales-cahnnel-switch'
@@ -145,10 +147,6 @@ body {
     &__save {
         display: flex;
         justify-content: end;
-        margin-top: 8px;
-    }
-
-    &__sales-cahnnel-switch {
         margin-top: 16px;
     }
 }

@@ -76,7 +76,7 @@
 
   services.mysql = {
     enable = true;
-    package = pkgs.mariadb_105;
+    package = pkgs.mariadb_106;
     initialDatabases = lib.mkDefault [
       { name = "swagbraintree"; }
       { name = "swagbraintree_test"; }
