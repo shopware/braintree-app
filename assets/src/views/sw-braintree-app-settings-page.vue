@@ -42,7 +42,6 @@ import SwBraintreeAppSettingsCurrency from '@/component/sw-braintree-app-setting
 import SwSalesChannelSwitch from '@/component/base/sw-sales-channel-switch.vue';
 import SwCardViewContent from '@/component/base/sw-card-view-content.vue';
 import { registerSaveHandler, type RegisterSaveHandler } from '@/resources/inject-keys';
-import * as sw from '@shopware-ag/meteor-admin-sdk';
 
 type SaveHandler = Parameters<RegisterSaveHandler>[0];
 
@@ -113,10 +112,6 @@ export default defineComponent({
 
         onUpdateSalesChannel(salesChannelId: string): void {
             this.salesChannelId = salesChannelId;
-        },
-
-        onPaymentMethodOverview() {
-            void sw.window.routerPush({ name: 'sw.settings.payment.overview' });
         },
     },
 });
