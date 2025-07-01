@@ -1,11 +1,13 @@
 <template>
 <sw-card-view-content class='sw-braintree-app-settings-page'>
     <mt-card class='sw-braintree-app-settings-page__navigation'>
-        <mt-tabs
-            :items='tabs'
-            :default-item='defaultItem'
-            @new-item-active='onNewItemActive'
-        />
+        <template #tabs>
+            <mt-tabs
+                :items='tabs'
+                :default-item='defaultItem'
+                @new-item-active='onNewItemActive'
+            />
+        </template>
 
         <sw-sales-channel-switch
             class='sw-braintree-app-settings-page__sales-cahnnel-switch'
@@ -40,6 +42,7 @@ import SwBraintreeAppSettingsCurrency from '@/component/sw-braintree-app-setting
 import SwSalesChannelSwitch from '@/component/base/sw-sales-channel-switch.vue';
 import SwCardViewContent from '@/component/base/sw-card-view-content.vue';
 import { registerSaveHandler, type RegisterSaveHandler } from '@/resources/inject-keys';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 
 type SaveHandler = Parameters<RegisterSaveHandler>[0];
 
@@ -111,6 +114,10 @@ export default defineComponent({
         onUpdateSalesChannel(salesChannelId: string): void {
             this.salesChannelId = salesChannelId;
         },
+
+        onPaymentMethodOverview() {
+            void sw.window.routerPush({ name: 'sw.settings.payment.overview' });
+        },
     },
 });
 
@@ -145,10 +152,6 @@ body {
     &__save {
         display: flex;
         justify-content: end;
-        margin-top: 8px;
-    }
-
-    &__sales-cahnnel-switch {
         margin-top: 16px;
     }
 }
