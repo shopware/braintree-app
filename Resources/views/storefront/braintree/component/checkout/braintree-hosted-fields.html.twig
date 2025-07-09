@@ -13,8 +13,10 @@
     currencyId: page.order.currencyId ?? context.currency.id,
     salesChannelId: context.salesChannel.id,
     noMerchantAccountId: 'braintree.noMerchantAccountId'|trans,
+    customFields: page.extensions.swag_braintree_app_custom_fields.all ?? null,
 } %}
 
+{% block component_braintree_hosted_fields %}
 <div data-swag-braintree-hosted-fields data-swag-braintree-hosted-fields-options="{{ pluginOptions|json_encode }}" class="swag-braintree-hosted-fields">
     <div id="sw-braintree-payment-method__number" class="form-control"></div>
 
@@ -27,3 +29,4 @@
 
     <div id="sw-braintree-payment-method__postalCode" class="form-control"></div>
 </div>
+{% endblock %}

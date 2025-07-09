@@ -20,11 +20,8 @@
 
 > - [ Overview](#overview)
 > - [ Features](#features)
-> - [ Getting Started](#getting-started)
->   - [ Installation](#local-installation)
->   - [ Replace hardcoded urls](#replace-hardcoded-urls)
->   - [ Develop locally](#develop-locally)
->   - [ Tests](#tests)
+> - [ Fraud Protection Advanced](https://github.com/shopware/braintree-app/wiki/2.-Fraud-Protection-Advanced)
+> - [ Getting Started](https://github.com/shopware/braintree-app/wiki/1.-Getting-started)
 > - [ Contributing](#contributing)
 > - [ License](#license)
 
@@ -46,7 +43,7 @@ This repository encompasses both the robust backend infrastructure and the corre
 
 :white_check_mark: Easy integration & maintenance
 
-:white_check_mark: Maximum security thanks to automatic 3-D Secure
+:white_check_mark: Maximum security thanks to automatic 3-D Secure and [Fraud Protection Advanced](https://github.com/shopware/braintree-app/wiki/2.-Fraud-Protection-Advanced)
 
 ---
 
@@ -54,74 +51,7 @@ This repository encompasses both the robust backend infrastructure and the corre
 
 If you are a merchant and want to install the app to your shop, you can find it [here](https://store.shopware.com/en/swag930601467972f/braintree-by-paypal.html)
 
-###  Local Installation
-
-1. First setup [devenv](https://developer.shopware.com/docs/guides/installation/devenv.html)
-2. Clone the repository
-   ```sh
-   git clone https://github.com/shopware/braintree-app
-   ```
-3. Install dependencies
-   ```sh
-   composer install
-   npm install
-   ```
-4. Start devenv
-   ```sh
-   devenv up
-   ```
-5. Setup database, manifest and hardcoded urls
-   ```sh
-   composer setup
-   ```
-6. Install and activate the app
-7. Rebuild shopware's storefront js
-
-### Replace hardcoded urls
-
-#### Via command
-
-Run `composer setup:manifest` to generate a manifest setup with the current `APP_URL`
-Run `composer setup:url` to replace hardcoded urls with your `APP_URL`, e.g. `http://localhost:8080`.
-
-#### Manually
-
-There are several hardcoded urls that need to be replaced when developing locally:
-- ~~`manifest.xml`~~ (Replaced by manifest templating with `composer setup:manifest`)
-- ~~`assets/src/service/api.ts`~~ (Replaced by origin url)
-- `Resources/app/storefront/src/checkout/swag-braintree.hosted-fields.js`
-  
-Replace `https://braintree.shopware.com` with your `APP_URL`, e.g. `http://localhost:8080`
-
-### Develop locally
-
-#### Administation
-- Build dev: `npm run dev`
-- Build prod: `npm run build`
-- Watch dev: `npm run watch`
-- ESLint: `composer eslint` or `composer eslint-fix`
-
-#### App Server
-- ECS: `composer ecs-fix`
-- PHPStan: `composer phpstan`
-- PHPUnit: `composer phpunit`
-- Infection: `composer infection`
-
-###  Tests
-
-To execute tests, run:
-
-```sh
-composer phpunit
-```
-
-This repository uses [mutation testing](https://infection.github.io/guide/) to determine effectiveness of unit tests.
-
-To test for mutations, run:
-
-```sh
-composer infection
-```
+For a local setup guide, take a look at [the wiki page](https://github.com/shopware/braintree-app/wiki/1.-Getting-started).
 
 ---
 

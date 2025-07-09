@@ -12,6 +12,7 @@ class OrderInformationService
     public const LINE_ITEM_TYPE_DEBIT = 'debit';
     public const LINE_ITEM_TYPE_CREDIT = 'credit';
     public const LINE_ITEM_COMMODITY_CODE_CUSTOM_FIELD = 'swag_braintree_app_commodity_code';
+    public const CUSTOM_FIELDS = 'swag_braintree_app_custom_fields';
 
     public function __construct(
         private readonly TaxService $taxService,
@@ -130,6 +131,36 @@ class OrderInformationService
     public function extractSalesChannelId(PaymentPayAction $payment): string
     {
         return $payment->order->getSalesChannelId();
+    }
+
+    /**
+     * @return array<string, string|int>
+     */
+    public function extractCustomFields(PaymentPayAction $payment): array
+    {
+        $json = $payment->order->getCustomFields()[self::CUSTOM_FIELDS] ?? '{}';
+
+        if (!\is_string($json)) {
+            return [];
+        }
+
+        $customFields = \json_decode($json, true);
+
+        if (!\is_array($customFields)) {
+            return [];
+        }
+
+        $processedFields = [];
+        foreach ($customFields as $key => $value) {
+            if (!\is_string($key) || !\is_string($value) && !\is_numeric($value)) {
+                continue;
+            }
+
+            $key = $this->substr($key, 255);
+            $processedFields[$key] = $value;
+        }
+
+        return $processedFields;
     }
 
     /**

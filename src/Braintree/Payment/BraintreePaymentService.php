@@ -65,6 +65,7 @@ class BraintreePaymentService
             'shippingTaxAmount' => $this->orderInformationService->extractShippingTaxAmount($payment),
             'taxAmount' => $this->orderInformationService->extractTaxAmount($payment),
             'taxExempt' => $payment->order->getTaxStatus() === 'tax-free',
+            'customFields' => $this->orderInformationService->extractCustomFields($payment),
         ]);
 
         if (!$response->success) {

@@ -3,6 +3,7 @@
 namespace Swag\Braintree\Tests\Unit\Braintree\Payment;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\App\SDK\Context\ActionSource;
 use Shopware\App\SDK\Context\Cart\LineItem;
@@ -280,5 +281,63 @@ class OrderInformationServiceTest extends TestCase
     {
         $shippingTaxAmount = $this->orderInformationService->extractShippingTaxAmount($this->paymentPayAction);
         static::assertSame(1.46, $shippingTaxAmount);
+    }
+
+    public function testExtractCustomFieldsWithoutFields(): void
+    {
+        $paymentPayAction = new PaymentPayAction(
+            $this->shop,
+            $this->paymentPayAction->source,
+            new Order(\array_merge(
+                $this->paymentPayAction->order->toArray(),
+                ['customFields' => []],
+            )),
+            $this->paymentPayAction->orderTransaction,
+        );
+
+        $result = $this->orderInformationService->extractCustomFields($paymentPayAction);
+
+        static::assertEquals([], $result);
+    }
+
+    /**
+     * @param array<mixed> $expected
+     */
+    #[DataProvider('providerExtractCustomFields')]
+    public function testExtractCustomFields(mixed $fields, array $expected): void
+    {
+        $paymentPayAction = new PaymentPayAction(
+            $this->shop,
+            $this->paymentPayAction->source,
+            new Order(\array_merge(
+                $this->paymentPayAction->order->toArray(),
+                ['customFields' => [OrderInformationService::CUSTOM_FIELDS => $fields]],
+            )),
+            $this->paymentPayAction->orderTransaction,
+        );
+
+        $result = $this->orderInformationService->extractCustomFields($paymentPayAction);
+
+        static::assertEquals($expected, $result);
+    }
+
+    public static function providerExtractCustomFields(): \Generator
+    {
+        yield 'non-json value, int' => [4, []];
+        yield 'non-json value, string' => ['some weird string', []];
+        yield 'non-json value, null' => [null, []];
+        yield 'json' => [\json_encode([
+            'int' => 4,
+            'float' => 4.4,
+            'object' => new \stdClass(),
+            'array' => ['some-value'],
+            \str_repeat('sdf', 89) => 'string-to-long',
+            'normal_field' => 'some-value',
+        ], \JSON_THROW_ON_ERROR), [
+            'int' => 4,
+            'float' => 4.4,
+            \str_repeat('sdf', 85) => 'string-to-long',
+            'normal_field' => 'some-value',
+        ]];
     }
 }
