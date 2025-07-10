@@ -1,171 +1,169 @@
 <template>
 <div class='sw-braintree-app-order-transaction-detail-page'>
-    <mt-loader v-if='loading' class='transaction loading' />
+    <div v-if='loading' class='loader'>
+        <mt-loader />
+    </div>
+
+    <mt-empty-state
+        v-else-if='showEmptyState'
+        class='empty-state'
+        icon='solid-shopping-basket'
+        :headline='$t("orderTransactionDetail.emptyStateTitle")'
+        :description='$t("orderTransactionDetail.emptyStateDescription")'
+    />
+
     <div v-else class='transaction'>
-        <div v-if='showEmptyState'>
-            <div class='empty-state'>
-                <mt-icon name='regular-shopping-basket' class='empty-state__icon' />
-                <div class='empty-state__title'>
-                    {{ $t('orderTransactionDetail.emptyStateTitle') }}
+        <div class='transaction__header'>
+            <img
+                class='transaction__header__logo__image'
+                src='/assets/img/braintree-logo.png'
+                alt='Braintree'
+            >
+            <div class='transaction__header__customer'>
+                <div class='transaction__header__customer__name'>
+                    {{ transaction.customer.firstName }} {{ transaction.customer.lastName }}
                 </div>
-                <div class='empty-state__description'>
-                    {{ $t('orderTransactionDetail.emptyStateDescription') }}
+                <div class='transaction__header__customer__email'>
+                    {{ transaction.customer.email }}
+                </div>
+            </div>
+            <div class='transaction__header__detail'>
+                <div class='transaction__header__detail__price'>
+                    {{ $filters.toCurrency(parseFloat(transaction.amount), transaction.currencyIsoCode) }}
+                </div>
+                <div class='transaction__header__detail__date'>
+                    {{ $filters.toDateTime(transaction.createdAt, 'short') }}
                 </div>
             </div>
         </div>
-        <div v-else>
-            <div class='transaction__header'>
-                <div class='transaction__header__logo'>
-                    <img
-                        class='transaction__header__logo__image'
-                        src='/assets/img/braintree-logo.webp'
-                        alt='Braintree'
+        <div class='divider' />
+        <div class='transaction__body'>
+            <div class='transaction__body__transaction-detail'>
+                <div class='transaction__body__transaction-detail__customer-id flex-column'>
+                    <span class='transaction__body__title bold'>
+                        {{ $t('orderTransactionDetail.body.customerIdTitle') }}
+                    </span>
+                    {{ transaction?.customer.id ?? $t('orderTransactionDetail.body.customerIdEmptyLabel') }}
+                </div>
+                <div class='transaction__body__transaction-detail__amount flex-column'>
+                    <span class='transaction__body__title bold'>
+                        {{ $t('orderTransactionDetail.body.amountTitle') }}
+                    </span>
+                    <div class='transaction__body__transaction-detail__amount__detail flex-column'>
+                        <div class='transaction__body__transaction-detail__amount__detail__net flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.amountNetLabel') }}
+                            </span>
+                            {{ $filters.toCurrency(amountNet, transaction.currencyIsoCode) }}
+                        </div>
+                        <div class='transaction__body__transaction-detail__amount__detail__shipping flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.amountShippingLabel') }}
+                            </span>
+                            {{ $filters.toCurrency(parseFloat(transaction.shippingAmount), transaction.currencyIsoCode) }}
+                        </div>
+                        <div class='transaction__body__transaction-detail__amount__detail__gross flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.amountGrossLabel') }}
+                            </span>
+                            {{ $filters.toCurrency(parseFloat(transaction.amount), transaction.currencyIsoCode) }}
+                        </div>
+                    </div>
+                </div>
+                <div class='transaction__body__transaction-detail__three-d-s flex-column'>
+                    <span class='transaction__body__title bold'>
+                        {{ $t('orderTransactionDetail.body.threeDSTitle') }}
+                    </span>
+                    <div class='transaction__body__transaction-detail__three-d-s__detail flex-column'>
+                        <div class='transaction__body__transaction-detail__three-d-s__detail__liability-possible flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.threeDSLiabilityPossibleLabel') }}
+                            </span>
+                            {{ $t(`orderTransactionDetail.body.threeDSLiabilityPossibleValue.${ transaction.threeDSecureInfo.liabilityShiftPossible }`) }}
+                        </div>
+                        <div class='transaction__body__transaction-detail__three-d-s__detail__liability-shifted flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.threeDSLiabilityShiftedLabel') }}
+                            </span>
+                            {{ $t(`orderTransactionDetail.body.threeDSLiabilityShiftedValue.${ transaction.threeDSecureInfo.liabilityShifted }`) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='transaction__body__payment-detail'>
+                <div class='transaction__body__payment-detail__payment flex-column'>
+                    <span class='transaction__body__title bold'>
+                        {{ $t('orderTransactionDetail.body.paymentDetailsTitle') }}
+                    </span>
+                    <div class='transaction__body__payment-detail__payment__detail flex-column'>
+                        <div class='transaction__body__payment-detail__payment__detail__status flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.paymentDetailsStatusLabel') }}
+                            </span>
+                            <sw-status-indicator :status='statusType' :text='statusText(transaction.status)' />
+                        </div>
+                        <div class='transaction__body__payment-detail__payment__detail__type flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.paymentDetailsConclusionTypeLabel') }}
+                            </span>
+                            {{ $t('orderTransactionDetail.body.paymentDetailsConclusionTypeValue.immediate') }}
+                        </div>
+                        <div class='transaction__body__payment-detail__payment__detail__transaction-id flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.paymentDetailsTransactionIdLabel') }}
+                            </span>
+                            {{ transaction.id }}
+                        </div>
+                        <div class='transaction__body__payment-detail__payment__detail__created-at flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.paymentDetailsCreatedAtLabel') }}
+                            </span>
+                            {{ $filters.toDateTime(transaction.createdAt, 'short', 'medium') }}
+                        </div>
+                        <div class='transaction__body__payment-detail__payment__detail__updated-at flex-column'>
+                            <span class='transaction__body__title light'>
+                                {{ $t('orderTransactionDetail.body.paymentDetailsUpdatedAtLabel') }}
+                            </span>
+                            {{ $filters.toDateTime(transaction.updatedAt, 'short', 'medium') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='divider' />
+        <div class='transaction__history'>
+            <table class='transaction__history__table'>
+                <thead class='transaction__history__table__header'>
+                    <tr class='transaction__history__table__header__row'>
+                        <th class='transaction__history__table__header__row__cell'>
+                            {{ $t('orderTransactionDetail.history.header.status') }}
+                        </th>
+                        <th class='transaction__history__table__header__row__cell'>
+                            {{ $t('orderTransactionDetail.history.header.amountCaptured') }}
+                        </th>
+                        <th class='transaction__history__table__header__row__cell'>
+                            {{ $t('orderTransactionDetail.history.header.timestamp') }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class='transaction__history__table__body'>
+                    <tr
+                        v-for='(history, index) in transaction.statusHistory'
+                        :key='index'
+                        class='transaction__history__table__body__row'
                     >
-                </div>
-                <div class='transaction__header__customer'>
-                    <div class='transaction__header__customer__name'>
-                        {{ transaction.customer.firstName }} {{ transaction.customer.lastName }}
-                    </div>
-                    <div class='transaction__header__customer__email'>
-                        {{ transaction.customer.email }}
-                    </div>
-                </div>
-                <div class='transaction__header__detail'>
-                    <div class='transaction__header__detail__price'>
-                        {{ $filters.toCurrency(parseFloat(transaction.amount), transaction.currencyIsoCode) }}
-                    </div>
-                    <div class='transaction__header__detail__date'>
-                        {{ $filters.toDateTime(transaction.createdAt, 'short') }}
-                    </div>
-                </div>
-            </div>
-            <div class='transaction__body'>
-                <div class='transaction__body__transaction-detail'>
-                    <div class='transaction__body__transaction-detail__customer-id flex-column'>
-                        <span class='transaction__body__title bold'>
-                            {{ $t('orderTransactionDetail.body.customerIdTitle') }}
-                        </span>
-                        {{ transaction?.customer.id ?? $t('orderTransactionDetail.body.customerIdEmptyLabel') }}
-                    </div>
-                    <div class='transaction__body__transaction-detail__amount flex-column'>
-                        <span class='transaction__body__title bold'>
-                            {{ $t('orderTransactionDetail.body.amountTitle') }}
-                        </span>
-                        <div class='transaction__body__transaction-detail__amount__detail flex-column'>
-                            <div class='transaction__body__transaction-detail__amount__detail__net flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.amountNetLabel') }}
-                                </span>
-                                {{ $filters.toCurrency(amountNet, transaction.currencyIsoCode) }}
-                            </div>
-                            <div class='transaction__body__transaction-detail__amount__detail__shipping flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.amountShippingLabel') }}
-                                </span>
-                                {{ $filters.toCurrency(parseFloat(transaction.shippingAmount), transaction.currencyIsoCode) }}
-                            </div>
-                            <div class='transaction__body__transaction-detail__amount__detail__gross flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.amountGrossLabel') }}
-                                </span>
-                                {{ $filters.toCurrency(parseFloat(transaction.amount), transaction.currencyIsoCode) }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class='transaction__body__transaction-detail__three-d-s flex-column'>
-                        <span class='transaction__body__title bold'>
-                            {{ $t('orderTransactionDetail.body.threeDSTitle') }}
-                        </span>
-                        <div class='transaction__body__transaction-detail__three-d-s__detail flex-column'>
-                            <div class='transaction__body__transaction-detail__three-d-s__detail__liability-possible flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.threeDSLiabilityPossibleLabel') }}
-                                </span>
-                                {{ $t(`orderTransactionDetail.body.threeDSLiabilityPossibleValue.${ transaction.threeDSecureInfo.liabilityShiftPossible }`) }}
-                            </div>
-                            <div class='transaction__body__transaction-detail__three-d-s__detail__liability-shifted flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.threeDSLiabilityShiftedLabel') }}
-                                </span>
-                                {{ $t(`orderTransactionDetail.body.threeDSLiabilityShiftedValue.${ transaction.threeDSecureInfo.liabilityShifted }`) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class='transaction__body__payment-detail'>
-                    <div class='transaction__body__payment-detail__payment flex-column'>
-                        <span class='transaction__body__title bold'>
-                            {{ $t('orderTransactionDetail.body.paymentDetailsTitle') }}
-                        </span>
-                        <div class='transaction__body__payment-detail__payment__detail flex-column'>
-                            <div class='transaction__body__payment-detail__payment__detail__status flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.paymentDetailsStatusLabel') }}
-                                </span>
-                                <sw-status-indicator :status='statusType' :text='statusText(transaction.status)' />
-                            </div>
-                            <div class='transaction__body__payment-detail__payment__detail__type flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.paymentDetailsConclusionTypeLabel') }}
-                                </span>
-                                {{ $t('orderTransactionDetail.body.paymentDetailsConclusionTypeValue.immediate') }}
-                            </div>
-                            <div class='transaction__body__payment-detail__payment__detail__transaction-id flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.paymentDetailsTransactionIdLabel') }}
-                                </span>
-                                {{ transaction.id }}
-                            </div>
-                            <div class='transaction__body__payment-detail__payment__detail__created-at flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.paymentDetailsCreatedAtLabel') }}
-                                </span>
-                                {{ $filters.toDateTime(transaction.createdAt, 'short', 'medium') }}
-                            </div>
-                            <div class='transaction__body__payment-detail__payment__detail__updated-at flex-column'>
-                                <span class='transaction__body__title light'>
-                                    {{ $t('orderTransactionDetail.body.paymentDetailsUpdatedAtLabel') }}
-                                </span>
-                                {{ $filters.toDateTime(transaction.updatedAt, 'short', 'medium') }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class='transaction__history'>
-                <table class='transaction__history__table'>
-                    <thead class='transaction__history__table__header'>
-                        <tr class='transaction__history__table__header__row'>
-                            <th class='transaction__history__table__header__row__cell'>
-                                {{ $t('orderTransactionDetail.history.header.status') }}
-                            </th>
-                            <th class='transaction__history__table__header__row__cell'>
-                                {{ $t('orderTransactionDetail.history.header.amountCaptured') }}
-                            </th>
-                            <th class='transaction__history__table__header__row__cell'>
-                                {{ $t('orderTransactionDetail.history.header.timestamp') }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class='transaction__history__table__body'>
-                        <tr
-                            v-for='(history, index) in transaction.statusHistory'
-                            :key='index'
-                            class='transaction__history__table__body__row'
-                        >
-                            <td class='transaction__history__table__body__row__cell'>
-                                {{ statusText(history.status) }}
-                            </td>
-                            <td class='transaction__history__table__body__row__cell'>
-                                {{ $filters.toCurrency(parseFloat(history.amount), transaction.currencyIsoCode) }}
-                            </td>
-                            <td class='transaction__history__table__body__row__cell'>
-                                {{ $filters.toDateTime(history.timestamp.date, 'short', 'short') }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <td class='transaction__history__table__body__row__cell'>
+                            {{ statusText(history.status) }}
+                        </td>
+                        <td class='transaction__history__table__body__row__cell'>
+                            {{ $filters.toCurrency(parseFloat(history.amount), transaction.currencyIsoCode) }}
+                        </td>
+                        <td class='transaction__history__table__body__row__cell'>
+                            {{ $filters.toDateTime(history.timestamp.date, 'short', 'short') }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -174,7 +172,7 @@
 <script lang='ts'>
 import { defineComponent } from 'vue';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
-import { MtLoader, MtIcon } from '@shopware-ag/meteor-component-library';
+import { MtLoader, MtEmptyState } from '@shopware-ag/meteor-component-library';
 import SwStatusIndicator from '@/component/base/sw-status-indicator.vue';
 
 const Criteria = sw.data.Classes.Criteria;
@@ -182,7 +180,7 @@ const Repository = sw.data.repository<'order_transaction'>('order_transaction');
 
 export default defineComponent({
     name: 'sw-braintree-app-order-transaction-detail',
-    components: { SwStatusIndicator, MtLoader, MtIcon },
+    components: { SwStatusIndicator, MtLoader, MtEmptyState },
 
     data(): {
         loading: boolean,
@@ -236,9 +234,6 @@ export default defineComponent({
         loadBraintreeTransaction() {
             this.loading = true;
 
-            sw.location.stopAutoResizer();
-            void sw.location.updateHeight(705);
-
             void sw.data.subscribe(
                 'sw-order-detail-base__order',
                 async (response) => {
@@ -258,7 +253,6 @@ export default defineComponent({
 
                         this.transaction = transaction;
                     }).finally(() => {
-                        sw.location.startAutoResizer();
                         this.loading = false;
                     });
                 },
@@ -278,54 +272,54 @@ export default defineComponent({
 
 <style scoped lang='scss'>
 .sw-braintree-app-order-transaction-detail-page {
-    background: #fff;
+    background: var(--color-elevation-surface-default);
 
     .flex-column {
         display: flex;
         flex-direction: column;
     }
 
+    .loader {
+        height: 80px;
+        position: relative;
+
+        .mt-loader {
+            background: var(--color-elevation-surface-default);
+        }
+    }
+
+    .empty-state {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .divider {
+        border-top: 1px solid var(--color-border-primary-default);
+        height: 0;
+        margin: var(--scale-size-24) 0;
+    }
+
     .transaction {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        font-size: var(--font-size-xs);
+        line-height: var(--font-line-height-xs);
         min-height: 600px;
 
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            height: 100%;
-            padding: 48px;
-            text-align: center;
-
-            &__icon {
-                font-size: 4rem;
-                color: #52667A;
-
-                > svg {
-                    width: 400px;
-                    height: 400px;
-                }
-            }
-
-            &__title {
-                font-weight: bold;
-                font-size: 1.2rem;
-            }
-
-            &__description {
-                font-size: .9rem;
-            }
+        & > * {
+            padding: 0 var(--scale-size-8);
         }
 
         &__header {
             display: grid;
-            grid-template-columns: 1fr 5fr 1fr;
-            margin-bottom: 16px;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--scale-size-32);
+            font-size: var(--font-size-s);
+            line-height: var(--font-line-height-s);
 
             &__logo__image {
-                width: 80px;
-                border-radius: 4px;
+                width: var(--scale-size-80);
+                border-radius: var(--border-radius-s);
             }
 
             &__customer,
@@ -333,7 +327,6 @@ export default defineComponent({
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                gap: 4px;
             }
 
             &__detail {
@@ -342,23 +335,21 @@ export default defineComponent({
 
             &__customer__name,
             &__detail__price {
-                font-weight: bold;
-                font-size: 1.2rem;
+                font-weight: var(--font-weight-bold);
+                font-size: var(--font-size-m);
+                line-height: var(--font-line-height-m);
             }
         }
 
         &__body {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            border-top: 1px solid #d1d9e0;
-            padding-top: 28px;
-            font-size: .9rem;
 
             &__transaction-detail,
             &__payment-detail {
                 display: flex;
                 flex-direction: column;
-                gap: 48px;
+                gap: var(--scale-size-48);
 
                 &__payment__detail__status {
                     align-self: start;
@@ -368,35 +359,30 @@ export default defineComponent({
             &__transaction-detail__amount__detail,
             &__transaction-detail__three-d-s__detail,
             &__payment-detail__payment__detail {
-                gap: 28px;
+                gap: var(--scale-size-28);
             }
 
             &__title {
-                margin-bottom: 4px;
-
                 &.light {
-                    font-weight: lighter;
+                    color: var(--color-text-primary-disabled);
                 }
 
                 &.bold {
-                    font-weight: bold;
-                    margin-bottom: 24px;
+                    font-weight: var(--font-weight-bold);
+                    margin-bottom: var(--scale-size-24);
                 }
             }
         }
 
         &__history {
-            margin-top: 48px;
-            border-top: 1px solid #d1d9e0;
-
             &__table {
-                padding-top: 48px;
                 width: 100%;
 
                 &__header__row__cell {
                     font-weight: bold;
-                    font-size: 1.2rem;
-                    padding: 12px 0;
+                    font-size: var(--font-size-s);
+                    line-height: var(--font-line-height-s);
+                    padding-bottom: var(--scale-size-12);
                     text-align: end;
 
                     &:first-child {
@@ -405,9 +391,9 @@ export default defineComponent({
                 }
 
                 &__body__row__cell {
-                    padding: 12px 0;
+                    padding: var(--scale-size-12) 0;
                     text-align: end;
-                    border-top: 1px solid #d1d9e0;
+                    border-top: 1px solid var(--color-border-primary-default);
 
                     &:first-child {
                         text-align: start;
