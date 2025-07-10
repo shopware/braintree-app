@@ -1,7 +1,7 @@
 <template>
 <div>
     <mt-banner
-        v-if='true'
+        v-if='missingAccount'
         variant='attention'
         class='sw-braintree-app-settings-currency__missing-account'
         :closable='false'

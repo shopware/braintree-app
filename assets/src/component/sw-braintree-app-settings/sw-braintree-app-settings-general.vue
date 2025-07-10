@@ -7,7 +7,7 @@
     <div class='sw-braintree-app-settings-general__threeDSecuredEnforced'>
         <mt-switch
             class='sw-braintree-app-settings-general__threeDSecureEnforced__input'
-            :bordered='true'
+            bordered
             :label='$t("settings.general.threeDSecureEnforced.label")'
             :checked='activeConfig?.threeDSecureEnforced ?? undefined'
             :is-inherited='isFieldInherited("threeDSecureEnforced")'
