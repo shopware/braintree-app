@@ -9,7 +9,7 @@
     >
         <i18n-t keypath='configuration.missingCurrencyMapping' tag='span'>
             <template #link>
-                <mt-link type='internal' @click='onSettingsLinkCicked'>
+                <mt-link type='internal' @click='onSettingsLinkCicked("swBraintreeAppSettingsCurrency")'>
                     {{ $t("configuration.missingCurrencyMappingLink") }}
                 </mt-link>
             </template>
@@ -48,6 +48,14 @@
             >
                 {{ $t('configuration.test') }}
             </mt-button>
+
+            <mt-link
+                v-if='connection?.connectionStatus === "active"'
+                type='internal'
+                @click='onSettingsLinkCicked("swBraintreeAppSettingsCurrency")'
+            >
+                {{ $t("settings.link") }}
+            </mt-link>
         </div>
     </sw-braintree-app-config>
 
@@ -63,6 +71,7 @@ import { defineComponent } from 'vue';
 import SwBraintreeAppConfig from '@/component/sw-braintree-app-config.vue';
 import SwBraintreeAppMerchantDetails from '@/component/sw-braintree-app-merchant-details.vue';
 import { MtButton, MtBanner, MtLink, MtLoader } from '@shopware-ag/meteor-component-library';
+import { settingsTabHandler } from './sw-braintree-app-settings-page.vue';
 
 export default defineComponent({
     name: 'sw-braintree-app-config-page',
@@ -191,7 +200,8 @@ export default defineComponent({
             this.loading = loading;
         },
 
-        async onSettingsLinkCicked() {
+        async onSettingsLinkCicked(tab: Parameters<typeof settingsTabHandler.set>[0]): Promise<void> {
+            settingsTabHandler.set(tab);
             const { modules } = await sw.context.getModuleInformation();
             void sw.window.routerPush({
                 name: 'sw.extension.sdk.index',
@@ -206,13 +216,20 @@ export default defineComponent({
 
 <style lang='scss'>
 .sw-braintree-app-config-page {
+    background: var(--color-elevation-surface-default);
+
     &__buttons {
         display: flex;
-        gap: 8px;
+        flex-wrap: wrap-reverse;
+        gap: var(--scale-size-16);
+
+        .mt-link {
+            font-size: var(--font-size-xs);
+        }
     }
 
     &__missing-mappings {
-        margin-bottom: 32px;
+        margin-bottom: var(--scale-size-32);
     }
 }
 </style>

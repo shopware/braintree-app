@@ -7,6 +7,7 @@
     "disconnect-button": "Disconnect"
   },
   "configuration": {
+    "link": "Go to payment method overview",
     "merchant": {
       "disconnected": "Not connected"
     },
@@ -40,6 +41,7 @@
   },
   "settings": {
     "title": "Braintree by PayPal",
+    "link": "Go to settings",
     "allSalesChannels": "All channels",
     "tabs": {
       "generalLabel": "General",

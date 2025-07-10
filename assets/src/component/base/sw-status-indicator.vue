@@ -41,9 +41,9 @@ export default defineComponent({
     align-items: center;
     padding: 4px 12px;
     border-radius: 50px;
-    background: #D1D9E0;
+    background: var(--color-background-primary-default);
     height: 23px;
-    border: 1px solid #D1D9E0;
+    border: 1px solid var(--color-border-primary-default);
     line-height: 14px;
     font-size: 12px;
 
@@ -51,24 +51,24 @@ export default defineComponent({
         width: 8px;
         height: 8px;
         border-radius: 100%;
-        background: #52667A;
+        background: var(--color-text-secondary-default);
         display: inline-block;
     }
 
     &__text {
-        color: #52667A;
+        color: var(--color-text-secondary-default);
     }
 
     &.success {
-        background: #E7F9E9;
-        border-color: #c3f1c8;
+        background: var(--color-green-50);
+        border-color: var(--color-green-200);
 
         .sw-status__indicator {
-            background: #37D046;
+            background: var(--color-green-500);
         }
 
         .sw-status__text {
-            color: #2AC437;
+            color: var(--color-green-500);
         }
     }
 }

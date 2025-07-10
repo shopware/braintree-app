@@ -1,7 +1,7 @@
 <template>
 <div>
     <mt-banner
-        v-if='missingAccount'
+        v-if='true'
         variant='attention'
         class='sw-braintree-app-settings-currency__missing-account'
         :closable='false'
@@ -321,7 +321,7 @@ export default defineComponent({
     &__merchant-account-select {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--scale-size-4);
 
         .mt-field__label {
             width: auto;
@@ -350,8 +350,8 @@ export default defineComponent({
     &__missing-account {
         max-width: 960px;
 
-        .mt-external-link {
-            font-size: 16px;
+        &.mt-banner {
+            margin-bottom: var(--scale-size-40);
         }
     }
 }

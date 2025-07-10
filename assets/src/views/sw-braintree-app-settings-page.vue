@@ -15,7 +15,14 @@
             @update:value='onUpdateSalesChannel'
         />
 
-        <div class='sw-braintree-app-settings-page__save'>
+        <div class='sw-braintree-app-settings-page__buttons'>
+            <mt-link 
+                type='internal'
+                @click='onConfigLinkCicked'
+            >
+                {{ $t("configuration.link") }}
+            </mt-link>
+
             <mt-button
                 variant='primary'
                 size='default'
@@ -36,18 +43,40 @@
 
 <script lang='ts'>
 import { type Component, defineComponent } from 'vue';
-import { MtCard, MtButton, MtTabs } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtButton, MtTabs, MtLink } from '@shopware-ag/meteor-component-library';
 import SwBraintreeAppSettingsGeneral from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-general.vue';
 import SwBraintreeAppSettingsCurrency from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-currency.vue';
 import SwSalesChannelSwitch from '@/component/base/sw-sales-channel-switch.vue';
 import SwCardViewContent from '@/component/base/sw-card-view-content.vue';
 import { registerSaveHandler, type RegisterSaveHandler } from '@/resources/inject-keys';
+import * as sw from '@shopware-ag/meteor-admin-sdk';
 
 type SaveHandler = Parameters<RegisterSaveHandler>[0];
 
-const tabs: Record<string, Component> = {
+const tabs = {
     swBraintreeAppSettingsGeneral: SwBraintreeAppSettingsGeneral,
     swBraintreeAppSettingsCurrency: SwBraintreeAppSettingsCurrency,
+} as const;
+
+export const settingsTabHandler = {
+    set(item: keyof typeof tabs): void {
+        window.localStorage.setItem('sw-braintree-app-settings-active-tab', item);
+    },
+
+    get(): keyof typeof tabs {
+        let item = window.localStorage.getItem('sw-braintree-app-settings-active-tab') as null | keyof typeof tabs;
+
+        if (!item || !Object.keys(tabs).includes(item)) 
+            item = 'swBraintreeAppSettingsGeneral';
+
+        this.set(item);
+
+        return item;
+    },
+
+    clear(): void {
+        window.localStorage.removeItem('sw-braintree-app-settings-active-tab');
+    },
 };
 
 export default defineComponent({
@@ -67,18 +96,19 @@ export default defineComponent({
         SwCardViewContent,
         MtButton,
         MtTabs,
+        MtLink,
     },
 
     data(): {
-        activeTab: string,
+        activeTab: keyof typeof tabs,
         defaultItem: string,
         salesChannelId: string | null,
         tabs: TabItem[],
         saveHandler: SaveHandler[],
     } {
         return {
-            activeTab: 'swBraintreeAppSettingsGeneral',
-            defaultItem: 'swBraintreeAppSettingsGeneral',
+            activeTab: settingsTabHandler.get(),
+            defaultItem: settingsTabHandler.get(),
             salesChannelId: null,
             saveHandler: [],
             tabs: [
@@ -101,7 +131,8 @@ export default defineComponent({
     },
 
     methods: {
-        onNewItemActive(item: string): void {
+        async onNewItemActive(item: keyof typeof tabs): Promise<void> {
+            settingsTabHandler.set(item);
             this.activeTab = item;
             this.saveHandler = [];
         },
@@ -113,6 +144,12 @@ export default defineComponent({
         onUpdateSalesChannel(salesChannelId: string): void {
             this.salesChannelId = salesChannelId;
         },
+
+        onConfigLinkCicked(): void {
+            void sw.window.routerPush({
+                name: 'sw.settings.payment.overview',
+            });
+        },
     },
 });
 
@@ -120,34 +157,19 @@ export default defineComponent({
 
 <style lang='scss'>
 body {
-    background: #f9fafb;
+    background: var(--color-background-primary-default);
 }
 
 .sw-braintree-app-settings-page {
-    &__navigation.sw-card {
-        .sw-field {
-            margin-top: 40px;
-            margin-bottom: 0;
-        }
-
-        &:not(.sw-card--hero) {
-            box-shadow: none;
-        }
-
-        .sw-card__content {
-            padding: 0;
-            background: transparent;
-        }
-
-        .sw-tabs {
-            padding: 0;
-        }
-    }
-
-    &__save {
+    &__buttons {
         display: flex;
         justify-content: end;
-        margin-top: 16px;
+        margin-top: var(--scale-size-16);
+        gap: var(--scale-size-16);
+
+        .mt-link {
+            font-size: var(--font-size-xs);
+        }
     }
 }
 </style>

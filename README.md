@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/shopware/braintree-app/trunk/assets/img/braintree-logo.webp" width="100" />
+  <img src="https://raw.githubusercontent.com/shopware/braintree-app/trunk/assets/img/braintree-logo.png" width="100" />
 </p>
 <p align="center">
     <h1 align="center">BRAINTREE APP</h1>

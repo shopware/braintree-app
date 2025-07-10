@@ -9,6 +9,7 @@ import { addLocations } from '@/location';
 import { useStore } from '@/store';
 import { Notify } from './service/notify';
 import { createPinia } from 'pinia';
+import { settingsTabHandler } from './views/sw-braintree-app-settings-page.vue';
 
 const Criteria = sw.data.Classes.Criteria;
 const Repository = sw.data.repository<'payment_method'>('payment_method');
@@ -31,6 +32,7 @@ void Promise.all([
     const i18n = createI18n(locale);
 
     if (sw.location.is(sw.location.MAIN_HIDDEN)) {
+        settingsTabHandler.clear();
         await addLocations(paymentMethod, i18n);
         return;
     }

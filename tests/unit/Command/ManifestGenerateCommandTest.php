@@ -36,7 +36,8 @@ class ManifestGenerateCommandTest extends TestCase
     ): void {
         $this->output
             ->expects(static::atLeastOnce())
-            ->method('writeln');
+            ->method('writeln')
+            ->with(static::stringContains('Missing environment variables'));
 
         $command = $this->createCommand(
             $appUrl,
@@ -68,17 +69,6 @@ class ManifestGenerateCommandTest extends TestCase
         yield 'only projectDir' => [null, null, null, 'projectDir'];
 
         yield 'all missing' => [null, null, null, null];
-    }
-
-    /**
-     * Not sure why, but this test has to be here explicitly to satisfy infection php,
-     * however this should've been covered through the data provider above.
-     */
-    public function testInfectionFailingEdgeCase(): void
-    {
-        $command = new ManifestGenerateCommand(null, 'foo', 'bar', 'baz', $this->twig);
-
-        static::assertSame(ManifestGenerateCommand::FAILURE, $command->run($this->input, $this->output));
     }
 
     public function testRender(): void

@@ -105,11 +105,5 @@ export default defineComponent({
             display: none;
         }
     }
-
-    &__card {
-        box-shadow: none !important;
-        border: 1px solid rgb(209, 217, 224) !important;
-        border-radius: 4px !important;
-    }
 }
 </style>

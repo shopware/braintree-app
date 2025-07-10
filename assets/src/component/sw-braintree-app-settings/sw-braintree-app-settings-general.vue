@@ -7,6 +7,7 @@
     <div class='sw-braintree-app-settings-general__threeDSecuredEnforced'>
         <mt-switch
             class='sw-braintree-app-settings-general__threeDSecureEnforced__input'
+            :bordered='true'
             :label='$t("settings.general.threeDSecureEnforced.label")'
             :checked='activeConfig?.threeDSecureEnforced ?? undefined'
             :is-inherited='isFieldInherited("threeDSecureEnforced")'
@@ -150,7 +151,7 @@ export default defineComponent({
     flex-direction: column;
 
     &__shipsFromPostalCode {
-        margin-top: 24px;
+        margin-top: var(--scale-size-24);
     }
 }
 </style>

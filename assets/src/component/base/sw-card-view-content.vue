@@ -14,12 +14,13 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .sw-card-view__content {
-    padding: 15px;
+    padding: var(--scale-size-16);
+    padding-top: var(--scale-size-40);
 }
 
 @media screen and (min-width: 1360px) {
     .sw-card-view__content {
-        padding: 40px;
+        padding: var(--scale-size-40);
     }
 }
 </style>

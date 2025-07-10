@@ -7,7 +7,6 @@ import DomAccess from 'src/helper/dom-access.helper';
 import AppClient from '@friendsofshopware/storefront-sdk/service/app-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
-import ButtonLoadingIndicatorUtil from 'src/utility/loading-indicator/button-loading-indicator.util';
 
 const BASE_URL = 'https://braintree.shopware.com/api';
 
@@ -256,8 +255,10 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * Resets the order confirm button for a new submit
      */
     resetOrderConfirmButton() {
+        const confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
+        confirmOrderForm.dispatchEvent(new CustomEvent('removeLoader'));
+
         const confirmOrderFormButton = DomAccess.querySelector(document, this.options.confirmOrderButtonSelector);
-        (new ButtonLoadingIndicatorUtil(confirmOrderFormButton)).remove();
         confirmOrderFormButton.removeAttribute('disabled');
     }
 

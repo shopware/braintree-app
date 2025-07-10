@@ -1,11 +1,11 @@
 <template>
 <div class='sw-braintree-merchant-container'>
     <div class='sw-braintree-merchant-container__merchant'>
-        <span class='sw-braintree-merchant-container__merchant__id'>
+        <div class='sw-braintree-merchant-container__merchant__id'>
             {{ $t('configuration.merchantId' ) }}: <span class='fw-normal'>{{ merchantDetails }}</span>
-        </span>
+        </div>
 
-        <sw-internal-link
+        <mt-link
             v-if='!!connection?.merchantAccount'
             class='sw-braintree-merchant-container__merchant__disconnect'
             href='javascript:;'
@@ -13,7 +13,7 @@
             @click='$emit("disconnect")'
         >
             {{ $t('register.disconnect-button') }}
-        </sw-internal-link>
+        </mt-link>
     </div>
 
     <sw-status-indicator :status='status' :text='statusText' />
@@ -23,12 +23,12 @@
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
 import SwStatusIndicator from './base/sw-status-indicator.vue';
-import SwInternalLink from './base/sw-internal-link.vue';
+import { MtLink } from '@shopware-ag/meteor-component-library';
 
 export default defineComponent({
     name: 'sw-braintree-app-merchant-details',
 
-    components: { SwStatusIndicator, SwInternalLink },
+    components: { SwStatusIndicator, MtLink },
 
     emits: ['disconnect'],
 
@@ -77,10 +77,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .sw-braintree-merchant-container {
-    background: #F9FAFB;
-    border: 1px solid #D1D9E0;
-    border-radius: 4px;
-    padding: 32px;
+    background: var(--color-elevation-surface-sunken);
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: var(--border-radius-s);
+    padding: var(--scale-size-24);
 
     display: flex;
     flex-direction: row;
@@ -88,13 +88,12 @@ export default defineComponent({
     align-items: center;
 
     &__merchant {
+        font-size: var(--font-size-xs);
+        line-height: var(--font-line-height-xs);
+
         &__id {
-            font-size: 14px;
-            line-height: 16px;
-            font-style: normal;
-            color: #52667A;
-            font-weight: 600;
-            font-family: Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif;
+            color: var(--color-text-primary-default);
+            font-weight: var(--font-weight-semi-bold);
         }
     }
 }
