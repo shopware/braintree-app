@@ -7,12 +7,19 @@ namespace Swag\Braintree\Tests\Unit\Controller;
 use Braintree\ClientTokenGateway;
 use Braintree\Gateway;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shopware\App\SDK\Context\Storefront\StorefrontAction;
+use Shopware\App\SDK\Context\Storefront\StorefrontClaims;
+use Shopware\App\SDK\Framework\Collection;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
 use Swag\Braintree\Controller\StorefrontController;
 use Swag\Braintree\Entity\ShopEntity;
 
+/**
+ * @phpstan-import-type StorefrontClaimsArray from StorefrontClaims
+ */
 #[CoversClass(StorefrontController::class)]
 class StorefrontControllerTest extends TestCase
 {
@@ -32,7 +39,13 @@ class StorefrontControllerTest extends TestCase
         );
     }
 
-    public function testGetClientTokenReturnsJsonResponseWithToken(): void
+    /**
+     * @param StorefrontClaimsArray $queryParams
+     * @param StorefrontClaimsArray $claims
+     * @param StorefrontClaimsArray $expected
+     */
+    #[DataProvider('providerGetClientToken')]
+    public function testGetClientToken(array $queryParams, array $claims, array $expected): void
     {
         $clientToken = $this->createMock(ClientTokenGateway::class);
         $clientToken
@@ -51,14 +64,43 @@ class StorefrontControllerTest extends TestCase
         $this->salesChannelConfigService
             ->expects(static::once())
             ->method('getMerchantId')
-            ->with('this-is-sales-channel-id', 'this-is-currency-id', $shop)
+            ->with($expected['salesChannelId'], $expected['currencyId'], $shop)
             ->willReturn('this-is-merchant-id');
 
-        $response = $this->controller->getClientToken($shop, 'this-is-currency-id', 'this-is-sales-channel-id');
+        $action = new StorefrontAction($shop, new StorefrontClaims($claims), new Collection());
+
+        $response = $this->controller->getClientToken($action, ...$queryParams);
 
         $json = \json_decode($response->getContent(), true);
 
         static::assertNotNull($json);
         static::assertSame(['token' => 'this-is-client-token'], $json);
+    }
+
+    public static function providerGetClientToken(): \Generator
+    {
+        yield 'with query params' => [
+            ['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id'],
+            ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'claim-sales-channel-id'],
+            ['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id'],
+        ];
+
+        yield 'without query params' => [
+            ['currencyId' => null, 'salesChannelId' => null],
+            ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'claim-sales-channel-id'],
+            ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'claim-sales-channel-id'],
+        ];
+
+        yield 'without sales channel id param' => [
+            ['currencyId' => 'this-is-currency-id', 'salesChannelId' => null],
+            ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'claim-sales-channel-id'],
+            ['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'claim-sales-channel-id'],
+        ];
+
+        yield 'without currency id param' => [
+            ['currencyId' => null, 'salesChannelId' => 'this-is-sales-channel-id'],
+            ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'claim-sales-channel-id'],
+            ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'this-is-sales-channel-id'],
+        ];
     }
 }
