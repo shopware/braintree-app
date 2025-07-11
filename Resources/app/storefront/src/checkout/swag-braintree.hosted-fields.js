@@ -44,6 +44,8 @@ export default class SwagBraintreeHostedFields extends Plugin {
         postalCodeFieldSelector: '#sw-braintree-payment-method__postalCode',
 
         cartAmount: 0,
+
+        customFields: {},
     }
 
     async init() {
@@ -243,12 +245,22 @@ export default class SwagBraintreeHostedFields extends Plugin {
     async validateWith3DSecure(braintree3DS, payload) {
         braintree3DS.on('lookup-complete', (_, next) => void next());
 
+        const event = new CustomEvent('braintreeVerifyCardCustomFields', {
+            detail: {
+                options: this.options,
+                customFields: this.options.customFields,
+            },
+        });
+
+        this.el.dispatchEvent(event);
+
         return braintree3DS.verifyCard({
             amount: this.options.cartAmount.toString(),
             nonce: payload.nonce,
             bin: payload.details.bin,
             collectDeviceData: true,
-        })
+            customFields: event.detail.customFields || undefined,
+        });
     }
 
     /**

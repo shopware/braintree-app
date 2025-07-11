@@ -66,6 +66,25 @@
                 </text>
             </fields>
         </custom-field-set>
+        <custom-field-set>
+            <name>swag_braintree_app_order</name>
+            <label>Braintree by PayPal</label>
+            <label lang="de-DE">Braintree von PayPal</label>
+            <related-entities>
+                <order/>
+            </related-entities>
+            <fields>
+                <text name="swag_braintree_app_custom_fields">
+                    <position>1</position>
+                    <placeholder>JSON object, e.g. {"someField":"true"}</placeholder>
+                    <placeholder lang="de-DE">JSON Objekt, z.B. {"someField":"true"}</placeholder>
+                    <help-text>See https://developer.paypal.com/braintree/articles/control-panel/custom-fields for more information</help-text>
+                    <label>JSON object containing Braintree Custom Fields</label>
+                    <label lang="de-DE">JSON Objekt mit Braintree Custom Fields</label>
+                    <allow-cart-expose>true</allow-cart-expose>
+                </text>
+            </fields>
+        </custom-field-set>
     </custom-fields>
 
     <permissions>
