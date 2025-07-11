@@ -1,10 +1,15 @@
+# 3.1.0
+
+* Fixes an issue, where hiding the loading spinner leaves the confirm button empty
+* Adds support for client-side Custom Fields for the Fraud Protection Advanced feature
+
 # 3.0.0
 
 * Shopware 6.7 compatible release
 
 # 2.2.0
 
-+ Improved support for (advanced) fraud protection
+* Improved support for (advanced) fraud protection
 
 # 2.0.0
 
