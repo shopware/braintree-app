@@ -12,7 +12,7 @@
         <description lang="de-DE">Mit der App “PayPal Braintree” App von Shopware integrierst du ab sofort eine der beliebtesten Lösungen für Kreditkartenzahlungen ganz einfach in deinen Shop.</description>
         <author>shopware AG</author>
         <copyright>(c) by shopware AG</copyright>
-        <version>2.2.0</version>
+        <version>2.3.0</version>
         <icon>Resources/plugin.webp</icon>
         <license>MIT</license>
         <compatibility>~6.6.0</compatibility>
@@ -65,6 +65,25 @@
                     <help-text>United Nations Standard Products and Services Code (UNSPSC). Search https://www.unspsc.org/ for more.</help-text>
                     <label>UNSPSC commodity code</label>
                     <label lang="de-DE">UNSPSC Warenkennzeichnungscode</label>
+                    <allow-cart-expose>true</allow-cart-expose>
+                </text>
+            </fields>
+        </custom-field-set>
+        <custom-field-set>
+            <name>swag_braintree_app_order</name>
+            <label>Braintree by PayPal</label>
+            <label lang="de-DE">Braintree von PayPal</label>
+            <related-entities>
+                <order/>
+            </related-entities>
+            <fields>
+                <text name="swag_braintree_app_custom_fields">
+                    <position>1</position>
+                    <placeholder>JSON object, e.g. {"someField":"true"}</placeholder>
+                    <placeholder lang="de-DE">JSON Objekt, z.B. {"someField":"true"}</placeholder>
+                    <help-text>See https://developer.paypal.com/braintree/articles/control-panel/custom-fields for more information</help-text>
+                    <label>JSON object containing Braintree Custom Fields</label>
+                    <label lang="de-DE">JSON Objekt mit Braintree Custom Fields</label>
                     <allow-cart-expose>true</allow-cart-expose>
                 </text>
             </fields>

@@ -1,3 +1,7 @@
+# 2.3.0
+
+* Adds support for client-side Custom Fields for the Fraud Protection Advanced feature
+
 # 2.2.0
 
 + Improved support for (advanced) fraud protection
