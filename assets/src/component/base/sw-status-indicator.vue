@@ -77,11 +77,11 @@ export default defineComponent({
         border-color: var(--color-orange-200);
 
         .sw-status__indicator {
-            background: var(--color-orange-500);
+            background: var(--color-orange-600);
         }
 
         .sw-status__text {
-            color: var(--color-orange-500);
+            color: var(--color-orange-600);
         }
     }
 
