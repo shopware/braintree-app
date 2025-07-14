@@ -6814,16 +6814,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.80.0",
+            "version": "v3.82.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "e49ed46b8f7adcc451d4cd2ed34eaae33372bc60"
+                "reference": "684ed3ab41008a2a4848de8bde17eb168c596247"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/e49ed46b8f7adcc451d4cd2ed34eaae33372bc60",
-                "reference": "e49ed46b8f7adcc451d4cd2ed34eaae33372bc60",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/684ed3ab41008a2a4848de8bde17eb168c596247",
+                "reference": "684ed3ab41008a2a4848de8bde17eb168c596247",
                 "shasum": ""
             },
             "require": {
@@ -6907,7 +6907,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.80.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.82.2"
             },
             "funding": [
                 {
@@ -6915,7 +6915,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-06T21:00:51+00:00"
+            "time": "2025-07-08T21:13:15+00:00"
         },
         {
             "name": "infection/abstract-testframework-adapter",
@@ -7096,16 +7096,16 @@
         },
         {
             "name": "infection/infection",
-            "version": "0.30.1",
+            "version": "0.30.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/infection/infection.git",
-                "reference": "70cd94675f6372cf13962d9d52de86b02a909c09"
+                "reference": "a23f4a0b9e279d021fdf0bb91334e74d1cc32b07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/infection/infection/zipball/70cd94675f6372cf13962d9d52de86b02a909c09",
-                "reference": "70cd94675f6372cf13962d9d52de86b02a909c09",
+                "url": "https://api.github.com/repos/infection/infection/zipball/a23f4a0b9e279d021fdf0bb91334e74d1cc32b07",
+                "reference": "a23f4a0b9e279d021fdf0bb91334e74d1cc32b07",
                 "shasum": ""
             },
             "require": {
@@ -7137,8 +7137,7 @@
             },
             "conflict": {
                 "antecedent/patchwork": "<2.1.25",
-                "dg/bypass-finals": "<1.4.1",
-                "phpunit/php-code-coverage": ">9,<9.1.4 || >9.2.17,<9.2.21"
+                "dg/bypass-finals": "<1.4.1"
             },
             "require-dev": {
                 "ext-simplexml": "*",
@@ -7210,7 +7209,7 @@
             ],
             "support": {
                 "issues": "https://github.com/infection/infection/issues",
-                "source": "https://github.com/infection/infection/tree/0.30.1"
+                "source": "https://github.com/infection/infection/tree/0.30.3"
             },
             "funding": [
                 {
@@ -7222,7 +7221,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2025-07-03T22:10:25+00:00"
+            "time": "2025-07-11T21:15:39+00:00"
         },
         {
             "name": "infection/mutator",
@@ -7354,22 +7353,22 @@
         },
         {
             "name": "kubawerlos/php-cs-fixer-custom-fixers",
-            "version": "v3.29.1",
+            "version": "v3.30.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kubawerlos/php-cs-fixer-custom-fixers.git",
-                "reference": "2d9af89140c047b68c767dab9f9f60d0506d66bc"
+                "reference": "636bbba1f5d6356dd3b75b9b4f77e7a14190dbda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kubawerlos/php-cs-fixer-custom-fixers/zipball/2d9af89140c047b68c767dab9f9f60d0506d66bc",
-                "reference": "2d9af89140c047b68c767dab9f9f60d0506d66bc",
+                "url": "https://api.github.com/repos/kubawerlos/php-cs-fixer-custom-fixers/zipball/636bbba1f5d6356dd3b75b9b4f77e7a14190dbda",
+                "reference": "636bbba1f5d6356dd3b75b9b4f77e7a14190dbda",
                 "shasum": ""
             },
             "require": {
                 "ext-filter": "*",
                 "ext-tokenizer": "*",
-                "friendsofphp/php-cs-fixer": "^3.77",
+                "friendsofphp/php-cs-fixer": "^3.82",
                 "php": "^7.4 || ^8.0"
             },
             "require-dev": {
@@ -7394,7 +7393,7 @@
             "description": "A set of custom fixers for PHP CS Fixer",
             "support": {
                 "issues": "https://github.com/kubawerlos/php-cs-fixer-custom-fixers/issues",
-                "source": "https://github.com/kubawerlos/php-cs-fixer-custom-fixers/tree/v3.29.1"
+                "source": "https://github.com/kubawerlos/php-cs-fixer-custom-fixers/tree/v3.30.1"
             },
             "funding": [
                 {
@@ -7402,7 +7401,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-06T13:46:09+00:00"
+            "time": "2025-07-12T06:37:38+00:00"
         },
         {
             "name": "marc-mabe/php-enum",
@@ -11313,7 +11312,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -11323,6 +11322,6 @@
         "ext-session": "*",
         "ext-simplexml": "*"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
