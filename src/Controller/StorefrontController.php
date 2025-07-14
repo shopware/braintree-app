@@ -3,8 +3,8 @@
 namespace Swag\Braintree\Controller;
 
 use Braintree\Gateway;
+use Shopware\App\SDK\Context\Storefront\StorefrontAction;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
-use Swag\Braintree\Entity\ShopEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[Route(path: '/api')]
+#[Route(path: '/api', format: 'json')]
 class StorefrontController extends AbstractController
 {
     public function __construct(
@@ -29,17 +29,18 @@ class StorefrontController extends AbstractController
         methods: [Request::METHOD_POST]
     )]
     public function getClientToken(
-        ShopEntity $shop,
+        StorefrontAction $storefrontAction,
         #[MapQueryParameter(name: 'currency-id')]
-        string $currencyId,
+        ?string $currencyId = null,
         #[MapQueryParameter(name: 'sales-channel-id')]
-        string $salesChannelId,
+        ?string $salesChannelId = null,
     ): Response {
-        $merchantAccount = $this->salesChannelConfigService->getMerchantId($salesChannelId, $currencyId, $shop);
+        $currencyId ??= $storefrontAction->claims->getCurrencyId();
+        $salesChannelId ??= $storefrontAction->claims->getSalesChannelId();
 
-        $token = $this->gateway->clientToken()->generate([
-            'merchantAccountId' => $merchantAccount,
-        ]);
+        $merchantAccount = $this->salesChannelConfigService->getMerchantId($salesChannelId, $currencyId, $storefrontAction->shop);
+
+        $token = $this->gateway->clientToken()->generate(['merchantAccountId' => $merchantAccount]);
 
         return new JsonResponse(['token' => $token]);
     }
