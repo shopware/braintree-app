@@ -50,7 +50,6 @@
             </mt-button>
 
             <mt-link
-                v-if='connection?.connectionStatus === "active"'
                 type='internal'
                 @click='onSettingsLinkCicked("swBraintreeAppSettingsCurrency")'
             >

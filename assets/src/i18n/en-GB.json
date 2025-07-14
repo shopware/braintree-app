@@ -65,7 +65,7 @@
     },
     "currency": {
       "missingAccountTitle": "Missing information",
-      "missingAccount": "Please link your Braintree account in the {link}",
+      "missingAccount": "Please check and link your Braintree account in the {link}",
       "missingAccountLink": "payment methods overview",
       "table": {
         "title": "Currency mapping",

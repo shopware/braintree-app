@@ -1,21 +1,5 @@
 <template>
 <div>
-    <mt-banner
-        v-if='missingAccount'
-        variant='attention'
-        class='sw-braintree-app-settings-currency__missing-account'
-        :closable='false'
-        :title='$t("settings.currency.missingAccountTitle")'
-    >
-        <i18n-t keypath='settings.currency.missingAccount' tag='span'>
-            <template #link>
-                <mt-link type='internal' @click='onPaymentMethodOverview'>
-                    {{ $t("settings.currency.missingAccountLink") }}
-                </mt-link>
-            </template>
-        </i18n-t>
-    </mt-banner>
-
     <mt-card
         :title='$t("settings.currency.table.title")'
         :is-loading='loading'
@@ -62,7 +46,7 @@ import type { PropType } from 'vue';
 import { defineComponent, inject } from 'vue';
 import SwBraintreeAppTable from '../base/sw-braintree-app-table.vue';
 import SwBraintreeAppCurrencyMappingSelect from './sw-braintree-app-settings-currency-mapping-select.vue';
-import { MtCard, MtBanner, MtLink } from '@shopware-ag/meteor-component-library';
+import { MtCard } from '@shopware-ag/meteor-component-library';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
 import { DefaultCurrencyMappingEntity } from '@/resources/entities';
 import { registerSaveHandler } from '@/resources/inject-keys';
@@ -80,8 +64,6 @@ export default defineComponent({
         SwBraintreeAppTable,
         MtCard,
         SwBraintreeAppCurrencyMappingSelect,
-        MtBanner,
-        MtLink,
     },
 
     props: {
@@ -89,6 +71,11 @@ export default defineComponent({
             type: String as PropType<string | null>,
             required: false,
             default: null,
+        },
+        missingAccount: {
+            type: Boolean,
+            required: false,
+            default: false,
         },
     },
 
@@ -99,7 +86,6 @@ export default defineComponent({
     },
 
     data(): {
-        missingAccount: boolean,
         hasChanges: boolean,
         loading: boolean,
         loadingInputs: boolean,
@@ -110,7 +96,6 @@ export default defineComponent({
         currencies: Currencies,
     } {
         return {
-            missingAccount: false,
             hasChanges: false,
             loading: true,
             loadingInputs: true,
@@ -178,10 +163,8 @@ export default defineComponent({
                 .then((merchantAccounts) => {
                     if (merchantAccounts.length > 0)
                         this.merchantAccounts = merchantAccounts;
-                    else
-                        this.missingAccount = true;
                 })
-                .catch(() => {this.missingAccount = true;});
+                .catch(() => {});
         },
 
         async getCurrencyMappings(salesChannelId: string | null = null): Promise<void> {
@@ -300,12 +283,6 @@ export default defineComponent({
             if (this.mappings[idx].id) this.deletedMappings.push({ ...this.mappings[idx] });
             else this.mappings.splice(idx, 1);
         },
-
-        onPaymentMethodOverview() {
-            void sw.window.routerPush({
-                name: 'sw.settings.payment.overview',
-            });
-        },
     },
 });
 </script>
@@ -344,14 +321,6 @@ export default defineComponent({
     &__merchant-account-select:not(.is-inheritance) {
         .mt-field__label {
             display: none;
-        }
-    }
-
-    &__missing-account {
-        max-width: 960px;
-
-        &.mt-banner {
-            margin-bottom: var(--scale-size-40);
         }
     }
 }
