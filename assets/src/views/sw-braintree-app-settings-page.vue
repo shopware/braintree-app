@@ -33,9 +33,26 @@
         </div>
     </mt-card>
 
+    <mt-banner
+        v-if='missingAccount'
+        variant='attention'
+        class='sw-braintree-app-settings-page__missing-account'
+        :closable='false'
+        :title='$t("settings.currency.missingAccountTitle")'
+    >
+        <i18n-t keypath='settings.currency.missingAccount' tag='span'>
+            <template #link>
+                <mt-link type='internal' @click='onPaymentMethodOverview'>
+                    {{ $t("settings.currency.missingAccountLink") }}
+                </mt-link>
+            </template>
+        </i18n-t>
+    </mt-banner>
+
     <component
         :is='activeTabComponent'
         :sales-channel-id='salesChannelId'
+        :missing-account='missingAccount'
     />
 </sw-card-view-content>
 </template>
@@ -43,7 +60,7 @@
 
 <script lang='ts'>
 import { type Component, defineComponent } from 'vue';
-import { MtCard, MtButton, MtTabs, MtLink } from '@shopware-ag/meteor-component-library';
+import { MtCard, MtButton, MtTabs, MtLink, MtBanner } from '@shopware-ag/meteor-component-library';
 import SwBraintreeAppSettingsGeneral from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-general.vue';
 import SwBraintreeAppSettingsCurrency from '@/component/sw-braintree-app-settings/sw-braintree-app-settings-currency.vue';
 import SwSalesChannelSwitch from '@/component/base/sw-sales-channel-switch.vue';
@@ -97,6 +114,7 @@ export default defineComponent({
         MtButton,
         MtTabs,
         MtLink,
+        MtBanner,
     },
 
     data(): {
@@ -105,6 +123,7 @@ export default defineComponent({
         salesChannelId: string | null,
         tabs: TabItem[],
         saveHandler: SaveHandler[],
+        connection?: BraintreeConnection,
     } {
         return {
             activeTab: settingsTabHandler.get(),
@@ -121,6 +140,7 @@ export default defineComponent({
                     label: this.$t('settings.tabs.currencyLabel'),
                 },
             ],
+            connection: undefined,
         };
     },
 
@@ -128,9 +148,25 @@ export default defineComponent({
         activeTabComponent(): Component {
             return tabs[this.activeTab];
         },
+
+        missingAccount(): boolean {
+            return !!this.connection && this.connection.connectionStatus !== 'active';
+        },
+    },
+
+    created(): void {
+        this.getConnectionStatus();
     },
 
     methods: {
+        async getConnectionStatus(): Promise<void> {
+            return this.$api.get<BraintreeConnection>('/config/status')
+                .then((connection) => {
+                    this.connection = connection;
+                })
+                .catch((e) => this.$notify.error('fetch_account_status', e));
+        },
+
         async onNewItemActive(item: keyof typeof tabs): Promise<void> {
             settingsTabHandler.set(item);
             this.activeTab = item;
@@ -146,6 +182,12 @@ export default defineComponent({
         },
 
         onConfigLinkCicked(): void {
+            void sw.window.routerPush({
+                name: 'sw.settings.payment.overview',
+            });
+        },
+
+        onPaymentMethodOverview() {
             void sw.window.routerPush({
                 name: 'sw.settings.payment.overview',
             });
@@ -169,6 +211,14 @@ body {
 
         .mt-link {
             font-size: var(--font-size-xs);
+        }
+    }
+
+    &__missing-account {
+        max-width: 960px;
+
+        &.mt-banner {
+            margin-bottom: var(--scale-size-40);
         }
     }
 }
