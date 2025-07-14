@@ -59,6 +59,7 @@ class BraintreePaymentServiceTest extends TestCase
         $salesChannelConfigService = $this->createMock(SalesChannelConfigService::class);
         $salesChannelConfigService->method('getMerchantId')->willReturn('this-is-merchant-id');
         $salesChannelConfigService->method('isThreeDSecureEnforced')->willReturn(true);
+        $salesChannelConfigService->method('submitForSettlement')->willReturn(true);
 
         $this->transactionRepository = $this->createMock(TransactionRepository::class);
 

@@ -2,6 +2,7 @@ export const DefaultConfigEntity = (salesChannelId?: string | null): ConfigEntit
     id: null,
     shop: '',
     threeDSecureEnforced: false,
+    submitForSettlement: true,
     shipsFromPostalCode: null,
     salesChannelId: salesChannelId ?? null,
     createdAt: (new Date()).toISOString(),

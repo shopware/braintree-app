@@ -4,23 +4,35 @@
     :title='$t("settings.general.title")'
     :is-loading='loading'
 >
-    <div class='sw-braintree-app-settings-general__threeDSecuredEnforced'>
+    <div class='content'>
         <mt-switch
-            class='sw-braintree-app-settings-general__threeDSecureEnforced__input'
+            class='sw-braintree-app-settings-general__threeDSecureEnforced'
             bordered
             :label='$t("settings.general.threeDSecureEnforced.label")'
             :checked='activeConfig?.threeDSecureEnforced ?? undefined'
             :is-inherited='isFieldInherited("threeDSecureEnforced")'
             :is-inheritance-field='!!salesChannelId'
-            :help-text='$t("settings.general.threeDSecureToolTip")'
+            :help-text='$t("settings.general.threeDSecureEnforced.tooltip")'
             @change='activeConfig.threeDSecureEnforced = !activeConfig.threeDSecureEnforced'
             @inheritance-remove='onRemove3DSInheritance()'
             @inheritance-restore='onRestoreInheritance("threeDSecureEnforced")'
         />
-    </div>
-    <div class='sw-braintree-app-settings-general__shipsFromPostalCode'>
+
+        <mt-switch
+            class='sw-braintree-app-settings-general__submitForSettlement'
+            bordered
+            :label='$t("settings.general.submitForSettlement.label")'
+            :checked='activeConfig?.submitForSettlement ?? true'
+            :is-inherited='isFieldInherited("submitForSettlement")'
+            :is-inheritance-field='!!salesChannelId'
+            :help-text='$t("settings.general.submitForSettlement.tooltip")'
+            @change='activeConfig.submitForSettlement = !activeConfig.submitForSettlement'
+            @inheritance-remove='onRemove3DSInheritance()'
+            @inheritance-restore='onRestoreInheritance("submitForSettlement")'
+        />
+
         <mt-text-field
-            class='sw-braintree-app-settings-general__shipsFromPostalCode__input'
+            class='sw-braintree-app-settings-general__shipsFromPostalCode'
             :label='$t("settings.general.shipsFromPostalCode.label")'
             :placeholder='$t("settings.general.shipsFromPostalCode.placeholder")'
             :is-inherited='isFieldInherited("shipsFromPostalCode")'
@@ -147,11 +159,10 @@ export default defineComponent({
 
 <style lang='scss'>
 .sw-braintree-app-settings-general {
-    display: flex;
-    flex-direction: column;
-
-    &__shipsFromPostalCode {
-        margin-top: var(--scale-size-24);
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--scale-size-24);
     }
 }
 </style>

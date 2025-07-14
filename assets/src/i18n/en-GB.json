@@ -55,12 +55,16 @@
     "general": {
       "title": "General",
       "threeDSecureEnforced": {
-        "label": "Only accept transactions with 3D Secure"
+        "label": "Only accept transactions with 3D Secure",
+        "tooltip": "Transaction will not be accepted, if 3D Secure is not available"
       },
-      "threeDSecureToolTip": "Transaction will not be accepted, if 3D Secure is not available",
       "shipsFromPostalCode": {
         "label": "Sender shipping address postal code",
         "placeholder": "e.g. 48268"
+      },
+      "submitForSettlement": {
+        "label": "Submit for settlement immediately",
+        "tooltip": "If this option is enabled, transactions will be submitted for settlement immediately after the order got placed. If it is disabled, transactions will only be authorized and will need to be settled manually in your Braintree account."
       }
     },
     "currency": {

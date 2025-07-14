@@ -29,6 +29,10 @@ class ConfigEntity implements EntityInterface
     private ?bool $threeDSecureEnforced = null;
 
     #[Groups(groups: ['admin-write'])]
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
+    private ?bool $submitForSettlement = null;
+
+    #[Groups(groups: ['admin-write'])]
     #[ORM\Column(type: Types::STRING, length: 20, nullable: true)]
     private ?string $shipsFromPostalCode = null;
 
@@ -40,6 +44,18 @@ class ConfigEntity implements EntityInterface
     public function setThreeDSecureEnforced(?bool $threeDSecureEnforced): self
     {
         $this->threeDSecureEnforced = $threeDSecureEnforced;
+
+        return $this;
+    }
+
+    public function isSubmitForSettlement(): ?bool
+    {
+        return $this->submitForSettlement;
+    }
+
+    public function setSubmitForSettlement(?bool $submitForSettlement): self
+    {
+        $this->submitForSettlement = $submitForSettlement;
 
         return $this;
     }
