@@ -1,3 +1,7 @@
+# 2.3.0
+
+* Fügt Unterstützung für Client-Side Custom Fields für die Fraud Protection Advanced Funktion hinzu
+
 # 2.2.0
 
 * Verbesserte Integration der (erweiterten) Betrugsprävention
