@@ -21,19 +21,11 @@
     </div>
 
     <mt-empty-state
-        v-else-if='!transaction && !swTransactionIds'
+        v-else-if='!transaction'
         class='empty-state'
         icon='solid-shopping-basket'
         :headline='$t("orderTransactionDetail.emptyStateTitle")'
         :description='$t("orderTransactionDetail.emptyStateDescription")'
-    />
-
-    <mt-empty-state
-        v-else-if='!transaction'
-        class='empty-state'
-        icon='solid-shopping-basket'
-        :headline='$t("orderTransactionDetail.invalidEmptyStateTitle")'
-        :description='$t("orderTransactionDetail.invalidEmptyStateDescription", Number(shop?.braintreeSandbox))'
     />
 
     <div v-else class='transaction'>
@@ -211,14 +203,12 @@ export default defineComponent({
         loadingShop: boolean,
         transaction: BraintreeTransaction | null,
         shop: ShopEntity | null,
-        swTransactionIds: string[] | null,
     } {
         return {
             loadingTransaction: true,
             loadingShop: true,
             transaction: null,
             shop: null,
-            swTransactionIds: null,
         };
     },
 
@@ -280,16 +270,15 @@ export default defineComponent({
                 async ({ data }) => {
                     this.loadingTransaction = true;
                     this.transaction = null;
-                    this.swTransactionIds = null;
 
                     const criteria = (new Criteria())
                         .addFilter(Criteria.equals('orderId', (data as { id: string }).id));
 
                     const result = await Repository.search(criteria);
-                    this.swTransactionIds = result?.map((transaction) => transaction.id) ?? null;
+                    const transactionIds = result?.map((transaction) => transaction.id) || null;
 
                     void this.$api.post<BraintreeTransaction | null>('/transaction/newest', {
-                        transactions: this.swTransactionIds,
+                        transactions: transactionIds,
                     }).then((transaction) => {
                         if (!transaction)
                             return;

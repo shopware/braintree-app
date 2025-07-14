@@ -80,9 +80,7 @@
     "tabLabel": "Braintree",
     "title": "Braintree by PayPal",
     "emptyStateTitle": "No braintree transaction found",
-    "emptyStateDescription": "This order was not handled through Braintree",
-    "invalidEmptyStateTitle": "No braintree transaction found",
-    "invalidEmptyStateDescription": "Transaction was placed by another account or sandbox mode enabled | Transaction was placed by another account or sandbox mode disabled",
+    "emptyStateDescription": "This order was not handled through Braintree or was done by a different Braintree account.",
     "transactionLink": "View and edit transaction in Braintree",
     "body": {
       "customerIdTitle": "Customer ID",
