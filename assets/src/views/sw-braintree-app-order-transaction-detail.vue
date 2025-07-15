@@ -1,11 +1,27 @@
 <template>
 <div class='sw-braintree-app-order-transaction-detail-page'>
-    <div v-if='loading' class='loader'>
+    <header class='header'>
+        <span class='title'>{{ $t('orderTransactionDetail.title') }}</span>
+        <mt-link
+            v-if='transactionLink'
+            type='external'
+            class='transaction__link'
+            as='a'
+            :to='transactionLink'
+            target='_blank'
+        >
+            {{ $t('orderTransactionDetail.transactionLink') }}
+        </mt-link>
+    </header>
+
+    <div class='divider' />
+
+    <div v-if='loadingTransaction && loadingShop' class='loader'>
         <mt-loader />
     </div>
 
     <mt-empty-state
-        v-else-if='showEmptyState'
+        v-else-if='!transaction'
         class='empty-state'
         icon='solid-shopping-basket'
         :headline='$t("orderTransactionDetail.emptyStateTitle")'
@@ -172,7 +188,7 @@
 <script lang='ts'>
 import { defineComponent } from 'vue';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
-import { MtLoader, MtEmptyState } from '@shopware-ag/meteor-component-library';
+import { MtLoader, MtEmptyState, MtLink } from '@shopware-ag/meteor-component-library';
 import SwStatusIndicator from '@/component/base/sw-status-indicator.vue';
 
 const Criteria = sw.data.Classes.Criteria;
@@ -180,29 +196,29 @@ const Repository = sw.data.repository<'order_transaction'>('order_transaction');
 
 export default defineComponent({
     name: 'sw-braintree-app-order-transaction-detail',
-    components: { SwStatusIndicator, MtLoader, MtEmptyState },
+    components: { SwStatusIndicator, MtLoader, MtEmptyState, MtLink },
 
     data(): {
-        loading: boolean,
-        transaction: BraintreeTransaction,
+        loadingTransaction: boolean,
+        loadingShop: boolean,
+        transaction: BraintreeTransaction | null,
+        shop: ShopEntity | null,
     } {
         return {
-            loading: true,
-            transaction: {} as BraintreeTransaction,
+            loadingTransaction: true,
+            loadingShop: true,
+            transaction: null,
+            shop: null,
         };
     },
 
     computed: {
         amountNet(): number {
-            return parseFloat(this.transaction.amount) - parseFloat(this.transaction.shippingAmount);
-        },
-
-        showEmptyState(): boolean {
-            return !this.loading && !Object.keys(this.transaction).length;
+            return parseFloat(this.transaction?.amount ?? '') - parseFloat(this.transaction?.shippingAmount ?? '');
         },
 
         statusType(): StatusIndicatorType {
-            switch (this.transaction.status) {
+            switch (this.transaction?.status) {
                 case 'authorization_expired':
                 case 'settlement_declined':
                 case 'failed':
@@ -224,26 +240,42 @@ export default defineComponent({
                     return undefined;
             }
         },
+
+        transactionLink(): string {
+            if (this.loadingTransaction || this.loadingShop || !this.transaction || !this.shop)
+                return '';
+
+            return `https://${this.shop?.braintreeSandbox ? 'sandbox.' : ''}braintreegateway.com/merchants/${this.shop?.braintreeMerchantId}/transactions/${this.transaction?.id}`;
+        },
     },
 
     created() {
         this.loadBraintreeTransaction();
+        this.getShopConfig();
     },
 
     methods: {
-        loadBraintreeTransaction() {
-            this.loading = true;
+        async getShopConfig(): Promise<void> {
+            this.loadingShop = true;
 
+            return this.$api.get<ShopEntity>('/entity/shop')
+                .then((shop) => { this.shop = shop; })
+                .catch((e) => this.$notify.error('fetch_config', e))
+                .finally(() => { this.loadingShop = false; });
+        },
+
+        loadBraintreeTransaction() {
             void sw.data.subscribe(
                 'sw-order-detail-base__order',
-                async (response) => {
-                    const data = response.data as { id: string };
+                async ({ data }) => {
+                    this.loadingTransaction = true;
+                    this.transaction = null;
 
                     const criteria = (new Criteria())
-                        .addFilter(Criteria.equals('orderId', data.id));
+                        .addFilter(Criteria.equals('orderId', (data as { id: string }).id));
 
                     const result = await Repository.search(criteria);
-                    const transactionIds = result?.map((transaction) => transaction.id);
+                    const transactionIds = result?.map((transaction) => transaction.id) || null;
 
                     void this.$api.post<BraintreeTransaction | null>('/transaction/newest', {
                         transactions: transactionIds,
@@ -253,7 +285,7 @@ export default defineComponent({
 
                         this.transaction = transaction;
                     }).finally(() => {
-                        this.loading = false;
+                        this.loadingTransaction = false;
                     });
                 },
                 {
@@ -272,6 +304,21 @@ export default defineComponent({
 
 <style scoped lang='scss'>
 .sw-braintree-app-order-transaction-detail-page {
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: var(--font-size-s);
+        line-height: var(--font-line-height-s);
+
+        .title {
+            font-size: var(--font-size-m);
+            line-height: var(--font-line-height-m);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary-default);
+        }
+    }
+
     background: var(--color-elevation-surface-default);
 
     .flex-column {

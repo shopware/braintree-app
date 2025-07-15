@@ -37,7 +37,6 @@ export async function addLocations(paymentMethod: EntitySchema.Entity<'payment_m
             component: 'card',
             positionId: 'swag-braintree-app-order-transaction-detail',
             props: {
-                title: i18n.global.t('orderTransactionDetail.title'),
                 locationId: 'swag-braintree-app-order-transaction-detail-position-before',
             },
         }),

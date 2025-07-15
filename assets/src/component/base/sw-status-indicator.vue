@@ -71,5 +71,31 @@ export default defineComponent({
             color: var(--color-green-500);
         }
     }
+
+    &.warning {
+        background: var(--color-orange-50);
+        border-color: var(--color-orange-200);
+
+        .sw-status__indicator {
+            background: var(--color-orange-600);
+        }
+
+        .sw-status__text {
+            color: var(--color-orange-600);
+        }
+    }
+
+    &.danger {
+        background: var(--color-red-50);
+        border-color: var(--color-red-200);
+
+        .sw-status__indicator {
+            background: var(--color-red-500);
+        }
+
+        .sw-status__text {
+            color: var(--color-red-500);
+        }
+    }
 }
 </style>
