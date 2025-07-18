@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[Route(path: '/api/gateway', name: 'swag.braintree.api.gateway.')]
+#[Route(path: '/api/gateway', name: 'swag.braintree.api.gateway.', format: 'json')]
 class GatewayController extends AbstractController
 {
     public const CREDIT_CARD_TECHNICAL_NAME = 'payment_SwagBraintreeApp_credit_card';

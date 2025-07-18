@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[Route(path: '/api')]
+#[Route(path: '/api', format: 'json')]
 class EntityController extends AbstractController
 {
     public function __construct(

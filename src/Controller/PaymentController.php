@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
+#[Route(format: 'json')]
 class PaymentController extends AbstractController
 {
     public function __construct(
