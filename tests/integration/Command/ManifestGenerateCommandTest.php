@@ -41,7 +41,7 @@ class ManifestGenerateCommandTest extends KernelTestCase
         static::assertSame('With the “PayPal Braintree” app developed by Shopware, you can now easily integrate one of the most popular solutions for credit card payments into your store.', (string) $manifest->meta->description);
         static::assertSame('shopware AG', (string) $manifest->meta->author);
         static::assertSame('(c) by shopware AG', (string) $manifest->meta->copyright);
-        static::assertSame('Resources/plugin.webp', (string) $manifest->meta->icon);
+        static::assertSame('Resources/plugin.png', (string) $manifest->meta->icon);
         static::assertSame('MIT', (string) $manifest->meta->license);
 
         static::assertSame($appUrl . '/app/lifecycle/register', (string) $manifest->setup->registrationUrl);

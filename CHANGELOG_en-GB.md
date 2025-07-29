@@ -1,3 +1,7 @@
+# 2.3.1
+
+* Replaces the app preview image from .webp to .png
+
 # 2.3.0
 
 * Adds support for client-side Custom Fields for the Fraud Protection Advanced feature
