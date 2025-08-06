@@ -24,7 +24,7 @@ class HmrService
             return false;
         }
 
-        $connection = @\fsockopen('localhost', $this->vitePort);
+        $connection = @\fsockopen('localhost', $this->vitePort, timeout: 1);
 
         if (!\is_resource($connection)) {
             return false;
