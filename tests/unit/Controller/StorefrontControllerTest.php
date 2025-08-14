@@ -6,6 +6,7 @@ namespace Swag\Braintree\Tests\Unit\Controller;
 
 use Braintree\ClientTokenGateway;
 use Braintree\Gateway;
+use Braintree\MerchantAccountGateway;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,11 +28,20 @@ class StorefrontControllerTest extends TestCase
 
     private MockObject&SalesChannelConfigService $salesChannelConfigService;
 
+    private MockObject&MerchantAccountGateway $merchantAccountGateway;
+
     private StorefrontController $controller;
 
     protected function setUp(): void
     {
+        $this->merchantAccountGateway = $this->createMock(MerchantAccountGateway::class);
+
         $this->gateway = $this->createMock(Gateway::class);
+        $this->gateway
+            ->expects(static::any())
+            ->method('merchantAccount')
+            ->willReturn($this->merchantAccountGateway);
+
         $this->salesChannelConfigService = $this->createMock(SalesChannelConfigService::class);
         $this->controller = new StorefrontController(
             $this->gateway,
@@ -67,14 +77,26 @@ class StorefrontControllerTest extends TestCase
             ->with($expected['salesChannelId'], $expected['currencyId'], $shop)
             ->willReturn('this-is-merchant-id');
 
+        $this->salesChannelConfigService
+            ->expects(static::once())
+            ->method('isThreeDSecureEnforced')
+            ->with($expected['salesChannelId'], $shop)
+            ->willReturn(false);
+
+        $this->merchantAccountGateway
+            ->expects(static::once())
+            ->method('find')
+            ->with('this-is-merchant-id')
+            ->willReturn((object) ['threeDSecure' => ['v2' => ['enabled' => false]]]);
+
         $action = new StorefrontAction($shop, new StorefrontClaims($claims), new Collection());
 
-        $response = $this->controller->getClientToken($action, ...$queryParams);
+        $response = $this->controller->getClientConfig($action, ...$queryParams);
 
         $json = \json_decode($response->getContent(), true);
 
         static::assertNotNull($json);
-        static::assertSame(['token' => 'this-is-client-token'], $json);
+        static::assertSame(['threeDS' => ['enforced' => false, 'enabled' => false], 'token' => 'this-is-client-token'], $json);
     }
 
     public static function providerGetClientToken(): \Generator

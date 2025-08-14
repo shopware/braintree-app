@@ -42,7 +42,12 @@ class BraintreePaymentService
         }
 
         $nonce = $this->extractNonce($payment);
-        $this->validateThreeDSecure($nonce, $this->salesChannelConfigService->isThreeDSecureEnforced($salesChannelId, $payment->shop));
+
+        $merchant = $this->gateway->merchantAccount()->find($merchantId);
+
+        if ($merchant->threeDSecure['v2']['enabled'] ?? false) {
+            $this->validateThreeDSecure($nonce, $this->salesChannelConfigService->isThreeDSecureEnforced($salesChannelId, $payment->shop));
+        }
 
         $billing = $this->orderInformationService->extractBillingAddress($payment);
         $shipping = $this->orderInformationService->extractShippingAddress($payment);
