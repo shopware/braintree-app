@@ -400,6 +400,98 @@ class BraintreePaymentServiceTest extends TestCase
         $this->paymentService->handleTransaction($paymentPayAction);
     }
 
+    public function testHandleTransactionWithThreeDSecuredDisabled(): void
+    {
+        $salesChannelConfigService = $this->createMock(SalesChannelConfigService::class);
+        $salesChannelConfigService
+            ->method('getMerchantId')
+            ->willReturn('this-is-merchant-id');
+
+        $this->merchantAccountGateway
+            ->expects(static::once())
+            ->method('find')
+            ->with('this-is-merchant-id')
+            ->willReturn((object) [
+                'threeDSecure' => [
+                    'v2' => [
+                        'enabled' => false,
+                    ],
+                ],
+            ]);
+
+        $this->paymentService = new BraintreePaymentService(
+            $this->gateway,
+            $this->orderInformationService,
+            $salesChannelConfigService,
+            $this->transactionRepository,
+            $this->entityManager,
+        );
+
+        $this->paymentMethodNonceGateway
+            ->expects(static::never())
+            ->method('find');
+
+        $this->transactionGateway
+            ->expects(static::once())
+            ->method('sale')
+            ->willReturn(
+                new Result\Successful([
+                    'transaction' => Transaction::factory([
+                        'id' => 'this-is-transaction-id',
+                        'currencyIsoCode' => 'EUR',
+                        'amount' => 200,
+                    ]),
+                ], ['transaction'])
+            );
+
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+
+        $this->paymentService->handleTransaction($paymentPayAction);
+    }
+
+    public function testHandleTransactionThreeDSecureDefault(): void
+    {
+        $salesChannelConfigService = $this->createMock(SalesChannelConfigService::class);
+        $salesChannelConfigService
+            ->method('getMerchantId')
+            ->willReturn('this-is-merchant-id');
+
+        $this->merchantAccountGateway
+            ->expects(static::once())
+            ->method('find')
+            ->with('this-is-merchant-id')
+            ->willReturn((object) []);
+
+        $this->paymentService = new BraintreePaymentService(
+            $this->gateway,
+            $this->orderInformationService,
+            $salesChannelConfigService,
+            $this->transactionRepository,
+            $this->entityManager,
+        );
+
+        $this->paymentMethodNonceGateway
+            ->expects(static::never())
+            ->method('find');
+
+        $this->transactionGateway
+            ->expects(static::once())
+            ->method('sale')
+            ->willReturn(
+                new Result\Successful([
+                    'transaction' => Transaction::factory([
+                        'id' => 'this-is-transaction-id',
+                        'currencyIsoCode' => 'EUR',
+                        'amount' => 200,
+                    ]),
+                ], ['transaction'])
+            );
+
+        $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
+
+        $this->paymentService->handleTransaction($paymentPayAction);
+    }
+
     public function testExtractNonce(): void
     {
         $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);

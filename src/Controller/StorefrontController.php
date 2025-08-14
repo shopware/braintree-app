@@ -67,6 +67,6 @@ class StorefrontController extends AbstractController
         #[MapQueryParameter(name: 'sales-channel-id')]
         ?string $salesChannelId = null,
     ): Response {
-        return $this->redirectToRoute('braintree.client.config', ['currency-id' => $currencyId, 'sales-channel-id' => $salesChannelId]);
+        return $this->getClientConfig($storefrontAction, $currencyId, $salesChannelId);
     }
 }

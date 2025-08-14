@@ -54,8 +54,8 @@ class StorefrontControllerTest extends TestCase
      * @param StorefrontClaimsArray $claims
      * @param StorefrontClaimsArray $expected
      */
-    #[DataProvider('providerGetClientToken')]
-    public function testGetClientToken(array $queryParams, array $claims, array $expected): void
+    #[DataProvider('providerGetClientConfig')]
+    public function testGetClientConfig(array $queryParams, array $claims, array $expected): void
     {
         $clientToken = $this->createMock(ClientTokenGateway::class);
         $clientToken
@@ -99,7 +99,7 @@ class StorefrontControllerTest extends TestCase
         static::assertSame(['threeDS' => ['enforced' => false, 'enabled' => false], 'token' => 'this-is-client-token'], $json);
     }
 
-    public static function providerGetClientToken(): \Generator
+    public static function providerGetClientConfig(): \Generator
     {
         yield 'with query params' => [
             ['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id'],
@@ -124,5 +124,165 @@ class StorefrontControllerTest extends TestCase
             ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'claim-sales-channel-id'],
             ['currencyId' => 'claim-currency-id', 'salesChannelId' => 'this-is-sales-channel-id'],
         ];
+    }
+
+    public function testThreeDSecureEnforced(): void
+    {
+        $clientToken = $this->createMock(ClientTokenGateway::class);
+        $clientToken
+            ->expects(static::once())
+            ->method('generate')
+            ->with(['merchantAccountId' => 'this-is-merchant-id'])
+            ->willReturn('this-is-client-token');
+
+        $this->gateway
+            ->expects(static::once())
+            ->method('clientToken')
+            ->willReturn($clientToken);
+
+        $shop = new ShopEntity('', '', '');
+
+        $this->salesChannelConfigService
+            ->expects(static::once())
+            ->method('getMerchantId')
+            ->with('this-is-sales-channel-id', 'this-is-currency-id', $shop)
+            ->willReturn('this-is-merchant-id');
+
+        $this->salesChannelConfigService
+            ->expects(static::once())
+            ->method('isThreeDSecureEnforced')
+            ->with('this-is-sales-channel-id', $shop)
+            ->willReturn(true);
+
+        $action = new StorefrontAction($shop, new StorefrontClaims(['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id']), new Collection());
+        $response = $this->controller->getClientConfig($action, 'this-is-currency-id', 'this-is-sales-channel-id');
+
+        $json = \json_decode($response->getContent(), true);
+
+        static::assertNotNull($json);
+        static::assertArrayHasKey('threeDS', $json);
+        static::assertArrayHasKey('enforced', $json['threeDS']);
+        static::assertTrue($json['threeDS']['enforced']);
+    }
+
+    public function testThreeDSecureEnabled(): void
+    {
+        $clientToken = $this->createMock(ClientTokenGateway::class);
+        $clientToken
+            ->expects(static::once())
+            ->method('generate')
+            ->with(['merchantAccountId' => 'this-is-merchant-id'])
+            ->willReturn('this-is-client-token');
+
+        $this->gateway
+            ->expects(static::once())
+            ->method('clientToken')
+            ->willReturn($clientToken);
+
+        $shop = new ShopEntity('', '', '');
+
+        $this->salesChannelConfigService
+            ->expects(static::once())
+            ->method('getMerchantId')
+            ->with('this-is-sales-channel-id', 'this-is-currency-id', $shop)
+            ->willReturn('this-is-merchant-id');
+
+        $this->merchantAccountGateway
+            ->expects(static::once())
+            ->method('find')
+            ->with('this-is-merchant-id')
+            ->willReturn((object) ['threeDSecure' => ['v2' => ['enabled' => true]]]);
+
+        $action = new StorefrontAction($shop, new StorefrontClaims(['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id']), new Collection());
+        $response = $this->controller->getClientConfig($action, 'this-is-currency-id', 'this-is-sales-channel-id');
+
+        $json = \json_decode($response->getContent(), true);
+
+        static::assertNotNull($json);
+        static::assertArrayHasKey('threeDS', $json);
+        static::assertArrayHasKey('enabled', $json['threeDS']);
+        static::assertTrue($json['threeDS']['enabled']);
+    }
+
+    public function testThreeDSecureEnabledDefault(): void
+    {
+        $clientToken = $this->createMock(ClientTokenGateway::class);
+        $clientToken
+            ->expects(static::once())
+            ->method('generate')
+            ->with(['merchantAccountId' => 'this-is-merchant-id'])
+            ->willReturn('this-is-client-token');
+
+        $this->gateway
+            ->expects(static::once())
+            ->method('clientToken')
+            ->willReturn($clientToken);
+
+        $shop = new ShopEntity('', '', '');
+
+        $this->salesChannelConfigService
+            ->expects(static::once())
+            ->method('getMerchantId')
+            ->with('this-is-sales-channel-id', 'this-is-currency-id', $shop)
+            ->willReturn('this-is-merchant-id');
+
+        $this->merchantAccountGateway
+            ->expects(static::once())
+            ->method('find')
+            ->with('this-is-merchant-id')
+            ->willReturn((object) []);
+
+        $action = new StorefrontAction($shop, new StorefrontClaims(['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id']), new Collection());
+        $response = $this->controller->getClientConfig($action, 'this-is-currency-id', 'this-is-sales-channel-id');
+
+        $json = \json_decode($response->getContent(), true);
+
+        static::assertNotNull($json);
+        static::assertArrayHasKey('threeDS', $json);
+        static::assertArrayHasKey('enabled', $json['threeDS']);
+        static::assertFalse($json['threeDS']['enabled']);
+    }
+
+    public function testDeprecatedGetClientToken(): void
+    {
+        $clientToken = $this->createMock(ClientTokenGateway::class);
+        $clientToken
+            ->expects(static::once())
+            ->method('generate')
+            ->with(['merchantAccountId' => 'this-is-merchant-id'])
+            ->willReturn('this-is-client-token');
+
+        $this->gateway
+            ->expects(static::once())
+            ->method('clientToken')
+            ->willReturn($clientToken);
+
+        $shop = new ShopEntity('', '', '');
+
+        $this->salesChannelConfigService
+            ->expects(static::once())
+            ->method('getMerchantId')
+            ->with('this-is-sales-channel-id', 'this-is-currency-id', $shop)
+            ->willReturn('this-is-merchant-id');
+
+        $this->merchantAccountGateway
+            ->expects(static::once())
+            ->method('find')
+            ->with('this-is-merchant-id')
+            ->willReturn((object) []);
+
+        $action = new StorefrontAction($shop, new StorefrontClaims(['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id']), new Collection());
+        $response = $this->controller->getClientToken($action, 'this-is-currency-id', 'this-is-sales-channel-id');
+
+        $json = \json_decode($response->getContent(), true);
+
+        static::assertNotNull($json);
+        static::assertArrayHasKey('token', $json);
+        static::assertSame('this-is-client-token', $json['token']);
+        static::assertArrayHasKey('threeDS', $json);
+        static::assertArrayHasKey('enabled', $json['threeDS']);
+        static::assertArrayHasKey('enforced', $json['threeDS']);
+        static::assertFalse($json['threeDS']['enforced']);
+        static::assertFalse($json['threeDS']['enabled']);
     }
 }
