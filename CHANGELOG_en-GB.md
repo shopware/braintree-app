@@ -1,3 +1,7 @@
+# 3.1.1
+
+* Fixes an issue during checkout with Braintree merchants, where 3DS is not enrolled 
+
 # 3.1.0
 
 * Fixes an issue, where hiding the loading spinner leaves the confirm button empty
