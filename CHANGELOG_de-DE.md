@@ -1,3 +1,7 @@
+# 2.3.2
+
+* Behebt ein Problem während des Checkouts, bei dem Braintree Merchants nicht für 3DS registriert sind
+
 # 2.3.1
 
 * Ersetzt das Vorschaubild für die App von .webp auf .png
