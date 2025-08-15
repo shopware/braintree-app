@@ -11,6 +11,8 @@ import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-l
 const BASE_URL = 'https://braintree.shopware.com/api';
 
 /**
+ * @typedef {{ token: string, threeDS: { enforced: boolean, enabled: boolean } }} BraintreeClientConfig
+ *
  * @typedef {module:braintree-web/client.Client} BraintreeClient
  *
  * @typedef {module:braintree-web/hosted-fields.HostedFields} BraintreeHostedFields
@@ -24,6 +26,9 @@ const BASE_URL = 'https://braintree.shopware.com/api';
  * @typedef {module:braintree-web/data-collector.deviceData} BraintreeDeviceData
  */
 export default class SwagBraintreeHostedFields extends Plugin {
+    /** @type {BraintreeClientConfig} */
+    config;
+
     static options = {
         confirmOrderFormSelector: '#confirmOrderForm',
         confirmOrderButtonSelector: '#confirmOrderForm button[type=submit]',
@@ -53,6 +58,8 @@ export default class SwagBraintreeHostedFields extends Plugin {
 
         this._client = new AppClient('SwagBraintreeApp');
 
+        this.config = await this.getClientConfig();
+
         const braintreeClient = await this.createClient();
         const braintreeHostedFields = await this.createHostedFields(braintreeClient);
         const braintree3DS = await this.create3DSecure(braintreeClient);
@@ -69,16 +76,23 @@ export default class SwagBraintreeHostedFields extends Plugin {
     }
 
     /**
+     * @returns Promise<BraintreeClientConfig>
+     */
+    async getClientConfig() {
+        const request = await this._client.post(`${BASE_URL}/client/config?shop-id=${this.options.appShopId}&currency-id=${this.options.currencyId}&sales-channel-id=${this.options.salesChannelId}`);
+
+        if (!request.ok) {
+            throw new Error(await request.text())
+        }
+
+        return await request.json();
+    }
+
+    /**
      * @returns {Promise<BraintreeClient>} Client token of the merchant
      */
     async createClient() {
-        const request = await this._client.post(`${BASE_URL}/client/token?shop-id=${this.options.appShopId}&currency-id=${this.options.currencyId}&sales-channel-id=${this.options.salesChannelId}`);
-
-        if (!request.ok) throw new Error(await request.text());
-
-        const authorization = (await request.json()).token;
-
-        return BraintreeClient.create({ authorization });
+        return BraintreeClient.create({ authorization: this.config.token });
     }
 
     /**
@@ -119,9 +133,13 @@ export default class SwagBraintreeHostedFields extends Plugin {
 
     /**
      * @param {BraintreeClient} client
-     * @returns Promise<BraintreeThreeDSecure>
+     * @returns Promise<BraintreeThreeDSecure|null>
      */
     create3DSecure(client) {
+        if (!this.config.threeDS.enabled) {
+            return Promise.resolve(null);
+        }
+
         return Braintree3DSecure.create({
             client,
             version: 2
@@ -133,25 +151,29 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * @returns Promise<BraintreeDataCollector>
      */
     createDataCollector(client) {
-        return BraintreeDataCollector.create({ client });
+        return BraintreeDataCollector.create({ client, kount: true });
     }
 
     /**
      * @param {BraintreeHostedFields} braintreeHostedFields
-     * @param {BraintreeThreeDSecure} braintree3DS
+     * @param {BraintreeThreeDSecure|null} braintree3DS
      * @param {Promise<BraintreeDataCollector>} braintreeDataCollector
      * @param {SubmitEvent} event
      */
     async onSubmitOrderConfirm(braintreeHostedFields, braintree3DS, braintreeDataCollector, event) {
         event.preventDefault();
 
-        if (!this.checkSubmitValidity(braintreeHostedFields)) return;
+        if (!this.checkSubmitValidity(braintreeHostedFields)) {
+            return;
+        }
 
         PageLoadingIndicatorUtil.create();
 
         let payload = await this.tokenizeTransaction(braintreeHostedFields);
 
-        payload = await this.validateWith3DSecure(braintree3DS, payload);
+        if (braintree3DS) {
+            payload = await this.validateWith3DSecure(braintree3DS, payload);
+        }
 
         const braintreeDeviceData = await (await braintreeDataCollector).getDeviceData();
 
@@ -168,7 +190,9 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * @returns {HTMLElement|undefined} First invalid element if exists
      */
     checkValidity(braintreeHostedFields, state) {
-        if (!state) state = braintreeHostedFields.getState();
+        if (!state) {
+            state = braintreeHostedFields.getState();
+        }
 
         let invalid = undefined;
         for (let field of ['cvv', 'number', 'expirationDate', 'cardholderName', 'postalCode']) {
@@ -196,7 +220,9 @@ export default class SwagBraintreeHostedFields extends Plugin {
      */
     checkSubmitValidity(braintreeHostedFields) {
         const invalidField = this.checkValidity(braintreeHostedFields);
-        if (!invalidField) return true;
+        if (!invalidField) {
+            return true;
+        }
 
         invalidField.focus();
         invalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -279,7 +305,9 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * @private
      */
     resetOnSubmitError(error) {
-        if (!!error) console.error(error);
+        if (!!error) {
+            console.error(error);
+        }
 
         this.resetOrderConfirmButton();
         PageLoadingIndicatorUtil.remove();
