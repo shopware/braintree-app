@@ -245,7 +245,7 @@ export default defineComponent({
             if (this.loadingTransaction || this.loadingShop || !this.transaction || !this.shop)
                 return '';
 
-            return `https://${this.shop?.braintreeSandbox ? 'sandbox.' : ''}braintreegateway.com/merchants/${this.shop?.braintreeMerchantId}/transactions/${this.transaction?.id}`;
+            return `https://${this.shop?.braintreeSandbox ? 'sandbox' : 'www'}.braintreegateway.com/merchants/${this.shop?.braintreeMerchantId}/transactions/${this.transaction?.id}`;
         },
     },
 
