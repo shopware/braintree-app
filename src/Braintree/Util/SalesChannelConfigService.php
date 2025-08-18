@@ -52,6 +52,25 @@ class SalesChannelConfigService
         return false;
     }
 
+    public function submitForSettlement(string $salesChannelId, ShopInterface $shop): bool
+    {
+        $configs = $this->configRepository->findBy(['salesChannelId' => [null, $salesChannelId], 'shop' => $shop]);
+
+        foreach ($configs as $config) {
+            $configs[$config->getSalesChannelId()] = $config;
+        }
+
+        if (isset($configs[$salesChannelId]) && $configs[$salesChannelId]->isSubmitForSettlement() !== null) {
+            return $configs[$salesChannelId]->isSubmitForSettlement();
+        }
+
+        if (isset($configs[null]) && $configs[null]->isSubmitForSettlement() !== null) {
+            return $configs[null]->isSubmitForSettlement();
+        }
+
+        return true;
+    }
+
     public function getShipsFromPostalCode(string $salesChannelId, ShopInterface $shop): string
     {
         $configs = $this->configRepository->findBy(['salesChannelId' => [null, $salesChannelId], 'shop' => $shop]);

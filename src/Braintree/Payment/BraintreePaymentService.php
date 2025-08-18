@@ -61,7 +61,9 @@ class BraintreePaymentService
             'discountAmount' => $this->orderInformationService->extractDiscountAmount($payment),
             'lineItems' => $this->orderInformationService->extractLineItems($payment),
             'merchantAccountId' => $merchantId,
-            'options' => ['submitForSettlement' => true],
+            'options' => [
+                'submitForSettlement' => $this->salesChannelConfigService->submitForSettlement($salesChannelId, $payment->shop),
+            ],
             'paymentMethodNonce' => $nonce,
             'purchaseOrderNumber' => $payment->order->getOrderNumber(),
             'shipping' => $shipping['address'],

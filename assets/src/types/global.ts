@@ -22,6 +22,7 @@ declare global {
         id: string | null,
         shop: string,
         threeDSecureEnforced: boolean | null,
+        submitForSettlement: boolean | null,
         shipsFromPostalCode: string | null,
         salesChannelId: string | null,
         createdAt: string,

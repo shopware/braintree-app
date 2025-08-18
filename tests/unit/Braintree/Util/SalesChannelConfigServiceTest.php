@@ -263,7 +263,7 @@ class SalesChannelConfigServiceTest extends TestCase
 
         $defaultConfig = (new ConfigEntity())
             ->setSalesChannelId(null)
-            ->setThreeDSecureEnforced(false);
+            ->setThreeDSecureEnforced(null);
 
         $this->configRepository
             ->expects(static::once())
@@ -406,5 +406,135 @@ class SalesChannelConfigServiceTest extends TestCase
         );
 
         static::assertSame('', $postalCode);
+    }
+
+    public function testSubmitForSettlementBothButSeperateIsNull(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setSubmitForSettlement(null);
+
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setSubmitForSettlement(true);
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config, $defaultConfig]);
+
+        $submitForSettlement = $this->salesChannelConfigService->submitForSettlement(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertTrue($submitForSettlement);
+    }
+
+    public function testSubmitForSettlementBothReturnsSeperate(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setSubmitForSettlement(true);
+
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setSubmitForSettlement(false);
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config, $defaultConfig]);
+
+        $submitForSettlement = $this->salesChannelConfigService->submitForSettlement(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertTrue($submitForSettlement);
+    }
+
+    public function testSubmitForSettlementOnlySeperate(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setSubmitForSettlement(true);
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config]);
+
+        $submitForSettlement = $this->salesChannelConfigService->submitForSettlement(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertTrue($submitForSettlement);
+    }
+
+    public function testSubmitForSettlementOnlyDefault(): void
+    {
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setSubmitForSettlement(false);
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$defaultConfig]);
+
+        $submitForSettlement = $this->salesChannelConfigService->submitForSettlement(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertFalse($submitForSettlement);
+    }
+
+    public function testSubmitForSettlementWithNone(): void
+    {
+        $shop = $this->shop;
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->with(static::callback(static function (array $criteria) use ($shop): bool {
+                static::assertContains('this-is-sales-channel-id', $criteria['salesChannelId']);
+                static::assertContains(null, $criteria['salesChannelId']);
+                static::assertEquals($shop, $criteria['shop']);
+
+                return true;
+            }))
+            ->willReturn([]);
+
+        $submitForSettlement = $this->salesChannelConfigService->submitForSettlement(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertTrue($submitForSettlement);
+    }
+
+    public function testSubmitForSettlementWithBothNull(): void
+    {
+        $config = (new ConfigEntity())
+            ->setSalesChannelId('this-is-sales-channel-id')
+            ->setSubmitForSettlement(null);
+
+        $defaultConfig = (new ConfigEntity())
+            ->setSalesChannelId(null)
+            ->setSubmitForSettlement(null);
+
+        $this->configRepository
+            ->expects(static::once())
+            ->method('findBy')
+            ->willReturn([$config, $defaultConfig]);
+
+        $submitForSettlement = $this->salesChannelConfigService->submitForSettlement(
+            'this-is-sales-channel-id',
+            $this->shop
+        );
+
+        static::assertTrue($submitForSettlement);
     }
 }
