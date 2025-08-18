@@ -111,7 +111,7 @@
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.2",
         "friendsofphp/php-cs-fixer": "^3.66",
-        "infection/infection": "^0.30",
+        "infection/infection": "^0.31",
         "kubawerlos/php-cs-fixer-custom-fixers": "^3.23",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
@@ -121,7 +121,7 @@
         "symfony/debug-bundle": "^7.2",
         "symfony/stopwatch": "^7.2",
         "symfony/web-profiler-bundle": "^7.2",
-        "symplify/phpstan-rules": "14.6.9",
+        "symplify/phpstan-rules": "14.6.13",
         "tomasvotruba/type-coverage": "^2"
     }
 }

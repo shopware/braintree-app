@@ -199,7 +199,7 @@ export default defineComponent({
 
 <style lang='scss'>
 body {
-    background: var(--color-background-primary-default);
+    background: var(--color-background-secondary-default);
 }
 
 .sw-braintree-app-settings-page {

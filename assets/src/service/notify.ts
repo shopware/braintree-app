@@ -17,7 +17,7 @@ export class Notify {
         const clone = response.clone();
         const message = await response
             .json()
-            .then((json) => String(json?.message || json))
+            .then(this.formatError.bind(this))
             .catch(() => clone.text());
 
         void sw.notification.dispatch({
@@ -33,5 +33,15 @@ export class Notify {
             title: this.i18n.global.t('notification.success'),
             message: this.i18n.global.t(`success.${String(code)}`),
         });
+    }
+
+    private formatError(json: any): string {
+        if (typeof json !== 'object') 
+            return String(json);
+
+        if (json?.message || json?.detail) 
+            return String(json.message || json.detail);
+
+        return String(JSON.stringify(json));
     }
 }
