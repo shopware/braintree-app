@@ -51,7 +51,7 @@ class ConfigEntity implements EntityInterface
 
     public function setShipsFromPostalCode(?string $shipsFromPostalCode): self
     {
-        $this->shipsFromPostalCode = $shipsFromPostalCode ?: null;
+        $this->shipsFromPostalCode = $shipsFromPostalCode;
 
         return $this;
     }
