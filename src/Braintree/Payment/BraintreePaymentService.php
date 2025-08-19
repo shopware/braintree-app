@@ -42,12 +42,9 @@ class BraintreePaymentService
         }
 
         $nonce = $this->extractNonce($payment);
+        $threeDSecureEnforced = $this->salesChannelConfigService->isThreeDSecureEnforced($salesChannelId, $payment->shop);
 
-        $merchant = $this->gateway->merchantAccount()->find($merchantId);
-
-        if ($merchant->threeDSecure['v2']['enabled'] ?? false) {
-            $this->validateThreeDSecure($nonce, $this->salesChannelConfigService->isThreeDSecureEnforced($salesChannelId, $payment->shop));
-        }
+        $this->validateThreeDSecure($nonce, $threeDSecureEnforced);
 
         $billing = $this->orderInformationService->extractBillingAddress($payment);
         $shipping = $this->orderInformationService->extractShippingAddress($payment);
@@ -61,7 +58,11 @@ class BraintreePaymentService
             'discountAmount' => $this->orderInformationService->extractDiscountAmount($payment),
             'lineItems' => $this->orderInformationService->extractLineItems($payment),
             'merchantAccountId' => $merchantId,
-            'options' => ['submitForSettlement' => true],
+            'options' => [
+                'submitForSettlement' => true,
+                // Braintree will set this to true themselves if it is unset and 3DS has been completed
+                ...($threeDSecureEnforced ? ['threeDSecure' => ['required' => true]] : []),
+            ],
             'paymentMethodNonce' => $nonce,
             'purchaseOrderNumber' => $payment->order->getOrderNumber(),
             'shipping' => $shipping['address'],
@@ -75,7 +76,7 @@ class BraintreePaymentService
 
         if (!$response->success) {
             // @infection-ignore-all - As if that line isn't painful enough
-            throw new BraintreePaymentException($response->errors->deepAll()[0]->message ?? 'Unknown error occured', shop: $payment->shop);
+            throw new BraintreePaymentException($response->errors->deepAll()[0]->message ?? $response->message ?? 'Unknown error occured', shop: $payment->shop);
         }
 
         if (!isset($response->transaction)) {
@@ -116,6 +117,10 @@ class BraintreePaymentService
         }
 
         if (!$nonceInfo->threeDSecureInfo) {
+            if (!$enforced) {
+                return;
+            }
+
             throw new BraintreePaymentException('3D secure validation failed');
         }
 

@@ -1,3 +1,7 @@
+# 3.1.2
+
+* Fixes an issue during checkout with Braintree merchants, where 3DS is not enrolled 
+
 # 3.1.1
 
 * Fixes an issue during checkout with Braintree merchants, where 3DS is not enrolled 
