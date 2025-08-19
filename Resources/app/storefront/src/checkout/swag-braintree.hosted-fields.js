@@ -137,13 +137,15 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * @returns Promise<BraintreeThreeDSecure|null>
      */
     create3DSecure(client) {
-        if (!this.config.threeDS.enabled) {
-            return Promise.resolve(null);
-        }
-
         return Braintree3DSecure.create({
             client,
             version: 2
+        }).catch((error) => {
+            if (this.config.threeDS.enforced) {
+                throw error;
+            }
+
+            return null;
         });
     }
 
