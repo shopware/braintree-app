@@ -1,3 +1,7 @@
+# 3.1.2
+
+* Behebt ein Problem während des Checkouts, bei dem Braintree Merchants nicht für 3DS registriert sind
+
 # 3.1.1
 
 * Behebt ein Problem während des Checkouts, bei dem Braintree Merchants nicht für 3DS registriert sind
