@@ -42,7 +42,7 @@ when@prod:
             nested:
                 type: stream
                 path: php://stderr
-                level: debug
+                level: info
                 formatter: monolog.formatter.json
             console:
                 type: console
@@ -51,4 +51,6 @@ when@prod:
             deprecation:
                 type: stream
                 channels: [deprecation]
+                level: notice
                 path: php://stderr
+                formatter: monolog.formatter.json
