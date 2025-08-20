@@ -3,6 +3,8 @@
 namespace Swag\Braintree\Tests\Unit\Controller;
 
 use Braintree\Transaction;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -25,14 +27,18 @@ class PaymentControllerTest extends TestCase
 
     private MockObject&BraintreePaymentService $paymentService;
 
+    private TestHandler $logger;
+
     protected function setUp(): void
     {
         $this->httpFoundationFactory = $this->createMock(HttpFoundationFactoryInterface::class);
         $this->paymentService = $this->createMock(BraintreePaymentService::class);
+        $this->logger = new TestHandler();
 
         $this->paymentController = new PaymentController(
             $this->paymentService,
             $this->httpFoundationFactory,
+            new Logger('test', [$this->logger]),
         );
     }
 

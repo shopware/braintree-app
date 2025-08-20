@@ -3,11 +3,13 @@
 namespace Swag\Braintree\Controller;
 
 use Braintree\Transaction;
+use Psr\Log\LoggerInterface;
 use Shopware\App\SDK\Context\Payment\PaymentPayAction;
 use Shopware\App\SDK\Response\PaymentResponse;
 use Shopware\App\SDK\Shop\ShopInterface;
-use Swag\Braintree\Braintree\Exception\BraintreePaymentException;
 use Swag\Braintree\Braintree\Payment\BraintreePaymentService;
+use Swag\Braintree\Framework\Exception\BraintreeHttpException;
+use Swag\Braintree\Framework\Logger\LogProcessor;
 use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +24,7 @@ class PaymentController extends AbstractController
     public function __construct(
         private readonly BraintreePaymentService $paymentService,
         private readonly HttpFoundationFactoryInterface $httpFoundationFactory,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -30,7 +33,10 @@ class PaymentController extends AbstractController
     {
         try {
             $this->paymentService->handleTransaction($payment);
-        } catch (BraintreePaymentException $e) {
+        } catch (BraintreeHttpException $e) {
+            // @infection-ignore-all - logger
+            $this->logger->warning('Payment failed', [LogProcessor::EXCEPTION => $e, LogProcessor::ACTION => $payment]);
+
             return $this->httpFoundationFactory->createResponse(PaymentResponse::failed($e->getMessage()));
         }
 

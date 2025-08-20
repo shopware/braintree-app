@@ -6,6 +6,7 @@ use Braintree\Exception\NotFound;
 use Braintree\Gateway;
 use Braintree\Transaction;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Shopware\App\SDK\Context\Payment\PaymentPayAction;
 use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\Braintree\Braintree\Exception\BraintreePaymentException;
@@ -13,6 +14,7 @@ use Swag\Braintree\Braintree\Exception\BraintreeTransactionNotFoundException;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
 use Swag\Braintree\Entity\TransactionEntity;
 use Swag\Braintree\Entity\TransactionReportEntity;
+use Swag\Braintree\Framework\Logger\LogProcessor;
 use Swag\Braintree\Repository\TransactionRepository;
 
 class BraintreePaymentService
@@ -28,11 +30,15 @@ class BraintreePaymentService
         private readonly SalesChannelConfigService $salesChannelConfigService,
         private readonly TransactionRepository $transactionRepository,
         private readonly EntityManagerInterface $em,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
     public function handleTransaction(PaymentPayAction $payment): Transaction
     {
+        // @infection-ignore-all - logger
+        $this->logger->notice('Handle transaction', [LogProcessor::ACTION => $payment]);
+
         $currencyId = $this->orderInformationService->extractCurrencyId($payment);
         $salesChannelId = $this->orderInformationService->extractSalesChannelId($payment);
         $merchantId = $this->salesChannelConfigService->getMerchantId($salesChannelId, $currencyId, $payment->shop);
@@ -44,14 +50,11 @@ class BraintreePaymentService
         $nonce = $this->extractNonce($payment);
         $threeDSecureEnforced = $this->salesChannelConfigService->isThreeDSecureEnforced($salesChannelId, $payment->shop);
 
-        $this->validateThreeDSecure($nonce, $threeDSecureEnforced);
+        $hasThreeDSecure = $this->validateThreeDSecure($nonce, $threeDSecureEnforced);
 
-        $billing = $this->orderInformationService->extractBillingAddress($payment);
-        $shipping = $this->orderInformationService->extractShippingAddress($payment);
-
-        $response = $this->gateway->transaction()->sale([
+        $sale = [
             'amount' => $payment->orderTransaction->getAmount()->getTotalPrice(),
-            'billing' => $billing['address'],
+            'billing' => $this->orderInformationService->extractBillingAddress($payment)['address'],
             'channel' => BraintreePaymentService::BRAINTREE_BN_CODE,
             'customer' => $this->orderInformationService->extractCustomer($payment),
             'deviceData' => $payment->requestData[self::BRAINTREE_DEVICE_DATA] ?? null,
@@ -65,22 +68,45 @@ class BraintreePaymentService
             ],
             'paymentMethodNonce' => $nonce,
             'purchaseOrderNumber' => $payment->order->getOrderNumber(),
-            'shipping' => $shipping['address'],
+            'shipping' => $this->orderInformationService->extractShippingAddress($payment)['address'],
             'shippingAmount' => $payment->order->getShippingCosts()->getTotalPrice(),
             'shipsFromPostalCode' => $this->salesChannelConfigService->getShipsFromPostalCode($salesChannelId, $payment->shop),
             'shippingTaxAmount' => $this->orderInformationService->extractShippingTaxAmount($payment),
             'taxAmount' => $this->orderInformationService->extractTaxAmount($payment),
             'taxExempt' => $payment->order->getTaxStatus() === 'tax-free',
             'customFields' => $this->orderInformationService->extractCustomFields($payment),
+        ];
+
+        // @infection-ignore-all - logger
+        $this->logger->notice('Sale transaction', [
+            LogProcessor::ACTION => $payment,
+            '3ds' => $hasThreeDSecure,
+            '3dsEnforced' => $threeDSecureEnforced,
+            'hasDeviceData' => !empty($sale['deviceData']),
+            'hasCustomFields' => !empty($sale['customFields']),
+            'merchantAccountId' => $sale['merchantAccountId'],
         ]);
+
+        $response = $this->gateway->transaction()->sale($sale);
 
         if (!$response->success) {
             // @infection-ignore-all - As if that line isn't painful enough
-            throw new BraintreePaymentException($response->errors->deepAll()[0]->message ?? $response->message ?? 'Unknown error occured', shop: $payment->shop);
+            $errorMessage = $response->errors->deepAll()[0]->message ?? null;
+            $responseMessage = $response->__isset('message') ? $response->message : null;
+
+            // @infection-ignore-all - As if that line isn't painful enough
+            throw new BraintreePaymentException(
+                $errorMessage ?? $responseMessage ?? 'Unknown error occured',
+                [
+                    'responseMessage' => $responseMessage,
+                    'responseErrors' => \array_map(static fn ($error) => $error->message, $response->errors->deepAll()),
+                ],
+                transactionId: $response->transaction->id ?? null,
+            );
         }
 
         if (!isset($response->transaction)) {
-            throw new BraintreePaymentException('No transaction provided', shop: $payment->shop);
+            throw new BraintreePaymentException('No transaction provided');
         }
 
         $this->saveTransaction($payment, $response->transaction);
@@ -92,23 +118,23 @@ class BraintreePaymentService
     {
         if (!$payment->requestData) {
             /** @infection-ignore-all can not be tested */
-            throw new BraintreePaymentException('No nonce provided', shop: $payment->shop);
+            throw new BraintreePaymentException('No nonce provided');
         }
 
         if (!\array_key_exists(self::BRAINTREE_NONCE, $payment->requestData)) {
-            throw new BraintreePaymentException('No nonce provided', shop: $payment->shop);
+            throw new BraintreePaymentException('No nonce provided');
         }
 
         $nonce = $payment->requestData[self::BRAINTREE_NONCE];
 
         if (!\is_string($nonce)) {
-            throw new BraintreePaymentException('No nonce provided', shop: $payment->shop);
+            throw new BraintreePaymentException('No nonce provided');
         }
 
         return $nonce;
     }
 
-    private function validateThreeDSecure(string $nonce, bool $enforced): void
+    private function validateThreeDSecure(string $nonce, bool $enforced): bool
     {
         try {
             $nonceInfo = $this->gateway->paymentMethodNonce()->find($nonce);
@@ -118,15 +144,17 @@ class BraintreePaymentService
 
         if (!$nonceInfo->threeDSecureInfo) {
             if (!$enforced) {
-                return;
+                return false;
             }
 
-            throw new BraintreePaymentException('3D secure validation failed');
+            throw new BraintreePaymentException('3D secure validation failed: No information given');
         }
 
         if (!ThreeDSecure::isValid($nonceInfo->threeDSecureInfo, $enforced)) {
-            throw new BraintreePaymentException('3D secure validation failed');
+            throw new BraintreePaymentException('3D secure validation failed with status "{{ status }}"', ['status' => $nonceInfo->threeDSecureInfo->status]);
         }
+
+        return true;
     }
 
     private function saveTransaction(PaymentPayAction $payment, Transaction $braintreeTransaction): void

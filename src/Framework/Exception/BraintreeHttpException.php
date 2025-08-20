@@ -13,7 +13,7 @@ abstract class BraintreeHttpException extends HttpException
     /**
      * @var mixed[]
      */
-    private array $parameters = [];
+    protected array $parameters = [];
 
     /**
      * @param mixed[] $parameters
