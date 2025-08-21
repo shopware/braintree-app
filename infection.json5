@@ -43,6 +43,9 @@
             "ignore": [
                 "Swag\\Braintree\\Braintree\\Payment\\BraintreePaymentService::handleTransaction",
             ]
-        }
+        },
+        "global-ignoreSourceCodeByRegex": [
+            "\\$this->logger.*"
+        ]
     }
 }

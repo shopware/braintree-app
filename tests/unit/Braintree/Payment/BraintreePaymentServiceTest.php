@@ -10,6 +10,10 @@ use Braintree\Result;
 use Braintree\Transaction;
 use Braintree\TransactionGateway;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Handler\TestHandler;
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -49,6 +53,8 @@ class BraintreePaymentServiceTest extends TestCase
 
     private MockObject&EntityManagerInterface $entityManager;
 
+    private TestHandler $logger;
+
     protected function setUp(): void
     {
         $this->paymentMethodNonceGateway = $this->createMock(PaymentMethodNonceGateway::class);
@@ -65,6 +71,8 @@ class BraintreePaymentServiceTest extends TestCase
 
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
+        $this->logger = new TestHandler();
+
         $this->orderInformationService = new OrderInformationService(new TaxService());
         $this->paymentService = new BraintreePaymentService(
             $this->gateway,
@@ -72,6 +80,7 @@ class BraintreePaymentServiceTest extends TestCase
             $this->salesChannelConfigService,
             $this->transactionRepository,
             $this->entityManager,
+            new Logger('test', [$this->logger]),
         );
         $this->shop = new ShopEntity('this-is-shop-id', '', 'this-is-shop-secret');
     }
@@ -266,7 +275,12 @@ class BraintreePaymentServiceTest extends TestCase
         static::expectException(BraintreePaymentException::class);
         static::expectExceptionMessage('Braintree payment process failed: 3D secure validation failed');
 
-        $this->paymentService->handleTransaction($paymentPayAction);
+        try {
+            $this->paymentService->handleTransaction($paymentPayAction);
+        } catch (BraintreePaymentException $e) {
+            static::assertSame(['status' => ThreeDSecure::STATUS_AUTHENTICATE_FAILED], $e->getParameters());
+            throw $e;
+        }
     }
 
     public function testHandleTransactionWithout3DSUnenforced(): void
@@ -306,6 +320,10 @@ class BraintreePaymentServiceTest extends TestCase
         $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         $this->paymentService->handleTransaction($paymentPayAction);
+
+        static::assertTrue($this->logger->hasRecordThatPasses(static function (LogRecord $record): bool {
+            return $record->message === 'Sale transaction' && $record->context['3ds'] === false;
+        }, Level::Notice));
     }
 
     public function testHandleTransactionWithout3DSEnforced(): void
@@ -370,6 +388,7 @@ class BraintreePaymentServiceTest extends TestCase
             $salesChannelConfigService,
             $this->transactionRepository,
             $this->entityManager,
+            new Logger('test', [$this->logger]),
         );
 
         $this->paymentMethodNonceGateway
@@ -425,6 +444,10 @@ class BraintreePaymentServiceTest extends TestCase
         $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         $this->paymentService->handleTransaction($paymentPayAction);
+
+        static::assertTrue($this->logger->hasRecordThatPasses(static function (LogRecord $record): bool {
+            return $record->message === 'Sale transaction' && $record->context['3ds'] === true;
+        }, Level::Notice));
     }
 
     public function testExtractNonce(): void
