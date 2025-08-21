@@ -117,6 +117,17 @@ class LogProcessorTest extends TestCase
         static::assertSame([], $result->extra);
     }
 
+    public function testInvokeWithWrongAction(): void
+    {
+        $action = new \stdClass();
+
+        $record = $this->getLogRecord('Test message with action', [LogProcessor::ACTION => $action]);
+        $result = ($this->processor)($record);
+
+        static::assertEquals(['action' => []], $result->context);
+        static::assertSame([], $result->extra);
+    }
+
     public function testInvokeWithRequest(): void
     {
         $request = new Request();

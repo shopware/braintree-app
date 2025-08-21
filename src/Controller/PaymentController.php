@@ -34,7 +34,6 @@ class PaymentController extends AbstractController
         try {
             $this->paymentService->handleTransaction($payment);
         } catch (BraintreeHttpException $e) {
-            // @infection-ignore-all - logger
             $this->logger->warning('Payment failed', [LogProcessor::EXCEPTION => $e, LogProcessor::ACTION => $payment]);
 
             return $this->httpFoundationFactory->createResponse(PaymentResponse::failed($e->getMessage()));

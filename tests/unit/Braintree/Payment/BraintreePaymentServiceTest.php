@@ -11,7 +11,9 @@ use Braintree\Transaction;
 use Braintree\TransactionGateway;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
+use Monolog\Level;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -318,6 +320,10 @@ class BraintreePaymentServiceTest extends TestCase
         $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         $this->paymentService->handleTransaction($paymentPayAction);
+
+        static::assertTrue($this->logger->hasRecordThatPasses(static function (LogRecord $record): bool {
+            return $record->message === 'Sale transaction' && $record->context['3ds'] === false;
+        }, Level::Notice));
     }
 
     public function testHandleTransactionWithout3DSEnforced(): void
@@ -438,6 +444,10 @@ class BraintreePaymentServiceTest extends TestCase
         $paymentPayAction = $this->createPaymentPayAction($this->shop, [BraintreePaymentService::BRAINTREE_NONCE => 'this-is-nonce']);
 
         $this->paymentService->handleTransaction($paymentPayAction);
+
+        static::assertTrue($this->logger->hasRecordThatPasses(static function (LogRecord $record): bool {
+            return $record->message === 'Sale transaction' && $record->context['3ds'] === true;
+        }, Level::Notice));
     }
 
     public function testExtractNonce(): void

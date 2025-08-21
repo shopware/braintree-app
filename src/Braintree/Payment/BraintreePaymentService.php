@@ -36,7 +36,6 @@ class BraintreePaymentService
 
     public function handleTransaction(PaymentPayAction $payment): Transaction
     {
-        // @infection-ignore-all - logger
         $this->logger->notice('Handle transaction', [LogProcessor::ACTION => $payment]);
 
         $currencyId = $this->orderInformationService->extractCurrencyId($payment);
@@ -77,7 +76,6 @@ class BraintreePaymentService
             'customFields' => $this->orderInformationService->extractCustomFields($payment),
         ];
 
-        // @infection-ignore-all - logger
         $this->logger->notice('Sale transaction', [
             LogProcessor::ACTION => $payment,
             '3ds' => $hasThreeDSecure,
