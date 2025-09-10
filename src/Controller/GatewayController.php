@@ -2,6 +2,8 @@
 
 namespace Swag\Braintree\Controller;
 
+use Braintree\Exception\NotFound;
+use Braintree\Gateway;
 use Psr\Http\Message\ResponseInterface;
 use Shopware\App\SDK\Context\Cart\Error;
 use Shopware\App\SDK\Context\Gateway\Checkout\CheckoutGatewayAction;
@@ -11,7 +13,6 @@ use Shopware\App\SDK\Gateway\Checkout\Command\AddCartErrorCommand;
 use Shopware\App\SDK\Gateway\Checkout\Command\RemovePaymentMethodCommand;
 use Shopware\App\SDK\Response\GatewayResponse;
 use Swag\Braintree\Braintree\Gateway\BraintreeConnectionService;
-use Swag\Braintree\Braintree\Gateway\Connection\BraintreeConnectionStatus;
 use Swag\Braintree\Braintree\Util\SalesChannelConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -26,6 +27,7 @@ class GatewayController extends AbstractController
     public function __construct(
         private readonly BraintreeConnectionService $connectionService,
         private readonly SalesChannelConfigService $salesChannelConfigService,
+        private readonly Gateway $gateway,
     ) {
     }
 
@@ -38,23 +40,23 @@ class GatewayController extends AbstractController
         if (!$action->paymentMethods->has(self::CREDIT_CARD_TECHNICAL_NAME)) {
             return GatewayResponse::createCheckoutGatewayResponse($commands);
         }
-
-        $status = $this->connectionService->testConnection();
-
-        if ($status->connectionStatus !== BraintreeConnectionStatus::STATUS_CONNECTED) {
-            $commands->add(new RemovePaymentMethodCommand(self::CREDIT_CARD_TECHNICAL_NAME));
-        }
-
-        if (!$this->salesChannelConfigService->getMerchantId(
+        
+        $merchantId = $this->salesChannelConfigService->getMerchantId(
             $action->context->getSalesChannel()->getId(),
             $action->context->getCurrencyId(),
             $action->shop
-        )) {
+        );
+
+        try {
+            $this->gateway->merchantAccount()->find($merchantId);
+        } catch(NotFound) {
             $commands->add(new RemovePaymentMethodCommand(self::CREDIT_CARD_TECHNICAL_NAME));
 
             if ($action->context->getPaymentMethod()->getTechnicalName() === self::CREDIT_CARD_TECHNICAL_NAME) {
                 $commands->add(new AddCartErrorCommand('Checkout with Braintree is currently not available in your currency', true, Error::LEVEL_ERROR));
             }
+        } catch (\Throwable) {
+            $commands->add(new RemovePaymentMethodCommand(self::CREDIT_CARD_TECHNICAL_NAME));
         }
 
         return GatewayResponse::createCheckoutGatewayResponse($commands);
