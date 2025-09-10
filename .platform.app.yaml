@@ -81,4 +81,8 @@ web:
       # The front-controller script to send non-static requests to.
       passthru: "/index.php"
 
-
+    '/build':
+      expires: 1h
+      passthru: false
+      scripts: false
+      allow: true
