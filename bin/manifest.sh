@@ -2,28 +2,24 @@
 
 set -Eeu -o pipefail
 
-print_err() { local retval=$?; echo "Failed at $1: $BASH_COMMAND"; exit $retval; }
+print_err() { local retval=$?; echo "$(basename "$0"): failed at $1: $BASH_COMMAND"; exit $retval; }
 trap 'print_err $LINENO' ERR
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-help() {
-    echo "Usage: $(basename "$0") <configure | clean | validate-prod>"
-    exit 1
-}
+if [ -z "${APP_URL+x}" ]; then
+    export $(grep APP_URL= ./.env)
+fi
+
+if [ -z "${APP_ENV+x}" ]; then
+    export $(grep APP_ENV= ./.env)
+fi
+
+if [ -z "${APP_SECRET+x}" ]; then
+    export $(grep APP_SECRET= ./.env)
+fi
 
 configure() {
-    if [ -z "${APP_URL+x}" ]; then
-        export $(grep APP_URL= ./.env)
-    fi
-
-    if [ -z "${APP_ENV+x}" ]; then
-        export $(grep APP_ENV= ./.env)
-    fi
-
-    if [ -z "${APP_SECRET+x}" ]; then
-        export $(grep APP_SECRET= ./.env)
-    fi
 
     echo "APP_ENV=$APP_ENV"
     echo "APP_URL=$APP_URL"
@@ -49,25 +45,43 @@ clean() {
     done
 }
 
-validate_prod() {
-    error=0
+validate() {
+    error=false
     apps="$(find ./apps -maxdepth 1 -name '6.*' -type d)"
 
     for app in $apps; do
-        if ! grep -q 'https://braintree.shopware.com' "$app/manifest.xml"; then
-            error=true
-            echo "::error file=$app,line=1::Contains no production URL"
+        # Validate absence of development content
+        if [ -n "${CI+x}" ] || [ "$APP_ENV" != "dev" ]; then
+            if ! grep -q 'https://braintree.shopware.com' "$app/manifest.xml"; then
+                error=true
+                echo "::error file=$app,line=1::Contains no production URL"
+            fi
+
+            if grep -q '<secret>' "$app/manifest.xml"; then
+                error=true
+                echo "::error file=$app,line=1::Contains a secret"
+            fi
         fi
 
-        if grep -q '<secret>' "$app/manifest.xml"; then
+        # Validate schema
+        schema="$(yq '.manifest["+@xsi:noNamespaceSchemaLocation"]' "$app/manifest.xml")"
+        schemaFile="$(mktemp)"
+
+        wget -q "$schema" -O "$schemaFile"
+
+        if ! xmllint --schema "$schemaFile" "$app/manifest.xml" --noout; then
             error=true
-            echo "::error file=$app,line=1::Contains a secret"
         fi
     done
 
     if [ "$error" = true ]; then
         exit 1;
     fi
+}
+
+help() {
+    echo "Usage: $(basename "$0") <configure | clean | validate>"
+    exit 1
 }
 
 if [ -z "${1+x}" ]; then help; fi
@@ -79,8 +93,8 @@ case "$1" in
     "clean")
         clean
         ;;
-    "validate-prod")
-        validate_prod
+    "validate")
+        validate
         ;;
     *)
         help

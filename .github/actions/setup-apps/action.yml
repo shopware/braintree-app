@@ -16,6 +16,10 @@ runs:
   steps:
     - uses: shopware/shopware-cli-action@v2
 
+    - name: Add xmllint
+      shell: bash
+      run: sudo apt install -y libxml2-utils
+
     - name: Configure manifests
       shell: bash
       env:
@@ -25,4 +29,4 @@ runs:
 
     - name: Check for non-production manifest.xml
       shell: bash
-      run: ./bin/manifest.sh validate-prod
+      run: ./bin/manifest.sh validate

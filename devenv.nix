@@ -5,6 +5,7 @@
     pkgs.gnupatch
     pkgs.gnused
     pkgs.yq-go
+    pkgs.libxml2
   ];
 
   dotenv.disableHint = true;
