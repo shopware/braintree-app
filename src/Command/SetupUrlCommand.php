@@ -15,7 +15,7 @@ class SetupUrlCommand extends Command
 {
     // relative to %kernel.project_dir%
     public const FILES = [
-        'Resources/app/storefront/{src/checkout,dist/storefront/js/swag-braintree-app}/*',
+        'apps/*/Resources/app/storefront/{src/checkout,dist/storefront/js/swag-braintree-app}/*',
     ];
 
     public function __construct(

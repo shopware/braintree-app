@@ -6,27 +6,39 @@ on:
 jobs:
   app-zip:
     runs-on: ubuntu-latest
+    needs: manifest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['6.7.0.0', '6.6.0.0', '6.5.0.0']
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/check-manifest
-      - uses: shopware/github-actions/build-zip@main
+      - uses: ./.github/actions/setup-apps
+      - uses: shopware/shopware-cli-action@v2
+
+      - name: Build extension
+        run: shopware-cli extension zip ./apps/${{ matrix.version }} --disable-git --release
+
+      - name: Rename zip
+        run: mv ./SwagBraintreeApp.zip SwagBraintreeApp-${{ matrix.version }}.zip
+
+      - name: Validate zip
+        shell: bash
+        run: shopware-cli extension validate SwagBraintreeApp-${{ matrix.version }}.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        id: upload
         with:
-          extensionName: SwagBraintreeApp
+          name: SwagBraintreeApp-${{ matrix.version }}.zip
+          path: SwagBraintreeApp-${{ matrix.version }}.zip
 
   manifest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup-php
-      - uses: ./.github/actions/check-manifest
-      - name: Generate manifest.xml
-        run: composer setup:manifest -- -f --env=prod
-      - uses: ./.github/actions/check-manifest
-      - name: Check manifest.xml
-        run: |
-          git update-index --refresh || printf ''
-          git diff-index "${{ github.sha }}" --quiet -- manifest.xml || (echo "Please run 'APP_ENV=prod composer setup:manifest' to sync the manifest.xml" && exit 1)
-
+      - uses: ./.github/actions/setup-apps
+      
   doctrine:
     runs-on: ubuntu-latest
     services:

@@ -4,6 +4,7 @@
   packages = [
     pkgs.gnupatch
     pkgs.gnused
+    pkgs.yq-go
   ];
 
   dotenv.disableHint = true;

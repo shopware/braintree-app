@@ -1,17 +1,28 @@
 name: App Release
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: Shopware version to deploy
+        required: true
+        type: choice
+        options:
+          - 6.7.0.0
+          - 6.6.0.0
+          - 6.5.0.0
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/check-manifest
+      - uses: ./.github/actions/setup-apps
       - uses: shopware/github-actions/store-release@main
         with:
+          skipCheckout: true
+          disableGit: true
           extensionName: SwagBraintreeApp
-          publishOnly: 'true'
           accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
           accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
           ghToken: ${{ secrets.GITHUB_TOKEN }}
+          path: ./apps/${{ inputs.version }}

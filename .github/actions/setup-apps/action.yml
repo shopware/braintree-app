@@ -1,0 +1,28 @@
+name: Setup apps
+description: ''
+
+inputs:
+  app-url:
+    description: App URL for manifest configuration
+    required: false
+    default: 'https://braintree.shopware.com'
+  app-env:
+    description: App environment for manifest configuration
+    required: false
+    default: prod
+
+runs:
+  using: composite
+  steps:
+    - uses: shopware/shopware-cli-action@v2
+
+    - name: Configure manifests
+      shell: bash
+      env:
+        APP_URL: ${{ inputs.app-url }}
+        APP_ENV: ${{ inputs.app-env }}
+      run: ./bin/manifest.sh configure
+
+    - name: Check for non-production manifest.xml
+      shell: bash
+      run: ./bin/manifest.sh validate-prod

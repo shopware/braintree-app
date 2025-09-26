@@ -90,7 +90,7 @@
             "bin/console setup:url",
             "npm run dev"
         ],
-        "setup:manifest": "bin/console manifest:generate",
+        "setup:manifest": "bin/manifest.sh configure",
         "setup:test": [
             "bin/console doctrine:schema:drop --env=test --force --full-database",
             "bin/console doctrine:migrations:migrate --env=test -n"
