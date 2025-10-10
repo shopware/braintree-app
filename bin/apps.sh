@@ -19,8 +19,7 @@ if [ -z "${APP_SECRET+x}" ]; then
     export $(grep APP_SECRET= ./.env)
 fi
 
-configure() {
-
+setup() {
     echo "APP_ENV=$APP_ENV"
     echo "APP_URL=$APP_URL"
 
@@ -57,9 +56,13 @@ validate() {
                 echo "::error file=$app,line=1::Contains no production URL"
             fi
 
-            if grep -q '<secret>' "$app/manifest.xml"; then
+            if ! command -v shopware-cli &> /dev/null; then
+                echo "shopware-cli could not be found"
+                exit 1 
+            fi
+
+            if ! shopware-cli extension validate --reporter github --store-compliance "$app" 2>/dev/null | sed -n "s|file=|file=$app/|p"; then
                 error=true
-                echo "::error file=$app,line=1::Contains a secret"
             fi
         fi
 
@@ -80,15 +83,15 @@ validate() {
 }
 
 help() {
-    echo "Usage: $(basename "$0") <configure | clean | validate>"
+    echo "Usage: $(basename "$0") <setup | clean | validate>"
     exit 1
 }
 
 if [ -z "${1+x}" ]; then help; fi
 
 case "$1" in
-    "configure")
-        configure
+    "setup")
+        setup
         ;;
     "clean")
         clean

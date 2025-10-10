@@ -83,14 +83,14 @@
         "setup": [
             "bin/console doctrine:schema:drop --force --full-database",
             "bin/console doctrine:migrations:migrate -n",
-            "@setup:manifest",
+            "@setup:apps",
             "@setup:url"
         ],
         "setup:url": [
             "bin/console setup:url",
             "npm run dev"
         ],
-        "setup:manifest": "bin/manifest.sh configure",
+        "setup:apps": "bin/apps.sh setup",
         "setup:test": [
             "bin/console doctrine:schema:drop --env=test --force --full-database",
             "bin/console doctrine:migrations:migrate --env=test -n"

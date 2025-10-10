@@ -1,9 +1,7 @@
-# .shopware-extension.yml
 build:
   zip:
-    composer:
-      enabled: false
     pack:
       excludes:
         paths:
           - .shopware-extension.yml
+          - manifest.overrides.xml

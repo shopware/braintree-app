@@ -25,8 +25,11 @@ runs:
       env:
         APP_URL: ${{ inputs.app-url }}
         APP_ENV: ${{ inputs.app-env }}
-      run: ./bin/manifest.sh configure
+      run: ./bin/apps.sh setup
 
     - name: Check for non-production manifest.xml
       shell: bash
-      run: ./bin/manifest.sh validate
+      env:
+        APP_URL: ${{ inputs.app-url }}
+        APP_ENV: ${{ inputs.app-env }}
+      run: ./bin/apps.sh validate
