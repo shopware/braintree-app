@@ -3,11 +3,12 @@
 6.*/.shopware-extension.yml
 6.*/manifest.xml
 6.*/Resources/app/storefront/.babelrc.js
+6.*/Resources/app/storefront/build/*
 6.*/Resources/app/storefront/package-lock.json
 6.*/Resources/app/storefront/package.json
 6.*/Resources/app/storefront/src/main.js
 6.*/Resources/app/storefront/src/scss/*
-6.*/Resources/app/storefront/build/*
 6.*/Resources/plugin.png
 6.*/Resources/snippet/*
 6.*/Resources/views/storefront/component/*
+6.*/Resources/views/storefront/dist/*
