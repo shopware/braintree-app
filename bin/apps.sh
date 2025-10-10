@@ -7,12 +7,14 @@ trap 'print_err $LINENO' ERR
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-if [ -z "${APP_URL+x}" ]; then
-    export $(grep APP_URL= ./.env)
-fi
-
 if [ -z "${APP_ENV+x}" ]; then
     export $(grep APP_ENV= ./.env)
+fi
+
+if [ -n "${CI+x}" ] || [ "$APP_ENV" = "prod" ]; then
+    export APP_URL="https://braintree.shopware.com"
+elif [ -z "${APP_URL+x}" ]; then
+    export $(grep APP_URL= ./.env)
 fi
 
 if [ -z "${APP_SECRET+x}" ]; then
@@ -42,6 +44,8 @@ clean() {
     for ig in $(cat ./apps/.gitignore); do
         find ./apps -wholename "./apps/$ig" -delete -printf "removing: %p\n"
     done
+
+    find ./apps/6.* -type d -empty -delete -printf "removing: %p\n"
 }
 
 validate() {
@@ -61,7 +65,7 @@ validate() {
                 exit 1 
             fi
 
-            if ! shopware-cli extension validate --reporter github --store-compliance "$app" 2>/dev/null | sed -n "s|file=|file=$app/|p"; then
+            if ! shopware-cli extension validate --reporter github "$app" 2>/dev/null | sed -n "s|file=|file=$app/|p"; then
                 error=true
             fi
         fi

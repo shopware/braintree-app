@@ -83,21 +83,23 @@
         "setup": [
             "bin/console doctrine:schema:drop --force --full-database",
             "bin/console doctrine:migrations:migrate -n",
-            "@setup:apps",
+            "@apps:setup",
             "@setup:url"
         ],
         "setup:url": [
             "bin/console setup:url",
             "npm run dev"
         ],
-        "setup:apps": "bin/apps.sh setup",
         "setup:test": [
             "bin/console doctrine:schema:drop --env=test --force --full-database",
             "bin/console doctrine:migrations:migrate --env=test -n"
         ],
         "phpunit:unit": "@phpunit --testsuite=SwagBraintreeUnitTest",
         "phpunit:integration": "@phpunit --testsuite=SwagBraintreeIntegrationTest",
-        "phpunit:application": "@phpunit --testsuite=SwagBraintreeApplicationTest"
+        "phpunit:application": "@phpunit --testsuite=SwagBraintreeApplicationTest",
+        "apps:setup": "bin/apps.sh setup",
+        "apps:validate": "bin/apps.sh validate",
+        "apps:clean": "bin/apps.sh clean"
     },
     "conflict": {
         "symfony/symfony": "*"
