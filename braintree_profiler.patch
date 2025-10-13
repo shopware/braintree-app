@@ -1,0 +1,12 @@
+diff --git 1/lib/Braintree/Http.php 2/lib/Braintree/Http.php
+index 3d4bae3..6ba23fd 100644
+--- 1/lib/Braintree/Http.php
++++ 2/lib/Braintree/Http.php
+@@ -143,6 +143,6 @@ class Http
+     {
+         $curlRequest = new CurlRequest($url);
+         // phpcs:ignore Generic.Files.LineLength
+-        return Curl::makeRequest($httpVerb, $url, $this->_config, $curlRequest, $requestBody, $file, $customHeaders, $this->_useClientCredentials);
++        return \Swag\Braintree\Framework\Profiler::trace('braintree::' . \parse_url($url, \PHP_URL_PATH), fn () => Curl::makeRequest($httpVerb, $url, $this->_config, $curlRequest, $requestBody, $file, $customHeaders, $this->_useClientCredentials));
+     }
+ }

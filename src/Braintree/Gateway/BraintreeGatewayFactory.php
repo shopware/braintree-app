@@ -5,6 +5,7 @@ namespace Swag\Braintree\Braintree\Gateway;
 use Braintree\Configuration;
 use Braintree\Gateway;
 use Swag\Braintree\Entity\ShopEntity;
+use Swag\Braintree\Framework\Profiler;
 use Swag\Braintree\Framework\Request\ShopResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -13,6 +14,7 @@ class BraintreeGatewayFactory
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly ShopResolver $shopResolver,
+        private readonly Profiler $profiler, // make sure stopwatch got injected
     ) {
     }
 
