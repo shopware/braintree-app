@@ -3,6 +3,7 @@
 namespace Swag\Braintree\Tests\Unit\Braintree\Payment;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\App\SDK\Context\ActionSource;
@@ -19,9 +20,9 @@ use Swag\Braintree\Tests\Contract\PaymentPayActionHelperTrait;
 use Swag\Braintree\Tests\Ids;
 
 #[CoversClass(OrderInformationService::class)]
-#[CoversClass(PaymentPayActionHelperTrait::class)]
-#[CoversClass(OrderHelperTrait::class)]
-#[CoversClass(OrderTransactionHelperTrait::class)]
+#[CoversTrait(PaymentPayActionHelperTrait::class)]
+#[CoversTrait(OrderHelperTrait::class)]
+#[CoversTrait(OrderTransactionHelperTrait::class)]
 class OrderInformationServiceTest extends TestCase
 {
     use PaymentPayActionHelperTrait;
