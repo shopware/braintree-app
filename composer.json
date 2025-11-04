@@ -4,31 +4,31 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-session": "*",
         "ext-simplexml": "*",
-        "braintree/braintree_php": "^6.24",
-        "doctrine/doctrine-bundle": "^2.13",
-        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "braintree/braintree_php": "^6.29",
+        "doctrine/doctrine-bundle": "^3.0",
+        "doctrine/doctrine-migrations-bundle": "^3.5",
         "doctrine/orm": "^3.3",
         "guzzlehttp/guzzle": "^7.9",
         "guzzlehttp/psr7": "^2.7",
         "nelmio/cors-bundle": "^2.5",
         "shopware/app-bundle": "^4.1",
-        "symfony/console": "^7.2",
-        "symfony/dotenv": "^7.2",
-        "symfony/http-foundation": "^7.2",
+        "symfony/console": "^7.3",
+        "symfony/dotenv": "^7.3",
+        "symfony/http-foundation": "^7.3",
         "symfony/flex": "^2",
-        "symfony/framework-bundle": "^7.2",
+        "symfony/framework-bundle": "^7.3",
         "symfony/monolog-bundle": "^3.10",
-        "symfony/property-access": "^7.2",
-        "symfony/psr-http-message-bridge": "^7.2",
-        "symfony/runtime": "^7.2",
-        "symfony/serializer": "^7.2",
-        "symfony/uid": "^7.2",
-        "symfony/yaml": "^7.2"
+        "symfony/property-access": "^7.3",
+        "symfony/psr-http-message-bridge": "^7.3",
+        "symfony/runtime": "^7.3",
+        "symfony/serializer": "^7.3",
+        "symfony/uid": "^7.3",
+        "symfony/yaml": "^7.3"
     },
     "config": {
         "allow-plugins": {
@@ -107,23 +107,23 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.2.*"
+            "require": "7.3.*"
         }
     },
     "require-dev": {
-        "dama/doctrine-test-bundle": "^8.2",
-        "friendsofphp/php-cs-fixer": "^3.66",
+        "dama/doctrine-test-bundle": "^8.4",
+        "friendsofphp/php-cs-fixer": "^3.89",
         "infection/infection": "^0.31",
-        "kubawerlos/php-cs-fixer-custom-fixers": "^3.23",
+        "kubawerlos/php-cs-fixer-custom-fixers": "^3.35",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-symfony": "^2",
-        "phpunit/phpunit": "^11",
-        "symfony/browser-kit": "^7.2",
-        "symfony/debug-bundle": "^7.2",
-        "symfony/stopwatch": "^7.2",
-        "symfony/web-profiler-bundle": "^7.2",
-        "symplify/phpstan-rules": "14.7.0",
+        "phpunit/phpunit": "^12",
+        "symfony/browser-kit": "^7.3",
+        "symfony/debug-bundle": "^7.3",
+        "symfony/stopwatch": "^7.3",
+        "symfony/web-profiler-bundle": "^7.3",
+        "symplify/phpstan-rules": "14.8.0",
         "tomasvotruba/type-coverage": "^2"
     }
 }

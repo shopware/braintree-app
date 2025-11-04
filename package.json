@@ -14,25 +14,25 @@
   },
   "dependencies": {
     "@shopware-ag/entity-schema-types": "6.9.0",
-    "@shopware-ag/meteor-admin-sdk": "6.3.0",
-    "@shopware-ag/meteor-component-library": "4.17.0",
+    "@shopware-ag/meteor-admin-sdk": "6.4.0",
+    "@shopware-ag/meteor-component-library": "4.20.0",
     "pinia": "^3.0.3",
-    "vue": "3.5.21",
+    "vue": "3.5.22",
     "vue-i18n": "^11.1.12"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^5.4.0",
-    "@types/node": "^24.5.2",
+    "@stylistic/eslint-plugin": "^5.5.0",
+    "@types/node": "^24.10.0",
     "@vitejs/plugin-legacy": "^7.2.1",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/eslint-config-typescript": "^14.6.0",
     "eslint": "^9.16.0",
-    "eslint-plugin-vue": "^10.4.0",
-    "sass": "^1.93.0",
+    "eslint-plugin-vue": "^10.5.1",
+    "sass": "^1.93.3",
     "typescript": "~5.6.3",
-    "vite": "^7.1.6",
-    "vite-plugin-vue-devtools": "^8.0.2",
-    "vue-tsc": "^3.0.7"
+    "vite": "^7.1.12",
+    "vite-plugin-vue-devtools": "^8.0.3",
+    "vue-tsc": "^3.1.2"
   },
   "engines": {
     "node": ">=22.17.0 <23"
