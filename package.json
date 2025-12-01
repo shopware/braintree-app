@@ -15,10 +15,10 @@
   "dependencies": {
     "@shopware-ag/entity-schema-types": "6.9.0",
     "@shopware-ag/meteor-admin-sdk": "6.4.0",
-    "@shopware-ag/meteor-component-library": "4.22.0",
+    "@shopware-ag/meteor-component-library": "4.23.0",
     "pinia": "^3.0.4",
-    "vue": "3.5.24",
-    "vue-i18n": "^11.2.1"
+    "vue": "3.5.25",
+    "vue-i18n": "^11.2.2"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.6.1",
@@ -27,7 +27,7 @@
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/eslint-config-typescript": "^14.6.0",
     "eslint": "^9.16.0",
-    "eslint-plugin-vue": "^10.6.0",
+    "eslint-plugin-vue": "^10.6.2",
     "sass": "^1.94.2",
     "typescript": "~5.6.3",
     "vite": "^7.2.4",
