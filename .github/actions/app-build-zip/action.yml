@@ -23,3 +23,7 @@ runs:
       with:
         name: SwagBraintreeApp-${{ inputs.version }}.zip
         path: SwagBraintreeApp-${{ inputs.version }}.zip
+
+    - name: Validate zip size
+      shell: bash
+      run: (( "$(du "SwagBraintreeApp-${{ inputs.version }}.zip" | awk '{print $1}')" < 5120 )) || (echo "Zip file should not be larger then 5MiB" && exit 1)

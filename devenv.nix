@@ -6,6 +6,7 @@
     pkgs.gnused
     pkgs.yq-go
     pkgs.libxml2
+    pkgs.shellcheck
   ];
 
   dotenv.disableHint = true;

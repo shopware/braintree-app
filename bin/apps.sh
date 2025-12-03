@@ -8,39 +8,57 @@ trap 'print_err $LINENO' ERR
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if [ -z "${APP_ENV+x}" ]; then
+    # shellcheck disable=SC2046
     export $(grep APP_ENV= ./.env)
 fi
 
-if [ -n "${CI+x}" ] || [ "$APP_ENV" = "prod" ]; then
+if [ -n "${CI:-}" ] || [ "$APP_ENV" = "prod" ]; then
     export APP_URL="https://braintree.shopware.com"
 elif [ -z "${APP_URL+x}" ]; then
+    # shellcheck disable=SC2046
     export $(grep APP_URL= ./.env)
 fi
 
 if [ -z "${APP_SECRET+x}" ]; then
+    # shellcheck disable=SC2046
     export $(grep APP_SECRET= ./.env)
 fi
+
+yq_xml_args="--input-format xml --output-format xml --indent 4 --xml-strict-mode"
+
+_validate_app_setup() {
+    if [ ! -d "$1" ]; then
+        echo "App version \"$1\" does not exist."
+        exit 1
+    elif [ ! -f "$1/manifest.xml" ]; then
+        echo 'Missing manifest.xml, run "make apps:setup" first'
+        exit 1
+    fi
+}
 
 setup() {
     echo "APP_ENV=$APP_ENV"
     echo "APP_URL=$APP_URL"
 
-    xml_args="--input-format xml --output-format xml --indent 4 --xml-strict-mode"
     apps="$(find ./apps -maxdepth 1 -name '6.*' -type d)"
 
     for app in $apps; do
         cp -R ./apps/shared/. "$app"
 
-        yq $xml_args -ir eval-all '. as $item ireduce ({}; . * $item)' "$app/manifest.xml" "$app/manifest.overrides.xml"
-        yq $xml_args -ir '(.. | select(tag == "!!str")) |= envsubst(nu)' "$app/manifest.xml"
+        # shellcheck disable=SC2086,SC2016
+        yq $yq_xml_args -ir eval-all '. as $item ireduce ({}; . * $item)' "$app/manifest.xml" "$app/manifest.overrides.xml"
+        # shellcheck disable=SC2086,SC2016
+        yq $yq_xml_args -ir '(.. | select(tag == "!!str")) |= envsubst(nu)' "$app/manifest.xml"
 
-        if [ -z "${CI+x}" ] && [ "$APP_ENV" == "dev" ]; then
-            yq $xml_args -ir '.manifest.setup.secret |= env(APP_SECRET)' "$app/manifest.xml"
+        if [ -z "${CI:-}" ] && [ "$APP_ENV" != "prod" ]; then
+            # shellcheck disable=SC2086
+            yq $yq_xml_args -ir '.manifest.setup.secret |= env(APP_SECRET)' "$app/manifest.xml"
         fi
     done
 }
 
 clean() {
+    # shellcheck disable=SC2013
     for ig in $(cat ./apps/.gitignore); do
         find ./apps -wholename "./apps/$ig" -delete -printf "removing: %p\n"
     done
@@ -53,11 +71,13 @@ validate() {
     apps="$(find ./apps -maxdepth 1 -name '6.*' -type d)"
 
     for app in $apps; do
+        _validate_app_setup "$app"
+
         # Validate absence of development content
-        if [ -n "${CI+x}" ] || [ "$APP_ENV" != "dev" ]; then
+        if [ -n "${CI:-}" ] || [ "$APP_ENV" == "prod" ]; then
             if ! grep -q 'https://braintree.shopware.com' "$app/manifest.xml"; then
                 error=true
-                echo "::error file=$app,line=1::Contains no production URL"
+                echo "::error file=$app/manifest.xml,line=1::Contains no production URL"
             fi
 
             if ! command -v shopware-cli &> /dev/null; then
@@ -74,9 +94,9 @@ validate() {
         schema="$(yq '.manifest["+@xsi:noNamespaceSchemaLocation"]' "$app/manifest.xml")"
         schemaFile="$(mktemp)"
 
-        wget -q "$schema" -O "$schemaFile"
+        curl -so "$schemaFile" "$schema"
 
-        if ! xmllint --schema "$schemaFile" "$app/manifest.xml" --noout; then
+        if ! xmllint --quiet --schema "$schemaFile" "$app/manifest.xml" --noout; then
             error=true
         fi
     done
@@ -86,8 +106,38 @@ validate() {
     fi
 }
 
+build() {
+    if [ -z "${1+x}" ]; then
+        apps="$(find ./apps -maxdepth 1 -name '6.*' -type d)"
+        for app in $apps; do
+            build "${app##*/}"
+        done
+    else
+        _validate_app_setup "./apps/$1"
+        shopware-cli extension build "./apps/$1"
+    fi
+}
+
+zip() {
+    if [ -z "${1+x}" ]; then
+        apps="$(find ./apps -maxdepth 1 -name '6.*' -type d)"
+
+        for app in $apps; do
+            zip "${app##*/}"
+        done
+    else
+        _validate_app_setup "./apps/$1"
+	    shopware-cli extension zip "./apps/$1" --disable-git --filename "SwagBraintreeApp-$1.zip"
+
+        if ! (( "$(du "SwagBraintreeApp-$1.zip" | awk '{print $1}')" < 5120 )); then
+            echo "Zip file should not be larger then 5MiB"
+            exit 1
+        fi
+    fi
+}
+
 help() {
-    echo "Usage: $(basename "$0") <setup | clean | validate>"
+    echo "Usage: $(basename "$0") <setup | clean | validate | zip [version?] | build [version?]>"
     exit 1
 }
 
@@ -102,6 +152,14 @@ case "$1" in
         ;;
     "validate")
         validate
+        ;;
+    "zip")
+        shift
+        zip "$@"
+        ;;
+    "build")
+        shift
+        build "$@"
         ;;
     *)
         help
