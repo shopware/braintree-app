@@ -1,19 +1,22 @@
 version: 2
 updates:
-  - package-ecosystem: "composer"
-    directory: "/"
+  - package-ecosystem: composer
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: monthly
     commit-message:
       prefix: 'fix(deps): '
     groups:
       all:
         patterns:
           - '*'
-  - package-ecosystem: "npm"
-    directory: "/"
+    ignore:
+      - dependency-name: 'symfony/*'
+        update-types: [version-update:semver-minor]
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: monthly
     commit-message:
       prefix: 'fix(deps): '
     groups:
@@ -22,11 +25,11 @@ updates:
           - '*'
     ignore:
       - dependency-name: typescript
-        update-types: ["version-update:semver-minor"]
-  - package-ecosystem: "github-actions"
-    directory: "/"
+        update-types: [version-update:semver-minor]
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: monthly
     commit-message:
       prefix: 'fix(deps): '
     groups:
