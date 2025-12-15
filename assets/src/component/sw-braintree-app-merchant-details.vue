@@ -76,7 +76,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.sw-braintree-merchant-container {
+#app .sw-braintree-merchant-container {
     background: var(--color-elevation-surface-sunken);
     border: 1px solid var(--color-border-primary-default);
     border-radius: var(--border-radius-s);
