@@ -12,7 +12,7 @@ updates:
           - '*'
     ignore:
       - dependency-name: 'symfony/*'
-        update-types: ["version-update:semver-minor"]
+        update-types: [version-update:semver-minor]
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -25,7 +25,7 @@ updates:
           - '*'
     ignore:
       - dependency-name: typescript
-        update-types: ["version-update:semver-minor"]
+        update-types: [version-update:semver-minor]
   - package-ecosystem: github-actions
     directory: /
     schedule:
