@@ -152,7 +152,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.sw-braintree-payment-method {
+#app .sw-braintree-payment-method {
     &__title {
         margin-top: var(--scale-size-32);
         margin-bottom: var(--scale-size-8);

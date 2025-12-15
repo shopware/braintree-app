@@ -99,7 +99,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.sw-braintree-sales-channel-switch {
+#app .sw-braintree-sales-channel-switch {
     &__select {
         .sw-select-selection-list__load-more {
             display: none;
