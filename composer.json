@@ -99,7 +99,9 @@
         "phpunit:application": "@phpunit --testsuite=SwagBraintreeApplicationTest",
         "apps:setup": "bin/apps.sh setup",
         "apps:validate": "bin/apps.sh validate",
-        "apps:clean": "bin/apps.sh clean"
+        "apps:clean": "bin/apps.sh clean",
+        "apps:build": "bin/apps.sh build",
+        "apps:zip": "bin/apps.sh zip"
     },
     "conflict": {
         "symfony/symfony": "*"

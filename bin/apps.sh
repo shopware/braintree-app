@@ -31,7 +31,7 @@ _validate_app_setup() {
         echo "App version \"$1\" does not exist."
         exit 1
     elif [ ! -f "$1/manifest.xml" ]; then
-        echo 'Missing manifest.xml, run "make apps:setup" first'
+        echo 'Missing manifest.xml, run "composer apps:setup" first'
         exit 1
     fi
 }
