@@ -31,10 +31,6 @@
         <base-app-url>${APP_URL}/admin-sdk</base-app-url>
     </admin>
 
-    <gateways>
-        <checkout>${APP_URL}/api/gateway/checkout</checkout>
-    </gateways>
-
     <payments>
         <payment-method>
             <identifier>credit_card</identifier>

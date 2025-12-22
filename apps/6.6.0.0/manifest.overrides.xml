@@ -4,4 +4,8 @@
         <version>2.3.3</version>
         <compatibility>~6.6.0</compatibility>
     </meta>
+
+    <gateways>
+        <checkout>${APP_URL}/api/gateway/checkout</checkout>
+    </gateways>
 </manifest>
