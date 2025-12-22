@@ -214,7 +214,7 @@ export default defineComponent({
 </script>
 
 <style lang='scss'>
-.sw-braintree-app-config-page {
+#app .sw-braintree-app-config-page {
     background: var(--color-elevation-surface-default);
 
     &__buttons {

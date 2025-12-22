@@ -7,32 +7,34 @@ body {
     background: transparent;
 }
 
-.mt-field {
-    margin: 0;
-}
-
-.mt-switch {
-    margin: 0;
-}
-
-.mt-switch--not-bordered {
-    min-height: 0;
-}
-
-.mt-select--small {
-    .mt-select-selection-list .mt-select-selection-list__input {
-        padding: 0;
+#app {
+    .mt-field {
+        margin: 0;
     }
 
-    .mt-select__selection:not(.mt-select-selection-list__item) {
-        min-height: 36px;
+    .mt-switch {
+        margin: 0;
     }
 
-    .mt-select-selection-list__item {
-        padding: 2px 0;
+    .mt-switch--not-bordered {
+        min-height: 0;
     }
 
-    .mt-label__caption {
-        overflow: visible;
+    .mt-select--small {
+        .mt-select-selection-list .mt-select-selection-list__input {
+            padding: 0;
+        }
+
+        .mt-select__selection:not(.mt-select-selection-list__item) {
+            min-height: 36px;
+        }
+
+        .mt-select-selection-list__item {
+            padding: 2px 0;
+        }
+
+        .mt-label__caption {
+            overflow: visible;
+        }
     }
 }

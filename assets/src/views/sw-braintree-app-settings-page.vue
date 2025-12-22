@@ -202,7 +202,7 @@ body {
     background: var(--color-background-secondary-default);
 }
 
-.sw-braintree-app-settings-page {
+#app .sw-braintree-app-settings-page {
     &__buttons {
         display: flex;
         justify-content: end;

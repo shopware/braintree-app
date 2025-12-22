@@ -288,7 +288,7 @@ export default defineComponent({
 </script>
 
 <style lang='scss'>
-.sw-braintree-app-settings-currency {
+#app .sw-braintree-app-settings-currency {
     &__loading-table {
         .sw-braintree-app-table__columns {
             height: 70px;
