@@ -31,4 +31,4 @@ node_modules
 public/build
 ###< vite ###
 
-Resources/app/storefront/dist
+apps/*/Resources/app/storefront/dist

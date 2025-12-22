@@ -1,0 +1,37 @@
+name: Setup apps
+description: ''
+
+inputs:
+  app-url:
+    description: App URL for manifest configuration
+    required: false
+    default: 'https://braintree.shopware.com'
+  app-env:
+    description: App environment for manifest configuration
+    required: false
+    default: prod
+
+runs:
+  using: composite
+  steps:
+    - uses: shopware/shopware-cli-action@v2
+
+    - name: Add xmllint
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxml2-utils
+
+    - name: Configure manifests
+      shell: bash
+      env:
+        APP_URL: ${{ inputs.app-url }}
+        APP_ENV: ${{ inputs.app-env }}
+      run: ./bin/apps.sh setup
+
+    - name: Check for non-production manifest.xml
+      shell: bash
+      env:
+        APP_URL: ${{ inputs.app-url }}
+        APP_ENV: ${{ inputs.app-env }}
+      run: ./bin/apps.sh validate

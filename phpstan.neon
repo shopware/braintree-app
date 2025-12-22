@@ -31,10 +31,6 @@ parameters:
                 message: '#Service "test\.client" is not registered in the container\.#'
                 path: tests
 
-            - # SimpleXML foo
-                message: '#Use explicit names over dynamic ones#'
-                path: tests/integration/Command/ManifestGenerateCommandTest.php
-
             - # Trait tests
                 message: '#^Call to function property_exists\(\) with class@anonymous/tests/.*#'
 

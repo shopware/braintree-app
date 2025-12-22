@@ -1,0 +1,54 @@
+name: apps
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  version-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      app_versions: ${{ steps.find-versions.outputs.app_versions }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Find versions
+        id: find-versions
+        working-directory: apps
+        run: echo "app_versions=$(find . -maxdepth 1 -name '6.*' -type d -printf '%f ' | yq -o=json -I0 eval 'split(" ")')" >> $GITHUB_OUTPUT
+
+  validate:
+    runs-on: ubuntu-latest
+    needs: version-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.version-matrix.outputs.app_versions) }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-apps
+
+      - uses: ./.github/actions/app-build-zip
+        with:
+          version: ${{ matrix.version }}
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: ShellCheck scripts
+        run: shellcheck -f gcc bin/apps.sh
+
+  no-unignored-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-apps
+
+      - name: Check for unignored files
+        run: |
+          git add apps
+          git diff --name-only --exit-code "${{ github.sha }}" -- apps/6.* || (echo "Add the unignored files to ./apps/.gitignore" && exit 1)

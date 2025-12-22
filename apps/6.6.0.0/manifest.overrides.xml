@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/Framework/App/Manifest/Schema/manifest-2.0.xsd">
+    <meta>
+        <version>2.3.3</version>
+        <compatibility>~6.6.0</compatibility>
+    </meta>
+
+    <gateways>
+        <checkout>${APP_URL}/api/gateway/checkout</checkout>
+    </gateways>
+</manifest>

@@ -1,0 +1,29 @@
+name: Setup apps
+description: Setup apps directory
+
+inputs:
+  version:
+    description: App version to build
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Build extension
+      shell: bash
+      run: shopware-cli extension zip ./apps/${{ inputs.version }} --disable-git --release --filename SwagBraintreeApp-${{ inputs.version }}.zip
+
+    - name: Validate zip
+      shell: bash
+      run: shopware-cli extension validate SwagBraintreeApp-${{ inputs.version }}.zip --store-compliance
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      id: upload
+      with:
+        name: SwagBraintreeApp-${{ inputs.version }}.zip
+        path: SwagBraintreeApp-${{ inputs.version }}.zip
+
+    - name: Validate zip size
+      shell: bash
+      run: (( "$(du "SwagBraintreeApp-${{ inputs.version }}.zip" | awk '{print $1}')" < 5120 )) || (echo "Zip file should not be larger then 5MiB" && exit 1)
