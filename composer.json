@@ -115,7 +115,7 @@
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.4",
         "friendsofphp/php-cs-fixer": "^3.89",
-        "infection/infection": "^0.31",
+        "infection/infection": "^0.32",
         "kubawerlos/php-cs-fixer-custom-fixers": "^3.35",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
