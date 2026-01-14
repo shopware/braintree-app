@@ -4,10 +4,12 @@ namespace Swag\Braintree\Framework\ArgumentResolver;
 
 use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\Braintree\Framework\Request\ShopResolver;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
+#[AutoconfigureTag(name: 'controller.argument_value_resolver', attributes: ['name' => 'shop'])]
 class ShopArgumentResolver implements ValueResolverInterface
 {
     public function __construct(

@@ -37,7 +37,7 @@
             <name>Credit or Debit Card (by Braintree)</name>
             <name lang="de-DE">Kredit- oder Debitkarte (von Braintree)</name>
             <pay-url>${APP_URL}/api/pay</pay-url>
-            <icon>Resources/config/plugin.jpg</icon>
+            <icon>Resources/config/plugin.png</icon>
         </payment-method>
     </payments>
 
@@ -116,6 +116,7 @@
         <read>landing_page</read>
         <read>customer_wishlist</read>
         <read>theme</read>
+        <read>app</read>
         <create>notification</create>
         <create>payment_method</create>
         <create>payment_method_translation</create>

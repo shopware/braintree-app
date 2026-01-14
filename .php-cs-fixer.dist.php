@@ -62,5 +62,7 @@ return (new Config())
         ])->exclude([
             'node_modules',
             '*/vendor/*',
-        ])
+        ])->filter(function (\SplFileInfo $file) {
+            return !str_contains($file->getRealPath(), '/config/reference.php');
+        })
     );

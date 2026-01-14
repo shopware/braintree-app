@@ -8,7 +8,7 @@ use Swag\Braintree\Entity\Contract\EntityInterface;
 use Swag\Braintree\Entity\Contract\EntityTrait;
 use Swag\Braintree\Entity\Contract\ShopAwareTrait;
 use Swag\Braintree\Repository\TransactionRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 #[ORM\Table(name: '`transaction`')]

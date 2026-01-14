@@ -9,13 +9,17 @@ use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\Utils;
 use GuzzleHttp\RequestOptions;
 use Swag\Braintree\Repository\TransactionReportRepository;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class ReportService
 {
     public function __construct(
+        #[Autowire(service: 'doctrine.orm.entity_manager')]
         private readonly EntityManagerInterface $em,
         private readonly TransactionReportRepository $transactionReportRepository,
+        #[Autowire(env: 'default::REPORT_IDENTIFIER')]
         private readonly ?string $apiIdentifier,
+        #[Autowire(service: 'guzzle.client.report')]
         private readonly Client $client,
     ) {
     }

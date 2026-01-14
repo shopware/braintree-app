@@ -5,6 +5,7 @@ namespace Swag\Braintree\Framework\Serializer;
 use Shopware\AppBundle\Entity\AbstractShop;
 use Swag\Braintree\Entity\Contract\EntityInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -16,6 +17,7 @@ class EntityNormalizer implements NormalizerInterface
     private const REGEX = '/.*(Swag.*)/';
 
     public function __construct(
+        #[Autowire(service: 'serializer.normalizer.object')]
         private readonly NormalizerInterface $normalizer,
     ) {
     }

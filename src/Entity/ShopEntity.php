@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Shopware\AppBundle\Entity\AbstractShop;
 use Swag\Braintree\Entity\Contract\EntityDateTrait;
 use Swag\Braintree\Repository\ShopRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Contracts\Service\ResetInterface;
 
 #[ORM\Entity(repositoryClass: ShopRepository::class)]

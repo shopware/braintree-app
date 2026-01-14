@@ -9,7 +9,7 @@ use Swag\Braintree\Entity\Contract\EntityTrait;
 use Swag\Braintree\Entity\Contract\SalesChannelAwareTrait;
 use Swag\Braintree\Entity\Contract\ShopAwareTrait;
 use Swag\Braintree\Repository\CurrencyMappingRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CurrencyMappingRepository::class)]
 #[ORM\Table(name: 'currency_mapping')]

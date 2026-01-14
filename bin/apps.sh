@@ -54,6 +54,11 @@ setup() {
             # shellcheck disable=SC2086
             yq $yq_xml_args -ir '.manifest.setup.secret |= env(APP_SECRET)' "$app/manifest.xml"
         fi
+
+        if [[ "${app##*/}" == 6.5* ]]; then
+            # shellcheck disable=SC2086
+            yq $yq_xml_args -ir 'del(.manifest.gateways)' "$app/manifest.xml"
+        fi
     done
 }
 

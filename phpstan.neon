@@ -5,9 +5,13 @@ parameters:
     level: 6
     phpVersion: 80200
     tmpDir: var/cache/phpstan
+
     paths:
         - src
         - tests
+
+    excludePaths:
+        - config/reference.php
 
     type_coverage:
         return_type: 99
