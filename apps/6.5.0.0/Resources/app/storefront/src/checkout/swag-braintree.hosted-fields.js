@@ -45,6 +45,8 @@ export default class SwagBraintreeHostedFields extends Plugin {
         postalCodeFieldSelector: '#sw-braintree-payment-method__postalCode',
 
         cartAmount: 0,
+
+        baseUrl: 'https://braintree.shopware.com'
     }
 
     async init() {
@@ -71,7 +73,11 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * @returns {Promise<BraintreeClient>} Client token of the merchant
      */
     async createClient() {
-        const request = await this._client.post(`${BASE_URL}/client/token?shop-id=${this.options.appShopId}&currency-id=${this.options.currencyId}&sales-channel-id=${this.options.salesChannelId}`);
+        const url = new URL('/api/client/config', this.options.baseUrl);
+        url.searchParams.append('shop-id', this.options.appShopId);
+        url.searchParams.append('currency-id', this.options.currencyId);
+        url.searchParams.append('sales-channel-id', this.options.salesChannelId);
+        const request = await this._client.post(url.toString());
 
         if (!request.ok) throw new Error(await request.text());
 

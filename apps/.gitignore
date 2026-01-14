@@ -10,5 +10,5 @@
 6.*/Resources/app/storefront/src/scss/*
 6.*/Resources/plugin.png
 6.*/Resources/snippet/*
-6.*/Resources/views/storefront/component/*
-6.*/Resources/views/storefront/dist/*
+6.*/Resources/views/storefront/*
+6.*/Resources/scripts/*

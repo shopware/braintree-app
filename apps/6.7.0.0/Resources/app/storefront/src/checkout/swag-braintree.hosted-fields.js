@@ -8,8 +8,6 @@ import AppClient from '@friendsofshopware/storefront-sdk/service/app-client.serv
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
-const BASE_URL = 'https://braintree.shopware.com/api';
-
 /**
  * @typedef {{ token: string, threeDS: { enforced: boolean, enabled: boolean } }} BraintreeClientConfig
  *
@@ -51,6 +49,8 @@ export default class SwagBraintreeHostedFields extends Plugin {
         cartAmount: 0,
 
         customFields: {},
+
+        baseUrl: 'https://braintree.shopware.com'
     }
 
     async init() {
@@ -79,7 +79,11 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * @returns Promise<BraintreeClientConfig>
      */
     async getClientConfig() {
-        const request = await this._client.post(`${BASE_URL}/client/config?shop-id=${this.options.appShopId}&currency-id=${this.options.currencyId}&sales-channel-id=${this.options.salesChannelId}`);
+        const url = new URL('/api/client/config', this.options.baseUrl);
+        url.searchParams.append('shop-id', this.options.appShopId);
+        url.searchParams.append('currency-id', this.options.currencyId);
+        url.searchParams.append('sales-channel-id', this.options.salesChannelId);
+        const request = await this._client.post(url.toString());
 
         if (!request.ok) {
             throw new Error(await request.text())
