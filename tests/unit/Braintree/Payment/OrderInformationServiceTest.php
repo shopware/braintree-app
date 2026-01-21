@@ -260,6 +260,49 @@ class OrderInformationServiceTest extends TestCase
         static::assertEquals(array_fill(0, 249, $expected), $lineItems);
     }
 
+    public function testExtractLineItemsWithZeroAmountItem(): void
+    {
+        $lineItemData = [
+            'label' => 'Free',
+            'good' => true,
+            'quantity' => 1,
+            'description' => 'foo',
+            'type' => 'product',
+            'referencedId' => 'product-id',
+            'payload' => [
+                'customFields' => [
+                    'commodityCode' => '123456789',
+                ],
+            ],
+            'price' => [
+                'totalPrice' => 0,
+                'unitPrice' => 0,
+                'calculatedTaxes' => [[
+                    'taxRate' => 19,
+                    'tax' => 0,
+                ]],
+            ],
+        ];
+
+        $order = $this->createMock(Order::class);
+        $order
+            ->expects($this->once())
+            ->method('getLineItems')
+            ->willReturn(new Collection([new LineItem($lineItemData)]));
+
+        $paymentPayAction = new PaymentPayAction(
+            $this->shop,
+            $this->createMock(ActionSource::class),
+            $order,
+            self::createOrderTransaction(),
+            null,
+        );
+
+        $lineItems = $this->orderInformationService->extractLineItems($paymentPayAction);
+
+        static::assertCount(0, $lineItems);
+    }
+
     public function testExtractDiscountAmount(): void
     {
         $discountAmount = $this->orderInformationService->extractDiscountAmount($this->paymentPayAction);

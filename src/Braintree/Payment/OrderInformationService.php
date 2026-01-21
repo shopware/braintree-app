@@ -89,6 +89,10 @@ class OrderInformationService
                 continue;
             }
 
+            if ($lineItem->getPrice()->getTotalPrice() === 0.0) {
+                continue;
+            }
+
             $lineItems[] = [
                 'commodityCode' => $this->extractCommodityCode($lineItem),
                 'description' => $this->substr($lineItem->getDescription(), 127),
