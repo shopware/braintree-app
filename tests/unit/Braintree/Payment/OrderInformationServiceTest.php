@@ -286,7 +286,7 @@ class OrderInformationServiceTest extends TestCase
 
         $order = $this->createMock(Order::class);
         $order
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getLineItems')
             ->willReturn(new Collection([new LineItem($lineItemData)]));
 
