@@ -17,7 +17,7 @@ if (\method_exists(Dotenv::class, 'bootEnv')) {
     (new Dotenv())->bootEnv(\dirname(__DIR__) . '/.env');
 }
 
-VarDumper::setHandler(function (mixed $var): ?string {
+VarDumper::setHandler(static function (mixed $var): ?string {
     $cloner = new VarCloner();
     $dumper = 'cli' === \PHP_SAPI ? new CliDumper() : new HtmlDumper();
 

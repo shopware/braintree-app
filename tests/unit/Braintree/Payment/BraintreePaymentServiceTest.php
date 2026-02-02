@@ -112,7 +112,7 @@ class BraintreePaymentServiceTest extends TestCase
         $this->transactionGateway
             ->expects(static::once())
             ->method('sale')
-            ->with(static::callback(function (array $sale) {
+            ->with(static::callback(static function (array $sale) {
                 static::assertEquals('this-is-merchant-id', $sale['merchantAccountId']);
                 static::assertEquals(200, $sale['amount']);
                 static::assertEquals(5, $sale['shippingAmount']);
@@ -143,7 +143,7 @@ class BraintreePaymentServiceTest extends TestCase
         $this->entityManager
             ->expects($emMatcher)
             ->method('persist')
-            ->willReturnCallback(function (object $entity) use (&$emMatcher): void {
+            ->willReturnCallback(static function (object $entity) use (&$emMatcher): void {
                 switch ($emMatcher->numberOfInvocations()) {
                     case 1:
                         /** @var TransactionEntity $entity */
@@ -300,7 +300,7 @@ class BraintreePaymentServiceTest extends TestCase
         $this->transactionGateway
             ->expects(static::once())
             ->method('sale')
-            ->with(static::callback(function (array $sale) {
+            ->with(static::callback(static function (array $sale) {
                 static::assertEquals(['submitForSettlement' => true], $sale['options']);
 
                 return true;
@@ -424,7 +424,7 @@ class BraintreePaymentServiceTest extends TestCase
         $this->transactionGateway
             ->expects(static::once())
             ->method('sale')
-            ->with(static::callback(function (array $sale) {
+            ->with(static::callback(static function (array $sale) {
                 static::assertEquals(['submitForSettlement' => true, 'threeDSecure' => ['required' => true]], $sale['options']);
 
                 return true;
