@@ -297,7 +297,7 @@ class ReportServiceTest extends TestCase
     private function extractTurnoverReports(array $history): array
     {
         return \array_map(
-            function (array $entry) {
+            static function (array $entry) {
                 $body = \json_decode($entry['request']->getBody()->getContents(), true);
                 static::assertIsArray($body);
 
