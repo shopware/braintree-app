@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32f2bf051fc40466139fedaf0fa845ef",
+    "content-hash": "aaa4930c7ef24e48899a6b0d09415467",
     "packages": [
         {
             "name": "braintree/braintree_php",
@@ -2691,22 +2691,22 @@
         },
         {
             "name": "shopware/app-bundle",
-            "version": "5.0.0",
+            "version": "6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/app-bundle-symfony.git",
-                "reference": "3cbb0e90f8cc2e722addbe462002ea1c6d77e610"
+                "reference": "4fab2623604c4cb78d3474051f335c822f281a61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/app-bundle-symfony/zipball/3cbb0e90f8cc2e722addbe462002ea1c6d77e610",
-                "reference": "3cbb0e90f8cc2e722addbe462002ea1c6d77e610",
+                "url": "https://api.github.com/repos/shopware/app-bundle-symfony/zipball/4fab2623604c4cb78d3474051f335c822f281a61",
+                "reference": "4fab2623604c4cb78d3474051f335c822f281a61",
                 "shasum": ""
             },
             "require": {
                 "nyholm/psr7": "^1.8",
                 "php": ">=8.1",
-                "shopware/app-php-sdk": ">=4.1.0",
+                "shopware/app-php-sdk": ">=5.0.0",
                 "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
                 "symfony/psr-http-message-bridge": "2.* || ^7.0 || ^8.0",
                 "symfony/routing": "^6.4 || ^7.0 || ^8.0"
@@ -2749,22 +2749,22 @@
             "description": "Symfony bundle to develop shopware apps easy",
             "support": {
                 "issues": "https://github.com/shopware/app-bundle-symfony/issues",
-                "source": "https://github.com/shopware/app-bundle-symfony/tree/5.0.0"
+                "source": "https://github.com/shopware/app-bundle-symfony/tree/6.0.0"
             },
-            "time": "2026-01-14T09:03:20+00:00"
+            "time": "2026-02-05T07:33:15+00:00"
         },
         {
             "name": "shopware/app-php-sdk",
-            "version": "4.1.4",
+            "version": "5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/app-php-sdk.git",
-                "reference": "1b42ba0c2d332d40f05d7dbe3dd8aadbf0291c9a"
+                "reference": "98665b2e3fcc32df7ec0b1790d5a41664cb0452e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/app-php-sdk/zipball/1b42ba0c2d332d40f05d7dbe3dd8aadbf0291c9a",
-                "reference": "1b42ba0c2d332d40f05d7dbe3dd8aadbf0291c9a",
+                "url": "https://api.github.com/repos/shopware/app-php-sdk/zipball/98665b2e3fcc32df7ec0b1790d5a41664cb0452e",
+                "reference": "98665b2e3fcc32df7ec0b1790d5a41664cb0452e",
                 "shasum": ""
             },
             "require": {
@@ -2819,10 +2819,10 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/app-php-sdk/tree/4.1.4",
+                "source": "https://github.com/shopware/app-php-sdk/tree/5.0.1",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2025-10-31T07:44:59+00:00"
+            "time": "2026-02-16T12:38:22+00:00"
         },
         {
             "name": "strobotti/php-jwk",
@@ -4142,16 +4142,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v8.0.3",
+            "version": "v8.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "ea062691009cc2b7bb87734fef20e02671cbd50b"
+                "reference": "f9fdd372473e66469c6d32a4ed12efcffdea38c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/ea062691009cc2b7bb87734fef20e02671cbd50b",
-                "reference": "ea062691009cc2b7bb87734fef20e02671cbd50b",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/f9fdd372473e66469c6d32a4ed12efcffdea38c4",
+                "reference": "f9fdd372473e66469c6d32a4ed12efcffdea38c4",
                 "shasum": ""
             },
             "require": {
@@ -4214,7 +4214,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v8.0.3"
+                "source": "https://github.com/symfony/http-client/tree/v8.0.5"
             },
             "funding": [
                 {
@@ -4234,7 +4234,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-23T14:52:06+00:00"
+            "time": "2026-01-27T16:18:07+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -11462,5 +11462,5 @@
         "ext-simplexml": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
