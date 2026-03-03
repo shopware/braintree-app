@@ -13,7 +13,7 @@ class TaxService
      */
     public function sumTaxes(Collection $taxes): float
     {
-        $amounts = $taxes->map(fn (CalculatedTax $calculatedTax) => $calculatedTax->getTax());
+        $amounts = $taxes->map(static fn (CalculatedTax $calculatedTax) => $calculatedTax->getTax());
 
         return FloatComparator::cast(\array_sum($amounts));
     }

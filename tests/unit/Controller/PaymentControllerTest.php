@@ -53,7 +53,7 @@ class PaymentControllerTest extends TestCase
         $this->httpFoundationFactory
             ->expects(static::once())
             ->method('createResponse')
-            ->willReturnCallback(function (ResponseInterface $response) {
+            ->willReturnCallback(static function (ResponseInterface $response) {
                 $body = \json_decode($response->getBody()->getContents(), true);
                 static::assertNotNull($body);
                 static::assertSame('paid', $body['status']);
@@ -76,7 +76,7 @@ class PaymentControllerTest extends TestCase
         $this->httpFoundationFactory
             ->expects(static::once())
             ->method('createResponse')
-            ->willReturnCallback(function (ResponseInterface $response) {
+            ->willReturnCallback(static function (ResponseInterface $response) {
                 $body = \json_decode($response->getBody()->getContents(), true);
                 static::assertNotNull($body);
                 static::assertSame('fail', $body['status']);
