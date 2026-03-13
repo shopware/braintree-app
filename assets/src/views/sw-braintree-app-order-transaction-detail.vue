@@ -86,7 +86,7 @@
                         </div>
                     </div>
                 </div>
-                <div class='transaction__body__transaction-detail__three-d-s flex-column' v-if="transaction.threeDSecureInfo">
+                <div v-if='transaction.threeDSecureInfo' class='transaction__body__transaction-detail__three-d-s flex-column'>
                     <span class='transaction__body__title bold'>
                         {{ $t('orderTransactionDetail.body.threeDSTitle') }}
                     </span>
