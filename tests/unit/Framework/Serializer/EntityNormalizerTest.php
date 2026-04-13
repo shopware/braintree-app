@@ -24,7 +24,7 @@ class EntityNormalizerTest extends TestCase
         $objectNormalizer
             ->expects(static::any())
             ->method('normalize')
-            ->willReturnCallback(fn (mixed $object) => [$object]);
+            ->willReturnCallback(static fn (mixed $object) => [$object]);
 
         $this->normalizer = new EntityNormalizer($objectNormalizer);
     }

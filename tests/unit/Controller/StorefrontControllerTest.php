@@ -50,7 +50,7 @@ class StorefrontControllerTest extends TestCase
     }
 
     /**
-     * @param StorefrontClaimsArray $queryParams
+     * @param array{currencyId: string, salesChannelId: string|null} $queryParams
      * @param StorefrontClaimsArray $claims
      * @param StorefrontClaimsArray $expected
      */

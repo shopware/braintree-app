@@ -21,7 +21,7 @@ class CollectionNormalizer implements NormalizerInterface, DenormalizerInterface
      */
     public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
-        return $object->map(function (EntityInterface|AbstractShop $item) {
+        return $object->map(static function (EntityInterface|AbstractShop $item) {
             if ($item instanceof AbstractShop) {
                 return $item->getShopId();
             }
@@ -32,7 +32,7 @@ class CollectionNormalizer implements NormalizerInterface, DenormalizerInterface
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
-        return $data instanceof Collection && $data->forAll(function ($_, $item) {
+        return $data instanceof Collection && $data->forAll(static function ($_, $item) {
             return $item instanceof EntityInterface || $item instanceof AbstractShop;
         });
     }
