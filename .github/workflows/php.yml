@@ -54,7 +54,7 @@ jobs:
       - name: Run PHPUnit
         run: composer phpunit:unit -- --coverage-clover=coverage.xml
       - name: Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage.xml
 
@@ -77,7 +77,7 @@ jobs:
       - name: Run PHPUnit
         run: composer phpunit:integration -- --coverage-clover=coverage.xml
       - name: Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage.xml
 

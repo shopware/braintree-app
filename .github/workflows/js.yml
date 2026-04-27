@@ -33,7 +33,7 @@ jobs:
       - name: ESLint report to cli
         run: node -p "require('./node_modules/eslint/lib/cli-engine/formatters/stylish.js')(require('./eslint-report.json'))"
       - name: Annotate ESLint report
-        uses: ataylorme/eslint-annotate-action@v3
+        uses: ataylorme/eslint-annotate-action@v4
         with:
           report-json: eslint-report.json
 
