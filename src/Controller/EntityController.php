@@ -85,7 +85,7 @@ class EntityController extends AbstractController
     #[Route(path: '/entity/config', name: 'entity.config.upsert', methods: [Request::METHOD_PATCH])]
     public function upsertConfigEntities(Request $request, ShopEntity $shop): void
     {
-        $configs = \json_decode($request->getContent(), true, \JSON_THROW_ON_ERROR);
+        $configs = \json_decode($request->getContent(), true, flags: \JSON_THROW_ON_ERROR);
 
         $this->configRepository->upsert($configs, $shop);
     }
@@ -119,7 +119,7 @@ class EntityController extends AbstractController
     #[Route(path: '/entity/currency_mapping', name: 'entity.currency_mapping.upsert', methods: [Request::METHOD_PATCH])]
     public function upsertBySalesChannelCurrencyMappingEntities(Request $request, ShopEntity $shop): void
     {
-        $currencyMappings = \json_decode($request->getContent(), true, \JSON_THROW_ON_ERROR);
+        $currencyMappings = \json_decode($request->getContent(), true, flags: \JSON_THROW_ON_ERROR);
 
         $this->currencyMappingRepository->delete($currencyMappings['deleted']);
         $this->currencyMappingRepository->upsert($currencyMappings['upsert'], $shop);
