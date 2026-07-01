@@ -31,7 +31,7 @@ jobs:
   ecs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-php
       - name: Run ECS
         run: composer ecs
@@ -39,7 +39,7 @@ jobs:
   phpstan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-php
       - name: Generate PHPStan cache
         run: php bin/console cache:clear
@@ -49,12 +49,12 @@ jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-php
       - name: Run PHPUnit
         run: composer phpunit:unit -- --coverage-clover=coverage.xml
       - name: Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           files: ./coverage.xml
 
@@ -70,14 +70,14 @@ jobs:
     env:
       DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-php
       - name: Setup database
         run: composer setup:test
       - name: Run PHPUnit
         run: composer phpunit:integration -- --coverage-clover=coverage.xml
       - name: Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           files: ./coverage.xml
 
@@ -93,7 +93,7 @@ jobs:
     env:
       DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-php
       - name: Setup database
         run: composer setup:test
@@ -112,7 +112,7 @@ jobs:
     env:
       DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-php
       - name: Setup database
         run: composer setup:test

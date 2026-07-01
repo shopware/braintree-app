@@ -16,7 +16,7 @@ jobs:
     env:
       DATABASE_URL: mysql://root:swagbraintree@127.0.0.1:3306/swagbraintree
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-php
 
       - name: Migrate database
