@@ -10,7 +10,7 @@ jobs:
     outputs:
       app_versions: ${{ steps.find-versions.outputs.app_versions }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Find versions
         id: find-versions
@@ -25,7 +25,7 @@ jobs:
       matrix:
         version: ${{ fromJSON(needs.version-matrix.outputs.app_versions) }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-apps
 
@@ -36,7 +36,7 @@ jobs:
   shellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: ShellCheck scripts
         run: shellcheck -f gcc bin/apps.sh
@@ -44,7 +44,7 @@ jobs:
   no-unignored-files:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-apps
 
