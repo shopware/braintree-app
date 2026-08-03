@@ -5,3 +5,6 @@ declare module '*.vue' {
 
     export default component;
 }
+
+// vite side effect
+declare module 'vite/modulepreload-polyfill' {}
