@@ -11,6 +11,8 @@
 
   dotenv.disableHint = true;
 
+  process.manager.implementation = lib.mkDefault "process-compose";
+
   languages.javascript = {
     enable = lib.mkDefault true;
     package = lib.mkDefault pkgs.nodejs-slim;
@@ -78,7 +80,7 @@
 
   services.mysql = {
     enable = true;
-    package = pkgs.mariadb_106;
+    package = pkgs.mariadb_1011;
     initialDatabases = lib.mkDefault [
       { name = "swagbraintree"; }
       { name = "swagbraintree_test"; }
@@ -104,6 +106,6 @@
   # Environment variables
   env.APP_URL = lib.mkDefault "http://localhost:8080";
   env.APP_SECRET = lib.mkDefault "devsecret";
-  env.DATABASE_URL = lib.mkDefault "mysql://swagbraintree:swagbraintree@localhost:3307/swagbraintree";
+  env.DATABASE_URL = lib.mkDefault "mysql://root@localhost:3307/swagbraintree";
   env.VITE_PORT = lib.mkDefault "5173";
 }
