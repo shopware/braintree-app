@@ -85,7 +85,7 @@ export default defineComponent({
     border-spacing: 0;
 
     tr:not(:first-child):nth-child(odd) {
-        background-color: #F0F2F5;
+        background-color: var(--color-background-tertiary-default);
     }
 
     &__headers {
@@ -95,7 +95,7 @@ export default defineComponent({
     }
 
     &__header, &__column {
-        border-right: 1px solid #D1D9E0;
+        border-right: 1px solid var(--color-border-primary-default);
 
         &:last-child {
             border-right: 0;
@@ -105,7 +105,7 @@ export default defineComponent({
     &__header {
         border-top: 0;
         padding: 20px;
-        border-bottom: 1px solid #D1D9E0;
+        border-bottom: 1px solid var(--color-border-primary-default);
         text-align: left;
     }
 

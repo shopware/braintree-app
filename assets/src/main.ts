@@ -9,7 +9,7 @@ import { addLocations } from '@/location';
 import { useStore } from '@/store';
 import { Notify } from './service/notify';
 import { createPinia } from 'pinia';
-import { settingsTabHandler } from './views/sw-braintree-app-settings-page.vue';
+import { settingsTabHandler } from './service/settings-tab-handler';
 
 const Criteria = sw.data.Classes.Criteria;
 const Repository = sw.data.repository<'payment_method'>('payment_method');

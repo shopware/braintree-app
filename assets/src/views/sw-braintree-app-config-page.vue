@@ -70,7 +70,7 @@ import { defineComponent } from 'vue';
 import SwBraintreeAppConfig from '@/component/sw-braintree-app-config.vue';
 import SwBraintreeAppMerchantDetails from '@/component/sw-braintree-app-merchant-details.vue';
 import { MtButton, MtBanner, MtLink, MtLoader } from '@shopware-ag/meteor-component-library';
-import { settingsTabHandler } from './sw-braintree-app-settings-page.vue';
+import { settingsTabHandler } from '@/service/settings-tab-handler';
 
 export default defineComponent({
     name: 'sw-braintree-app-config-page',
@@ -215,7 +215,7 @@ export default defineComponent({
 
 <style lang='scss'>
 #app .sw-braintree-app-config-page {
-    background: var(--color-elevation-surface-default);
+    background: var(--color-elevation-surface-raised);
 
     &__buttons {
         display: flex;
