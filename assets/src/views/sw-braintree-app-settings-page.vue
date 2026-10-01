@@ -67,33 +67,13 @@ import SwSalesChannelSwitch from '@/component/base/sw-sales-channel-switch.vue';
 import SwCardViewContent from '@/component/base/sw-card-view-content.vue';
 import { registerSaveHandler, type RegisterSaveHandler } from '@/resources/inject-keys';
 import * as sw from '@shopware-ag/meteor-admin-sdk';
+import { settingsTabHandler, type Tabs } from '@/service/settings-tab-handler';
 
 type SaveHandler = Parameters<RegisterSaveHandler>[0];
 
-const tabs = {
+export const tabs: Record<Tabs, typeof SwBraintreeAppSettingsCurrency | typeof SwBraintreeAppSettingsGeneral> = {
     swBraintreeAppSettingsGeneral: SwBraintreeAppSettingsGeneral,
     swBraintreeAppSettingsCurrency: SwBraintreeAppSettingsCurrency,
-} as const;
-
-export const settingsTabHandler = {
-    set(item: keyof typeof tabs): void {
-        window.localStorage.setItem('sw-braintree-app-settings-active-tab', item);
-    },
-
-    get(): keyof typeof tabs {
-        let item = window.localStorage.getItem('sw-braintree-app-settings-active-tab') as null | keyof typeof tabs;
-
-        if (!item || !Object.keys(tabs).includes(item)) 
-            item = 'swBraintreeAppSettingsGeneral';
-
-        this.set(item);
-
-        return item;
-    },
-
-    clear(): void {
-        window.localStorage.removeItem('sw-braintree-app-settings-active-tab');
-    },
 };
 
 export default defineComponent({

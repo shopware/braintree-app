@@ -319,7 +319,7 @@ export default defineComponent({
         }
     }
 
-    background: var(--color-elevation-surface-default);
+    background: var(--color-elevation-surface-raised);
 
     .flex-column {
         display: flex;
@@ -331,7 +331,7 @@ export default defineComponent({
         position: relative;
 
         .mt-loader {
-            background: var(--color-elevation-surface-default);
+            background: var(--color-elevation-surface-raised);
         }
     }
 
