@@ -12,10 +12,7 @@ ErrorHandler::register(null, false);
 
 require \dirname(__DIR__) . '/vendor/autoload.php';
 
-/** @phpstan-ignore function.alreadyNarrowedType */
-if (\method_exists(Dotenv::class, 'bootEnv')) {
-    (new Dotenv())->bootEnv(\dirname(__DIR__) . '/.env');
-}
+(new Dotenv())->bootEnv(\dirname(__DIR__) . '/.env');
 
 VarDumper::setHandler(static function (mixed $var): ?string {
     $cloner = new VarCloner();

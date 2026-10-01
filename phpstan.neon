@@ -1,6 +1,3 @@
-includes:
-    - vendor/symplify/phpstan-rules/config/static-rules.neon
-
 parameters:
     level: 6
     phpVersion: 80200
@@ -26,6 +23,20 @@ parameters:
             constantHassers: false
             containerXmlPath: 'var/cache/dev/Swag_Braintree_KernelDevDebugContainer.xml'
 
+    # symplify/phpstan-rules enables all of its rule sets by default (via extension-installer),
+    # we only want the hand-picked subset registered under `rules` below
+    symplify:
+        naming: false
+        complexity: false
+        configurable: false
+        static: false
+        symfony: false
+        symfonyConfig: false
+        doctrine: false
+        phpunit: false
+        mocks: false
+        ctor: false
+
     ignoreErrors:
             - # TestException
                 message: '#Multiple class/interface/trait is not allowed in single file#'
@@ -44,16 +55,32 @@ parameters:
 rules:
     # rules from https://github.com/symplify/phpstan-rules
     # domain
+    - Symplify\PHPStanRules\Rules\Domain\RequireExceptionNamespaceRule
+    - Symplify\PHPStanRules\Rules\Domain\RequireAttributeNamespaceRule
+    - Symplify\PHPStanRules\Rules\CheckRequiredInterfaceInContractNamespaceRule
+    - Symplify\PHPStanRules\Rules\RequireAttributeNameRule
     - Symplify\PHPStanRules\Rules\Enum\RequireUniqueEnumConstantRule
     - Symplify\PHPStanRules\Rules\PreventParentMethodVisibilityOverrideRule
 
     # explicit naming
     - Symplify\PHPStanRules\Rules\ForbiddenMultipleClassLikeInOneFileRule
-
-    - Symplify\PHPStanRules\Rules\Complexity\ForbiddenArrayMethodCallRule
+    - Symplify\PHPStanRules\Rules\UppercaseConstantRule
 
     # complexity rules
+    - Symplify\PHPStanRules\Rules\ForbiddenExtendOfNonAbstractClassRule
+    - Symplify\PHPStanRules\Rules\NoGlobalConstRule
+    - Symplify\PHPStanRules\Rules\NoReferenceRule
+    - Symplify\PHPStanRules\Rules\ForbiddenStaticClassConstFetchRule
+    - Symplify\PHPStanRules\Rules\Complexity\ForbiddenArrayMethodCallRule
     - Symplify\PHPStanRules\Rules\NoDynamicNameRule
 
-    # naming rules
-    - Symplify\PHPStanRules\Rules\UppercaseConstantRule
+    # docblock
+    - Symplify\PHPStanRules\Rules\NoMissnamedDocTagRule
+    - Symplify\PHPStanRules\Rules\RequireArrayShapeReturnRule
+
+    # attributes
+    - Symplify\PHPStanRules\Rules\NoDuplicateNonRepeatableAttributeRule
+
+    # phpunit
+    - Symplify\PHPStanRules\Rules\PHPUnit\PublicStaticDataProviderRule
+    - Symplify\PHPStanRules\Rules\PHPUnit\NoAssertFuncCallInTestsRule

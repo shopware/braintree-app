@@ -6,6 +6,6 @@
   "license": "MIT",
   "dependencies": {
     "@friendsofshopware/storefront-sdk": "^0.1.2",
-    "braintree-web": "^3.97.1"
+    "braintree-web": "^3.146.0"
   }
 }
