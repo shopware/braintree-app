@@ -124,16 +124,14 @@ class SalesChannelConfigServiceTest extends TestCase
 
     public function testGetMerchantIdWithNone(): void
     {
-        $shop = $this->shop;
-
         $this->currencyMappingRepository
             ->expects(static::once())
             ->method('findBy')
-            ->with(static::callback(static function (array $criteria) use ($shop): bool {
+            ->with(static::callback(function (array $criteria): bool {
                 static::assertContains('this-is-sales-channel-id', $criteria['salesChannelId']);
                 static::assertContains(null, $criteria['salesChannelId']);
                 static::assertEquals('this-is-currency-id', $criteria['currencyId']);
-                static::assertEquals($shop, $criteria['shop']);
+                static::assertEquals($this->shop, $criteria['shop']);
 
                 return true;
             }))
@@ -238,10 +236,10 @@ class SalesChannelConfigServiceTest extends TestCase
         $this->configRepository
             ->expects(static::once())
             ->method('findBy')
-            ->with(static::callback(static function (array $criteria) use ($shop): bool {
+            ->with(static::callback(function (array $criteria): bool {
                 static::assertContains('this-is-sales-channel-id', $criteria['salesChannelId']);
                 static::assertContains(null, $criteria['salesChannelId']);
-                static::assertEquals($shop, $criteria['shop']);
+                static::assertEquals($this->shop, $criteria['shop']);
 
                 return true;
             }))
@@ -364,14 +362,13 @@ class SalesChannelConfigServiceTest extends TestCase
 
     public function testShipsFromPostalCodeWithNone(): void
     {
-        $shop = $this->shop;
         $this->configRepository
             ->expects(static::once())
             ->method('findBy')
-            ->with(static::callback(static function (array $criteria) use ($shop): bool {
+            ->with(static::callback(function (array $criteria): bool {
                 static::assertContains('this-is-sales-channel-id', $criteria['salesChannelId']);
                 static::assertContains(null, $criteria['salesChannelId']);
-                static::assertEquals($shop, $criteria['shop']);
+                static::assertEquals($this->shop, $criteria['shop']);
 
                 return true;
             }))

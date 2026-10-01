@@ -80,8 +80,8 @@ class BraintreePaymentService
             LogProcessor::ACTION => $payment,
             '3ds' => $hasThreeDSecure,
             '3dsEnforced' => $threeDSecureEnforced,
-            'hasDeviceData' => !empty($sale['deviceData']),
-            'hasCustomFields' => !empty($sale['customFields']),
+            'hasDeviceData' => !!$sale['deviceData'],
+            'hasCustomFields' => !!$sale['customFields'],
             'merchantAccountId' => $sale['merchantAccountId'],
         ]);
 
