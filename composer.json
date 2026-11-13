@@ -4,7 +4,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.4.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-session": "*",
@@ -17,10 +17,10 @@
         "guzzlehttp/psr7": "^2.7",
         "nelmio/cors-bundle": "^2.5",
         "shopware/app-bundle": "^6.0",
-        "symfony/console": "8.0.*",
+        "symfony/console": "8.1.*",
         "symfony/dotenv": "8.1.*",
         "symfony/flex": "^2",
-        "symfony/framework-bundle": "8.0.*",
+        "symfony/framework-bundle": "8.1.*",
         "symfony/http-foundation": "8.1.*",
         "symfony/monolog-bundle": "^4.0",
         "symfony/property-access": "8.1.*",
@@ -112,7 +112,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "8.0.*"
+            "require": "8.1.*"
         }
     },
     "require-dev": {
@@ -123,10 +123,10 @@
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-symfony": "^2",
-        "phpunit/phpunit": "^13",
+        "phpunit/phpunit": "^12",
         "symfony/browser-kit": "8.1.*",
         "symfony/debug-bundle": "8.1.*",
-        "symfony/stopwatch": "8.0.*",
+        "symfony/stopwatch": "8.1.*",
         "symfony/web-profiler-bundle": "8.1.*",
         "symplify/phpstan-rules": "14.19.3",
         "tomasvotruba/type-coverage": "^2"
