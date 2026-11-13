@@ -1,6 +1,6 @@
 parameters:
     level: 6
-    phpVersion: 80200
+    phpVersion: 80400
     tmpDir: var/cache/phpstan
 
     paths:
@@ -30,18 +30,16 @@ parameters:
         complexity: false
         configurable: false
         static: false
+        modern: false
         symfony: false
         symfonyConfig: false
         doctrine: false
+        collections: false
         phpunit: false
         mocks: false
         ctor: false
 
     ignoreErrors:
-            - # TestException
-                message: '#Multiple class/interface/trait is not allowed in single file#'
-                path: tests/unit
-
             - # PHPStan does not know of symfony browser component
                 message: '#Service "test\.client" is not registered in the container\.#'
                 path: tests
@@ -77,9 +75,6 @@ rules:
     # docblock
     - Symplify\PHPStanRules\Rules\NoMissnamedDocTagRule
     - Symplify\PHPStanRules\Rules\RequireArrayShapeReturnRule
-
-    # attributes
-    - Symplify\PHPStanRules\Rules\NoDuplicateNonRepeatableAttributeRule
 
     # phpunit
     - Symplify\PHPStanRules\Rules\PHPUnit\PublicStaticDataProviderRule
