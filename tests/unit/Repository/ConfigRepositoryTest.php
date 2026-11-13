@@ -26,14 +26,17 @@ class ConfigRepositoryTest extends TestCase
 
     protected function setUp(): void
     {
+        // the repository resolves its entity manager lazily, not every test reaches it
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->entityManager
+            ->expects(static::atMost(1))
             ->method('getClassMetadata')
             ->with(ConfigEntity::class)
             ->willReturn(new ClassMetadata(ConfigEntity::class));
 
         $this->registry = $this->createMock(ManagerRegistry::class);
         $this->registry
+            ->expects(static::atMost(1))
             ->method('getManagerForClass')
             ->with(ConfigEntity::class)
             ->willReturn($this->entityManager);

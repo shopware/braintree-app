@@ -39,7 +39,7 @@ class RequestDebugIdSubscriberTest extends TestCase
         $request = new Request();
 
         $this->subsciber->onRequest(new RequestEvent(
-            $this->createMock(HttpKernelInterface::class),
+            static::createStub(HttpKernelInterface::class),
             $request,
             HttpKernelInterface::MAIN_REQUEST,
         ));
@@ -62,7 +62,7 @@ class RequestDebugIdSubscriberTest extends TestCase
         $subRequest = new Request();
 
         $this->subsciber->onRequest(new RequestEvent(
-            $this->createMock(HttpKernelInterface::class),
+            static::createStub(HttpKernelInterface::class),
             $subRequest,
             HttpKernelInterface::SUB_REQUEST,
         ));
@@ -75,7 +75,7 @@ class RequestDebugIdSubscriberTest extends TestCase
         $subRequest = new Request();
 
         $this->subsciber->onRequest(new RequestEvent(
-            $this->createMock(HttpKernelInterface::class),
+            static::createStub(HttpKernelInterface::class),
             $subRequest,
             HttpKernelInterface::SUB_REQUEST,
         ));
@@ -96,7 +96,7 @@ class RequestDebugIdSubscriberTest extends TestCase
         $response = new Response();
 
         $this->subsciber->onResponse(new ResponseEvent(
-            $this->createMock(HttpKernelInterface::class),
+            static::createStub(HttpKernelInterface::class),
             $request,
             HttpKernelInterface::MAIN_REQUEST,
             $response,
@@ -111,7 +111,7 @@ class RequestDebugIdSubscriberTest extends TestCase
         $response = new Response();
 
         $this->subsciber->onResponse(new ResponseEvent(
-            $this->createMock(HttpKernelInterface::class),
+            static::createStub(HttpKernelInterface::class),
             $request,
             HttpKernelInterface::MAIN_REQUEST,
             $response,

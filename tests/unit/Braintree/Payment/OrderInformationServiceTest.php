@@ -248,7 +248,7 @@ class OrderInformationServiceTest extends TestCase
 
         $paymentPayAction = new PaymentPayAction(
             $this->shop,
-            $this->createMock(ActionSource::class),
+            static::createStub(ActionSource::class),
             $order,
             $this->createOrderTransaction(),
             null,
@@ -292,7 +292,7 @@ class OrderInformationServiceTest extends TestCase
 
         $paymentPayAction = new PaymentPayAction(
             $this->shop,
-            $this->createMock(ActionSource::class),
+            static::createStub(ActionSource::class),
             $order,
             self::createOrderTransaction(),
             null,

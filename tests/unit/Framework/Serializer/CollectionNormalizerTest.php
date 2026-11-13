@@ -49,8 +49,8 @@ class CollectionNormalizerTest extends TestCase
 
     public function testSupportsNormalization(): void
     {
-        $entity = $this->createMock(EntityInterface::class);
-        $shop = $this->createMock(AbstractShop::class);
+        $entity = static::createStub(EntityInterface::class);
+        $shop = static::createStub(AbstractShop::class);
 
         static::assertTrue($this->normalizer->supportsNormalization(new ArrayCollection()));
         static::assertTrue($this->normalizer->supportsNormalization(new ArrayCollection([$entity])));
