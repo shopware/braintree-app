@@ -7,8 +7,10 @@ namespace Swag\Braintree\Tests\Unit\Controller;
 use Braintree\ClientTokenGateway;
 use Braintree\Gateway;
 use Braintree\MerchantAccountGateway;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\App\SDK\Context\Storefront\StorefrontAction;
@@ -38,7 +40,6 @@ class StorefrontControllerTest extends TestCase
 
         $this->gateway = $this->createMock(Gateway::class);
         $this->gateway
-            ->expects(static::any())
             ->method('merchantAccount')
             ->willReturn($this->merchantAccountGateway);
 
@@ -126,6 +127,7 @@ class StorefrontControllerTest extends TestCase
         ];
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testThreeDSecureEnforced(): void
     {
         $clientToken = $this->createMock(ClientTokenGateway::class);
@@ -243,6 +245,7 @@ class StorefrontControllerTest extends TestCase
         static::assertFalse($json['threeDS']['enabled']);
     }
 
+    #[IgnoreDeprecations]
     public function testDeprecatedGetClientToken(): void
     {
         $clientToken = $this->createMock(ClientTokenGateway::class);
@@ -270,6 +273,8 @@ class StorefrontControllerTest extends TestCase
             ->method('find')
             ->with('this-is-merchant-id')
             ->willReturn((object) []);
+
+        $this->expectUserDeprecationMessage('Method Swag\\Braintree\\Controller\\StorefrontController::getClientToken() is deprecated since 4.0.0, Use braintree.client.config instead.');
 
         $action = new StorefrontAction($shop, new StorefrontClaims(['currencyId' => 'this-is-currency-id', 'salesChannelId' => 'this-is-sales-channel-id']), new Collection());
         $response = $this->controller->getClientToken($action, 'this-is-currency-id', 'this-is-sales-channel-id');

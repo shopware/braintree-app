@@ -7,6 +7,7 @@ use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Shopware\App\SDK\Context\ActionSource;
 use Shopware\App\SDK\Context\Order\Order;
@@ -28,22 +29,25 @@ class LogProcessorTest extends TestCase
 {
     private RequestStack $requestStack;
 
-    private LogProcessor&MockObject $processor;
+    private ContainerInterface $container;
+
+    private LogProcessor&Stub $processor;
 
     protected function setUp(): void
     {
         $this->requestStack = new RequestStack();
 
-        $container = $this->createMock(ContainerInterface::class);
-        $container
+        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container
+            ->expects(static::once())
             ->method('get')
             ->with('request_stack', ContainerInterface::NULL_ON_INVALID_REFERENCE)
             ->willReturn($this->requestStack);
 
-        $this->processor = $this->getMockBuilder(LogProcessor::class)
+        $this->processor = static::getStubBuilder(LogProcessor::class)
             ->onlyMethods(['getBacktrace'])
-            ->setConstructorArgs([$container])
-            ->getMock();
+            ->setConstructorArgs([$this->container])
+            ->getStub();
     }
 
     public function testInvokeWithException(): void
@@ -188,12 +192,13 @@ class LogProcessorTest extends TestCase
             ['file' => 'file3.php', 'line' => 3, 'class' => 'class3', 'function' => 'function2'],
         ];
 
-        $this->processor->expects(static::once())
+        $processor = $this->createProcessorMock();
+        $processor->expects(static::once())
             ->method('getBacktrace')
             ->willReturn($backtrace);
 
         $record = $this->getLogRecord('Test message with backtrace');
-        $result = ($this->processor)($record);
+        $result = $processor($record);
 
         static::assertSame([], $result->context);
         static::assertEquals([
@@ -229,12 +234,13 @@ class LogProcessorTest extends TestCase
     #[DataProvider('traceToClassString')]
     public function testTraceToClassString(string $expected, array $trace): void
     {
-        $this->processor->expects(static::once())
+        $processor = $this->createProcessorMock();
+        $processor->expects(static::once())
             ->method('getBacktrace')
             ->willReturn([$trace]);
 
         $record = $this->getLogRecord('Test message with backtrace');
-        $result = ($this->processor)($record);
+        $result = $processor($record);
 
         static::assertSame([], $result->context);
         static::assertEquals(['loggedAt' => $expected], $result->extra);
@@ -247,6 +253,14 @@ class LogProcessorTest extends TestCase
         yield 'missing class' => ['file.php::function', ['file' => 'file.php', 'function' => 'function']];
         yield 'missing file' => ['class::function', ['class' => 'class', 'function' => 'function']];
         yield 'missing function' => ['class::', ['file' => 'file.php', 'class' => 'class']];
+    }
+
+    private function createProcessorMock(): LogProcessor&MockObject
+    {
+        return $this->getMockBuilder(LogProcessor::class)
+            ->onlyMethods(['getBacktrace'])
+            ->setConstructorArgs([$this->container])
+            ->getMock();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Swag\Braintree\Tests\Unit\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,7 @@ use Swag\Braintree\Repository\ShopRepository;
 use Symfony\Component\HttpFoundation\Request;
 
 #[CoversClass(BraintreeConfigurationController::class)]
+#[AllowMockObjectsWithoutExpectations]
 class BraintreeConfigurationControllerTest extends TestCase
 {
     private BraintreeConfigurationController $controller;

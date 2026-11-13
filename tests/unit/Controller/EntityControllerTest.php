@@ -4,6 +4,7 @@ namespace Swag\Braintree\Tests\Unit\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Uid\Uuid;
 
 #[CoversClass(EntityController::class)]
+#[AllowMockObjectsWithoutExpectations]
 class EntityControllerTest extends TestCase
 {
     private MockObject&EntityManagerInterface $entityManager;
@@ -103,7 +105,7 @@ class EntityControllerTest extends TestCase
 
     public function testGetBySalesChannelConfigEntity(): void
     {
-        $shop = $this->createMock(ShopEntity::class);
+        $shop = static::createStub(ShopEntity::class);
         $config = new ConfigEntity();
 
         $this->configRepository
@@ -118,7 +120,7 @@ class EntityControllerTest extends TestCase
 
     public function testGetBySalesChannelConfigEntityFoundNull(): void
     {
-        $shop = $this->createMock(ShopEntity::class);
+        $shop = static::createStub(ShopEntity::class);
 
         $this->configRepository
             ->expects(static::once())
@@ -134,7 +136,7 @@ class EntityControllerTest extends TestCase
 
     public function testGetBySalesChannelConfigEntityWithSalesChannelIdNull(): void
     {
-        $shop = $this->createMock(ShopEntity::class);
+        $shop = static::createStub(ShopEntity::class);
 
         $this->configRepository
             ->expects(static::once())
@@ -216,7 +218,7 @@ class EntityControllerTest extends TestCase
 
     public function testGetBySalesChannelCurrencyMappingEntities(): void
     {
-        $shop = $this->createMock(ShopEntity::class);
+        $shop = static::createStub(ShopEntity::class);
 
         $this->currencyMappingRepository
             ->expects(static::once())
@@ -229,7 +231,7 @@ class EntityControllerTest extends TestCase
 
     public function testGetBySalesChannelCurrencyMappingEntitiesWithSalesChannelIdNull(): void
     {
-        $shop = $this->createMock(ShopEntity::class);
+        $shop = static::createStub(ShopEntity::class);
 
         $this->currencyMappingRepository
             ->expects(static::once())

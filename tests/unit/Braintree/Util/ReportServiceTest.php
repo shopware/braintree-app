@@ -9,6 +9,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -191,6 +192,7 @@ class ReportServiceTest extends TestCase
         ]], $this->extractTurnoverReports($this->clientHistory));
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testTransactionFloatCasting(): void
     {
         $this->clientHandler->append(new Response());
@@ -225,6 +227,7 @@ class ReportServiceTest extends TestCase
         static::assertIsFloat($requestBodyArray['reportDataKeys']['turnover']);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testReportDateIsSent(): void
     {
         $this->clientHandler->append(new Response());
@@ -258,6 +261,7 @@ class ReportServiceTest extends TestCase
         static::assertInstanceOf(\DateTimeInterface::class, $reportDate);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testApiIdentifierIsSent(): void
     {
         $this->clientHandler->append(new Response());

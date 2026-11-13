@@ -42,7 +42,7 @@ class ShopResolverTest extends TestCase
         $resolver = new ShopResolver(
             $shopwareResolver,
             $repo,
-            $this->createMock(HttpMessageFactoryInterface::class)
+            static::createStub(HttpMessageFactoryInterface::class)
         );
 
         $resolvedShop = $resolver->resolveShop($request);
