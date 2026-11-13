@@ -20,7 +20,7 @@ class BraintreeConnectionServiceTest extends TestCase
 {
     public function testFromShop(): void
     {
-        $gateway = $this->createMock(Gateway::class);
+        $gateway = static::createStub(Gateway::class);
         $service = new BraintreeConnectionService($gateway);
 
         $shop = (new ShopEntity('', '', ''))

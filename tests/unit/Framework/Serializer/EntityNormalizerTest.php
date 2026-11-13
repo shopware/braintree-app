@@ -20,9 +20,8 @@ class EntityNormalizerTest extends TestCase
 
     protected function setUp(): void
     {
-        $objectNormalizer = $this->createMock(NormalizerInterface::class);
+        $objectNormalizer = static::createStub(NormalizerInterface::class);
         $objectNormalizer
-            ->expects(static::any())
             ->method('normalize')
             ->willReturnCallback(static fn (mixed $object) => [$object]);
 
@@ -31,8 +30,8 @@ class EntityNormalizerTest extends TestCase
 
     public function testSupportsNormalization(): void
     {
-        static::assertTrue($this->normalizer->supportsNormalization($this->createMock(EntityInterface::class)));
-        static::assertTrue($this->normalizer->supportsNormalization($this->createMock(AbstractShop::class)));
+        static::assertTrue($this->normalizer->supportsNormalization(static::createStub(EntityInterface::class)));
+        static::assertTrue($this->normalizer->supportsNormalization(static::createStub(AbstractShop::class)));
         static::assertFalse($this->normalizer->supportsNormalization(new \stdClass()));
     }
 

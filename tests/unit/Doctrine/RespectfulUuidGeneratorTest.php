@@ -17,7 +17,7 @@ class RespectfulUuidGeneratorTest extends TestCase
         $entity = $this->getTestEntity();
 
         $generator = new RespectfulUuidGenerator();
-        $id = $generator->generateId($this->createMock(EntityManager::class), $entity);
+        $id = $generator->generateId(static::createStub(EntityManager::class), $entity);
 
         static::assertNotNull($id);
         static::assertTrue(Uuid::isValid($id->toRfc4122()));
@@ -26,7 +26,7 @@ class RespectfulUuidGeneratorTest extends TestCase
     public function testGenerateIdWithNullEntity(): void
     {
         $generator = new RespectfulUuidGenerator();
-        $id = $generator->generateId($this->createMock(EntityManager::class), null);
+        $id = $generator->generateId(static::createStub(EntityManager::class), null);
 
         static::assertNull($id);
     }
@@ -40,7 +40,7 @@ class RespectfulUuidGeneratorTest extends TestCase
         static::expectException(\RuntimeException::class);
         static::expectExceptionMessage('Class stdClass not supported for respectful uuid generation. Use Swag\Braintree\Entity\Contract\EntityInterface instead');
 
-        $generator->generateId($this->createMock(EntityManager::class), $entity);
+        $generator->generateId(static::createStub(EntityManager::class), $entity);
     }
 
     public function testGenerateIdWithExistingId(): void
@@ -50,7 +50,7 @@ class RespectfulUuidGeneratorTest extends TestCase
         $entity = $this->getTestEntity($uuid);
 
         $generator = new RespectfulUuidGenerator();
-        $id = $generator->generateId($this->createMock(EntityManager::class), $entity);
+        $id = $generator->generateId(static::createStub(EntityManager::class), $entity);
 
         static::assertNotNull($id);
         static::assertSame($uuid, $id);

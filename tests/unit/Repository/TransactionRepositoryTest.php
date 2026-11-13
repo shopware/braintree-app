@@ -25,14 +25,17 @@ class TransactionRepositoryTest extends TestCase
 
     protected function setUp(): void
     {
+        // the repository resolves its entity manager lazily, not every test reaches it
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->entityManager
+            ->expects(static::atMost(1))
             ->method('getClassMetadata')
             ->with(TransactionEntity::class)
             ->willReturn(new ClassMetadata(TransactionEntity::class));
 
         $this->registry = $this->createMock(ManagerRegistry::class);
         $this->registry
+            ->expects(static::atMost(1))
             ->method('getManagerForClass')
             ->with(TransactionEntity::class)
             ->willReturn($this->entityManager);
