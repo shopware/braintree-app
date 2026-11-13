@@ -1,4 +1,3 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import BraintreeClient from 'braintree-web/client';
 import BraintreeHostedFields from 'braintree-web/hosted-fields';
 import Braintree3DSecure from 'braintree-web/three-d-secure';
@@ -8,6 +7,8 @@ import AppClient from '@friendsofshopware/storefront-sdk/service/app-client.serv
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import ButtonLoadingIndicatorUtil from 'src/utility/loading-indicator/button-loading-indicator.util';
+
+const { PluginBaseClass } = window;
 
 /**
  * @typedef {{ token: string, threeDS: { enforced: boolean, enabled: boolean } }} BraintreeClientConfig
@@ -24,7 +25,7 @@ import ButtonLoadingIndicatorUtil from 'src/utility/loading-indicator/button-loa
  * @typedef {module:braintree-web/data-collector.dataCollector} BraintreeDataCollector
  * @typedef {module:braintree-web/data-collector.deviceData} BraintreeDeviceData
  */
-export default class SwagBraintreeHostedFields extends Plugin {
+export default class SwagBraintreeHostedFields extends PluginBaseClass {
     /** @type {BraintreeClientConfig} */
     config;
 
@@ -310,7 +311,7 @@ export default class SwagBraintreeHostedFields extends Plugin {
      * @private
      */
     resetOnSubmitError(error) {
-        if (!!error) {
+        if (error) {
             console.error(error);
         }
 
