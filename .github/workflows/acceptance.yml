@@ -227,10 +227,16 @@ jobs:
           if [ -d tests/acceptance/test-results ]; then cp -r tests/acceptance/test-results "$dir/"; fi
           if [ -d shopware/var/log ]; then cp -r shopware/var/log "$dir/shopware-log"; fi
           cd "$dir"
-          # The archive is only weakly encrypted, so no file that still contains a Braintree credential may get into it
+          # The archive is only weakly encrypted, so no file that still contains a Braintree credential may get into it.
+          # Traces are compressed, so they are searched unpacked, and one that cannot be unpacked goes as well.
           for secret in "$BRAINTREE_MERCHANT_ID" "$BRAINTREE_PUBLIC_KEY" "$BRAINTREE_PRIVATE_KEY"; do
             if [ -n "$secret" ]; then
               { grep -rlF --null -e "$secret" . || true; } | xargs -0 -r rm -fv
+              find . -name '*.zip' -print0 | while IFS= read -r -d '' trace; do
+                if ! unzip -tqq "$trace" > /dev/null 2>&1 || unzip -p "$trace" | grep -qF -e "$secret"; then
+                  rm -fv "$trace"
+                fi
+              done
             fi
           done
           if [ -z "$(ls -A)" ]; then
