@@ -123,6 +123,16 @@ jobs:
           YAML
           fi
 
+          # A -dev Shopware sends no version to the Shopware Store, which then offers its latest release of the app as an
+          # update whatever line it is for. The daily app update task would download that release over the app under test.
+          if grep -q "'runtime_extension_management'" src/Core/Framework/DependencyInjection/Configuration.php; then
+            cat > config/packages/prod/acceptance-extension-management.yaml <<'YAML'
+          shopware:
+              deployment:
+                  runtime_extension_management: false
+          YAML
+          fi
+
           bin/console cache:clear
 
       - name: Start app server
