@@ -138,7 +138,8 @@ jobs:
 
       - name: Run Playwright
         working-directory: tests/acceptance
-        run: npx playwright test --reporter=github --trace=on-first-retry
+        # No --trace here: the CLI flag would override the specs that turn tracing off to keep the keys out of it
+        run: npx playwright test --reporter=github
         env:
           BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
           BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
@@ -153,6 +154,8 @@ jobs:
           dir="$RUNNER_TEMP/acceptance-artifact"
           mkdir -p "$dir"
           if [ -d tests/acceptance/test-results ]; then cp -r tests/acceptance/test-results "$dir/"; fi
+          # Playwright's failure snapshots contain the values of text fields, which include the Braintree keys
+          find "$dir" -name error-context.md -delete
           if [ -d shopware/var/log ]; then cp -r shopware/var/log "$dir/shopware-log"; fi
           cd "$dir"
           if [ -z "$(ls -A)" ]; then

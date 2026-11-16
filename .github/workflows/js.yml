@@ -10,7 +10,6 @@ on:
       - package-lock.json
       - tests/acceptance/**
       - .github/actions/setup-node/action.yml
-      - .github/actions/setup-acceptance/action.yml
       - .github/workflows/js.yml
   push:
     paths:
@@ -20,7 +19,6 @@ on:
       - package-lock.json
       - tests/acceptance/**
       - .github/actions/setup-node/action.yml
-      - .github/actions/setup-acceptance/action.yml
       - .github/workflows/js.yml
     branches:
       - trunk
@@ -70,7 +68,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: tests/acceptance/package.json
           cache: npm
           cache-dependency-path: tests/acceptance/package-lock.json
       - name: Install dependencies
