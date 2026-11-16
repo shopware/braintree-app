@@ -217,7 +217,6 @@ jobs:
         if: always()
         env:
           ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
-          BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
           BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
           BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
         run: |
@@ -227,9 +226,10 @@ jobs:
           if [ -d tests/acceptance/test-results ]; then cp -r tests/acceptance/test-results "$dir/"; fi
           if [ -d shopware/var/log ]; then cp -r shopware/var/log "$dir/shopware-log"; fi
           cd "$dir"
-          # The archive is only weakly encrypted, so no file that still contains a Braintree credential may get into it.
+          # The archive is only weakly encrypted, so no file that still contains a Braintree API key may get into it.
           # Traces are compressed, so they are searched unpacked, and one that cannot be unpacked goes as well.
-          for secret in "$BRAINTREE_MERCHANT_ID" "$BRAINTREE_PUBLIC_KEY" "$BRAINTREE_PRIVATE_KEY"; do
+          # The merchant ID is not searched for: every shopper's browser receives it, so it is in every checkout trace.
+          for secret in "$BRAINTREE_PUBLIC_KEY" "$BRAINTREE_PRIVATE_KEY"; do
             if [ -n "$secret" ]; then
               { grep -rlF --null -e "$secret" . || true; } | xargs -0 -r rm -fv
               find . -name '*.zip' -print0 | while IFS= read -r -d '' trace; do
