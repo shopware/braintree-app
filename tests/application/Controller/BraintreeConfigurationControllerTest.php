@@ -19,6 +19,7 @@ class BraintreeConfigurationControllerTest extends WebTestCase
         $shop->setBraintreeMerchantId('merchant-id');
         $shop->setBraintreePrivateKey('private-key');
         $shop->setBraintreePublicKey('public-key');
+        $shop->setBraintreeSandbox(true);
 
         $config = new ConfigEntity();
         $config->setShop($shop);
@@ -36,16 +37,21 @@ class BraintreeConfigurationControllerTest extends WebTestCase
         $entityManager->persist($config);
         $entityManager->persist($currencyMapping);
         $entityManager->flush();
+        // the controller has to load the shop from the database, like it does outside of tests
+        $entityManager->clear();
 
         $client = static::createClientForShop($shop);
         $client->request(Request::METHOD_DELETE, '/api/config');
 
+        // assert on what was written, not on the entity the controller changed in memory
+        $entityManager->clear();
         $resetShop = $entityManager->find(ShopEntity::class, $shop->getShopId());
 
         static::assertNull($resetShop->getBraintreeMerchantId());
         static::assertNull($resetShop->getBraintreePrivateKey());
         static::assertNull($resetShop->getBraintreePublicKey());
-        static::assertCount(0, $resetShop->getConfigs());
-        static::assertCount(0, $resetShop->getCurrencyMappings());
+        static::assertTrue($resetShop->isBraintreeSandbox());
+        static::assertCount(1, $resetShop->getConfigs());
+        static::assertCount(1, $resetShop->getCurrencyMappings());
     }
 }

@@ -66,8 +66,6 @@ class ShopEntity extends AbstractShop implements ResetInterface
 
     public function reset(): void
     {
-        $this->configs->clear();
-        $this->currencyMappings->clear();
         $this->braintreeMerchantId = null;
         $this->braintreePrivateKey = null;
         $this->braintreePublicKey = null;
