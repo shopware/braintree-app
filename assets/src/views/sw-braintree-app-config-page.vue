@@ -86,6 +86,7 @@ export default defineComponent({
 
     data(): {
         shop?: ShopEntity,
+        currencyMappings?: CurrencyMappingEntity[],
         loading: boolean,
         saving: boolean,
         testing: boolean,
@@ -93,6 +94,7 @@ export default defineComponent({
     } {
         return {
             shop: undefined,
+            currencyMappings: undefined,
             loading: true,
             saving: false,
             testing: false,
@@ -105,7 +107,7 @@ export default defineComponent({
             return !!this.shop?.braintreeMerchantId && !!this.shop?.braintreePublicKey && !!this.shop?.braintreePrivateKey;
         },
         missingCurrenyMappings(): boolean {
-            return !!this.shop && this.shop.currencyMappings.length === 0;
+            return !!this.currencyMappings && !this.currencyMappings.some((mapping) => mapping.merchantAccountId);
         },
     },
 
@@ -123,9 +125,13 @@ export default defineComponent({
         async getShopConfig(): Promise<void> {
             this.loading = true;
 
-            return this.$api.get<ShopEntity>('/entity/shop')
-                .then((shop) => {
+            return Promise.all([
+                this.$api.get<ShopEntity>('/entity/shop'),
+                this.$api.post<CurrencyMappingEntity[]>('/entity/currency_mapping'),
+            ])
+                .then(([shop, currencyMappings]) => {
                     this.shop = shop;
+                    this.currencyMappings = currencyMappings;
                 }).catch((e) => this.$notify.error('fetch_config', e)).finally(() => {
                     this.loading = false;
                 });
