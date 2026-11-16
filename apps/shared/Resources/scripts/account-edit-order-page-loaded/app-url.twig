@@ -1,0 +1,15 @@
+{% set page = hook.page %}
+
+{% set criteria = {
+    limit: 1,
+    filter: [{
+        type: 'equals',
+        field: 'name',
+        value: 'SwagBraintreeApp'
+    }],
+    fields: ['baseAppUrl']
+} %}
+
+{% set app = services.repository.search('app', criteria).first %}
+
+{% do page.addExtension('swagBraintreeApp', app) %}

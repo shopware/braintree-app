@@ -1,3 +1,7 @@
+# 3.1.3
+
+* Fixes an issue, where the credit card fields did not load when retrying a failed payment from the order edit page
+
 # 3.1.2
 
 * Fixes an issue during checkout with Braintree merchants, where 3DS is not enrolled 
