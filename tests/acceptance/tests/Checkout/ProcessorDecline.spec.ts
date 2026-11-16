@@ -23,6 +23,9 @@ test('Customer pays with a credit card the processor declines and the payment of
     await ShopCustomer.attemptsTo(ConfirmTermsAndConditions());
     await ShopCustomer.attemptsTo(FillBraintreeCard(TestCards.successfulNoChallenge));
     await ShopCustomer.presses(StorefrontCheckoutConfirm.submitOrderButton);
+    // 3D Secure runs before the order is sent and can outlast the expect timeout when Cardinal's sandbox device
+    // fingerprinting fails and it waits for its own timeouts, so wait for the navigation like ATS's SubmitOrder does
+    await StorefrontCheckoutOrderEdit.page.waitForURL('**/account/order/edit/**');
 
     await ShopCustomer.expects(StorefrontCheckoutOrderEdit.paymentFailedAlert).toBeVisible();
 

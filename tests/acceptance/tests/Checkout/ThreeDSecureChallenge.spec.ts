@@ -74,6 +74,9 @@ test('Customer fails an enforced 3D Secure challenge, the payment fails and the 
     await ShopCustomer.expects(StorefrontCheckoutOrderEdit.paymentMethodRadioGroup.getByRole('radio', { name: StorefrontCheckoutConfirm.paymentBraintreeName })).toBeChecked();
     await ShopCustomer.attemptsTo(FillBraintreeCard(TestCards.successfulNoChallenge));
     await ShopCustomer.presses(StorefrontCheckoutOrderEdit.completePaymentButton);
+    // 3D Secure runs before the order is sent and can outlast the expect timeout when Cardinal's sandbox device
+    // fingerprinting fails and it waits for its own timeouts, so wait for the navigation like ATS's SubmitOrder does
+    await StorefrontCheckoutFinish.page.waitForURL('**/checkout/finish**');
 
     // the finish page of a changed payment greets differently than the one of a new order
     await ShopCustomer.expects(StorefrontCheckoutFinish.page.getByRole('heading', { name: 'Thank you for updating your order!' })).toBeVisible();
