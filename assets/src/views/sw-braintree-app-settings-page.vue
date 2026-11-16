@@ -148,6 +148,9 @@ export default defineComponent({
         },
 
         async onNewItemActive(item: keyof typeof tabs): Promise<void> {
+            // the active tab is not re-created, so it would not register its save handler again
+            if (item === this.activeTab) return;
+
             settingsTabHandler.set(item);
             this.activeTab = item;
             this.saveHandler = [];
