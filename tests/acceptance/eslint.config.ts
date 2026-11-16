@@ -24,7 +24,6 @@ export default defineConfig(
         plugins: { '@stylistic': stylistic },
 
         rules: {
-            /* stylistic rules */
             '@stylistic/semi': ['error', 'always'],
             '@stylistic/indent': ['error', 4, { SwitchCase: 1 }],
             '@stylistic/member-delimiter-style': ['error'],
@@ -42,15 +41,10 @@ export default defineConfig(
             '@stylistic/quote-props': ['error', 'as-needed'],
             '@stylistic/no-extra-semi': ['error'],
             '@stylistic/comma-dangle': ['error', 'always-multiline'],
-            /* stylistic rules */
 
-            /* typescript rules */
             '@typescript-eslint/no-unused-vars': 'warn',
-            /* typescript rules */
 
-            /* playwright rules */
             'playwright/expect-expect': 'off',
-            /* playwright rules */
         },
     },
 );

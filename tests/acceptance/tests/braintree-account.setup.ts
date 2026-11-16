@@ -5,8 +5,7 @@ const PAYMENT_METHOD_TECHNICAL_NAME = 'payment_SwagBraintreeApp_credit_card';
 
 test('Braintree Account setup', async ({
     AdminApiContext,
-    BraintreeAppClient,
-    BraintreeDataProvider,
+    BraintreeBaseline,
     TestDataService,
 }) => {
     const paymentMethodResponse = await AdminApiContext.post('search/payment-method', {
@@ -16,22 +15,7 @@ test('Braintree Account setup', async ({
     const [paymentMethod] = (await paymentMethodResponse.json() as { data: { id: string }[] }).data;
     expect(paymentMethod, `Payment method ${PAYMENT_METHOD_TECHNICAL_NAME} not found. Is the SwagBraintreeApp installed, active and registered with the app server?`).toBeDefined();
 
-    const status = await BraintreeAppClient.connect({
-        merchantId: BraintreeDataProvider.get('MERCHANT_ID'),
-        publicKey: BraintreeDataProvider.get('PUBLIC_KEY'),
-        privateKey: BraintreeDataProvider.get('PRIVATE_KEY'),
-    });
-    expect(status, 'The Braintree sandbox credentials were rejected').toBe('active');
-
-    const currencyResponse = await AdminApiContext.get(`currency/${TestDataService.defaultSalesChannel.currencyId}`);
-    expect(currencyResponse.ok()).toBeTruthy();
-    const { data: currency } = await currencyResponse.json() as { data: { id: string, isoCode: string } };
-    const merchantAccount = (await BraintreeAppClient.getMerchantAccounts())
-        .find(account => account.currencyIsoCode === currency.isoCode);
-    expect(merchantAccount, `The Braintree sandbox has no merchant account in ${currency.isoCode}`).toBeDefined();
-
-    await BraintreeAppClient.setCurrencyMapping(null, currency, merchantAccount!.id);
-    await BraintreeAppClient.setThreeDSecureEnforced(null, false);
+    await BraintreeBaseline.establish();
 
     const paymentMethodUpdate = await AdminApiContext.patch(`payment-method/${paymentMethod.id}`, { data: { active: true } });
     expect(paymentMethodUpdate.ok()).toBeTruthy();

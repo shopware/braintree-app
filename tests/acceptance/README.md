@@ -30,7 +30,7 @@ To generate the access key you can use `bin/console integration:create Acceptanc
 ### `SHOPWARE_URL`, not `APP_URL`
 
 The acceptance test suite reads the shop URL from `APP_URL`, but in this repository (and its devenv shell) `APP_URL` is the URL of the Braintree app server.
-`playwright.config.ts` therefore always overwrites `APP_URL` with `SHOPWARE_URL`. It also pins `LANG` to `en-US`, so the test sales channel uses US English, the US and USD regardless of your locale.
+`playwright.config.ts` therefore always overwrites `APP_URL` with `SHOPWARE_URL`. It also pins `LANG` to `en-US`, which the acceptance test suite maps to the language en-GB, the country US and the currency USD for its test sales channel, regardless of your locale.
 
 ### Braintree sandbox
 
@@ -49,4 +49,6 @@ The `Braintree Setup` project runs first and prepares the Braintree connection a
 ## Writing Tests
 
 Import `test` from `@fixtures/AcceptanceTest`. Page objects and tasks are registered in `page-objects/AdministrationPages.ts`, `page-objects/StorefrontPages.ts`, `tasks/ShopAdminTasks.ts` or `tasks/ShopCustomerTasks.ts`.
-Use the `BraintreeAppClient` fixture to arrange and restore the app's configuration instead of clicking through its admin module.
+Use the `BraintreeAppClient` fixture to arrange the app's configuration instead of clicking through its admin module, and restore it in `test.afterEach` (a `finally` block does not run when a test times out). `BraintreeBaseline.establish()` restores the state the setup project established.
+
+Every spec file that sends the API keys (`BraintreeAppClient.connect()` and `BraintreeBaseline.establish()`, also in hooks) or opens the payment overview card or the order's Braintree tab must start with `test.use({ trace: 'off', screenshot: 'off' })`: traces and screenshots end up in `test-results/`, which CI uploads.

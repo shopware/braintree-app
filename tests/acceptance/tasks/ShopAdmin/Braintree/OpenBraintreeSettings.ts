@@ -12,7 +12,7 @@ export const OpenBraintreeSettings = base.extend<FixtureTypes>({
     OpenBraintreeSettings: async ({ ShopAdmin, AdminBraintreeSettings }, use) => {
         const task: OpenBraintreeSettingsTask = (tab) => {
             return async function OpenBraintreeSettings() {
-                await ShopAdmin.goesTo(AdminBraintreeSettings.url());
+                await ShopAdmin.goesTo(AdminBraintreeSettings.settingsListingUrl());
                 await AdminBraintreeSettings.settingsListingLink.click();
 
                 const tabLink = AdminBraintreeSettings.tab(tab);

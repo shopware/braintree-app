@@ -1,22 +1,11 @@
 import { test } from '@fixtures/AcceptanceTest';
-import { expect } from '@shopware-ag/acceptance-test-suite';
 
-// Restores the connection and the default currency mapping the setup established (disconnecting keeps the mappings).
-// A hook instead of finally: it also runs when the test times out, before the app client is disposed.
-test.afterEach(async ({ AdminApiContext, TestDataService, BraintreeAppClient, BraintreeDataProvider }) => {
-    const status = await BraintreeAppClient.connect({
-        merchantId: BraintreeDataProvider.get('MERCHANT_ID'),
-        publicKey: BraintreeDataProvider.get('PUBLIC_KEY'),
-        privateKey: BraintreeDataProvider.get('PRIVATE_KEY'),
-    });
-    expect(status).toBe('active');
+// The restore hook sends the API keys to the app server, a trace would record them
+test.use({ trace: 'off', screenshot: 'off' });
 
-    const currencyResponse = await AdminApiContext.get(`currency/${TestDataService.defaultSalesChannel.currencyId}`);
-    expect(currencyResponse.ok()).toBeTruthy();
-    const { data: currency } = await currencyResponse.json() as { data: { id: string, isoCode: string } };
-    const merchantAccount = (await BraintreeAppClient.getMerchantAccounts())
-        .find(account => account.currencyIsoCode === currency.isoCode);
-    await BraintreeAppClient.setCurrencyMapping(null, currency, merchantAccount!.id);
+// a hook instead of finally: it also runs when the test times out, before the app client is disposed
+test.afterEach(async ({ BraintreeBaseline }) => {
+    await BraintreeBaseline.establish();
 });
 
 test('Braintree is not offered in checkout while the shop is disconnected.', { tag: ['@Storefront'] }, async ({

@@ -7,12 +7,10 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
     /** Shopware's notice when it switched away from Braintree because the checkout gateway removed it */
     public readonly paymentBraintreeUnavailableAlert: Locator;
 
-    public readonly braintreeHostedFields: Locator;
+    private readonly braintreeHostedFields: Locator;
     public readonly braintreeCardNumberInput: Locator;
     public readonly braintreeExpirationDateInput: Locator;
     public readonly braintreeCvvInput: Locator;
-    public readonly braintreeCardholderNameInput: Locator;
-    public readonly braintreePostalCodeInput: Locator;
 
     /** The containers around the Hosted Fields iframes, which the app marks with `is-invalid` */
     public readonly braintreeCardNumberField: Locator;
@@ -34,8 +32,6 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
         this.braintreeCardNumberInput = this.hostedFieldInput('number', '#credit-card-number');
         this.braintreeExpirationDateInput = this.hostedFieldInput('expirationDate', '#expiration');
         this.braintreeCvvInput = this.hostedFieldInput('cvv', '#cvv');
-        this.braintreeCardholderNameInput = this.hostedFieldInput('cardholderName', '#cardholder-name');
-        this.braintreePostalCodeInput = this.hostedFieldInput('postalCode', '#postal-code');
 
         this.braintreeCardNumberField = page.locator('#sw-braintree-payment-method__number');
         this.braintreeExpirationDateField = page.locator('#sw-braintree-payment-method__expirationDate');

@@ -34,7 +34,7 @@ export class BraintreeSettings {
         this.merchantAccountOptions = this.frame.locator('.mt-select-result-list__item-list .mt-select-result');
     }
 
-    url(): string {
+    settingsListingUrl(): string {
         return '#/sw/settings/index/plugins';
     }
 

@@ -4,7 +4,7 @@ import type { FixtureTypes } from '@shopware-ag/acceptance-test-suite';
 const APP_NAME = 'SwagBraintreeApp';
 
 /** "active" once the app finds the default merchant account with the stored credentials */
-export type ConnectionStatus = 'active' | 'disconnected';
+type ConnectionStatus = 'active' | 'disconnected';
 
 export interface BraintreeCredentials {
     merchantId: string
@@ -12,11 +12,9 @@ export interface BraintreeCredentials {
     privateKey: string
 }
 
-export interface MerchantAccount {
+interface MerchantAccount {
     id: string
     currencyIsoCode: string
-    status: string
-    default: boolean
 }
 
 interface ConfigEntity {

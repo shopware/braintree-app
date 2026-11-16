@@ -11,6 +11,10 @@ process.env['SHOPWARE_ADMIN_PASSWORD'] = process.env['SHOPWARE_ADMIN_PASSWORD'] 
 process.env['APP_URL'] = (process.env['SHOPWARE_URL'] || 'http://localhost:8000').replace(/\/+$/, '') + '/';
 process.env['ADMIN_URL'] = process.env['APP_URL'] + 'admin/';
 
+// Playwright writes an aria snapshot of the open page, including input values and link URLs, to error-context.md
+// of every failed test. Braintree pages show the API keys and the merchant ID, and test-results/ is a CI artifact.
+process.env['PLAYWRIGHT_NO_COPY_PROMPT'] = '1';
+
 // The acceptance test suite derives language, country and currency of its sales channel from LANG
 process.env['LANG'] = 'en-US';
 
@@ -29,7 +33,8 @@ export default defineConfig({
 
     use: {
         baseURL: process.env['APP_URL'],
-        trace: 'retain-on-failure',
+        // Set here and not with --trace on the command line, which would override the setup project's trace: 'off'
+        trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
         video: 'off',
         locale: 'en-US',
     },
@@ -45,6 +50,7 @@ export default defineConfig({
         {
             name: 'Braintree Setup',
             testMatch: /.*\.setup\.ts/,
+            // it sends the API keys to the app server
             use: { trace: 'off' },
         },
         {

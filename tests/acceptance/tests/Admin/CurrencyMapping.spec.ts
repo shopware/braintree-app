@@ -1,64 +1,59 @@
 import { test } from '@fixtures/AcceptanceTest';
 import { expect } from '@shopware-ag/acceptance-test-suite';
 
-// The payment overview card shows the private key and the app server returns it to the admin
+// The payment overview card shows the private key and the restore hook sends it to the app server
 test.use({ trace: 'off', screenshot: 'off' });
+
+// a hook instead of finally: it also runs when the test times out, before the app client is disposed
+test.afterEach(async ({ BraintreeBaseline }) => {
+    await BraintreeBaseline.establish();
+});
 
 test('Merchant maps and unmaps the Braintree merchant account of the sales channel currency.', { tag: ['@Administration'] }, async ({
     ShopAdmin,
-    AdminApiContext,
-    TestDataService,
     AdminBraintreeSettings,
     AdminBraintreePaymentOverview,
     BraintreeAppClient,
+    BraintreeBaseline,
     OpenBraintreeSettings,
     SaveBraintreeSettings,
 }) => {
-    const currencyResponse = await AdminApiContext.get(`currency/${TestDataService.defaultSalesChannel.currencyId}`);
-    expect(currencyResponse.ok()).toBeTruthy();
-    const { data: currency } = await currencyResponse.json() as { data: { id: string, isoCode: string } };
-    const merchantAccountIds = (await BraintreeAppClient.getMerchantAccounts())
-        .filter(account => account.currencyIsoCode === currency.isoCode)
-        .map(account => account.id);
-    // the account the setup maps
-    const mappedMerchantAccountId = merchantAccountIds[0];
+    const currency = await BraintreeBaseline.currency();
+    const merchantAccountIds = await BraintreeBaseline.merchantAccountIds();
+    const [mappedMerchantAccountId] = merchantAccountIds;
 
     const merchantAccountSelect = AdminBraintreeSettings.merchantAccountSelect(currency.isoCode);
 
     // The banner counts mapping rows, so this relies on the default mapping being the shop's only one
     await BraintreeAppClient.deleteCurrencyMapping(null, currency.id);
-    try {
-        await ShopAdmin.goesTo(AdminBraintreePaymentOverview.url());
-        await expect(AdminBraintreePaymentOverview.missingCurrencyMappingsBanner).toBeVisible();
 
-        await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
-        await expect(merchantAccountSelect).toBeEnabled();
-        await expect(merchantAccountSelect).toHaveValue('');
-        await merchantAccountSelect.click();
-        await expect(AdminBraintreeSettings.merchantAccountOptions).toHaveText(merchantAccountIds);
-        await AdminBraintreeSettings.merchantAccountOptions.getByText(mappedMerchantAccountId, { exact: true }).click();
-        await ShopAdmin.attemptsTo(SaveBraintreeSettings());
+    await ShopAdmin.goesTo(AdminBraintreePaymentOverview.url());
+    await expect(AdminBraintreePaymentOverview.missingCurrencyMappingsBanner).toBeVisible();
 
-        await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
-        await expect(merchantAccountSelect).toBeEnabled();
-        await expect(merchantAccountSelect).toHaveValue(mappedMerchantAccountId);
+    await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
+    await expect(merchantAccountSelect).toBeEnabled();
+    await expect(merchantAccountSelect).toHaveValue('');
+    await merchantAccountSelect.click();
+    await expect(AdminBraintreeSettings.merchantAccountOptions).toHaveText(merchantAccountIds);
+    await AdminBraintreeSettings.merchantAccountOptions.getByText(mappedMerchantAccountId, { exact: true }).click();
+    await ShopAdmin.attemptsTo(SaveBraintreeSettings());
 
-        await ShopAdmin.goesTo(AdminBraintreePaymentOverview.url());
-        // the card's inputs are enabled once it loaded the shop, which decides about the banner
-        await expect(AdminBraintreePaymentOverview.merchantIdInput).toBeEnabled();
-        await expect(AdminBraintreePaymentOverview.missingCurrencyMappingsBanner).toBeHidden();
+    await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
+    await expect(merchantAccountSelect).toBeEnabled();
+    await expect(merchantAccountSelect).toHaveValue(mappedMerchantAccountId);
 
-        // Clearing keeps the mapping row with an empty merchant account, so the banner stays hidden after it
-        await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
-        await expect(merchantAccountSelect).toBeEnabled();
-        await AdminBraintreeSettings.merchantAccountClearButton(currency.isoCode).click();
-        await ShopAdmin.attemptsTo(SaveBraintreeSettings());
+    await ShopAdmin.goesTo(AdminBraintreePaymentOverview.url());
+    // the card's inputs are enabled once it loaded the shop, which decides about the banner
+    await expect(AdminBraintreePaymentOverview.merchantIdInput).toBeEnabled();
+    await expect(AdminBraintreePaymentOverview.missingCurrencyMappingsBanner).toBeHidden();
 
-        await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
-        await expect(merchantAccountSelect).toBeEnabled();
-        await expect(merchantAccountSelect).toHaveValue('');
-    }
-    finally {
-        await BraintreeAppClient.setCurrencyMapping(null, currency, mappedMerchantAccountId);
-    }
+    // Clearing keeps the mapping row with an empty merchant account, so the banner stays hidden after it
+    await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
+    await expect(merchantAccountSelect).toBeEnabled();
+    await AdminBraintreeSettings.merchantAccountClearButton(currency.isoCode).click();
+    await ShopAdmin.attemptsTo(SaveBraintreeSettings());
+
+    await ShopAdmin.attemptsTo(OpenBraintreeSettings('Currency mapping'));
+    await expect(merchantAccountSelect).toBeEnabled();
+    await expect(merchantAccountSelect).toHaveValue('');
 });
