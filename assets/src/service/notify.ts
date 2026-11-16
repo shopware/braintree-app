@@ -8,6 +8,11 @@ export class Notify {
     }
 
     async error(code: keyof Messages['errors'], response?: unknown) {
+        if (response === undefined) {
+            this.dispatchError(code);
+            return;
+        }
+
         if (!(response instanceof Response))
             throw response;
 
@@ -20,11 +25,7 @@ export class Notify {
             .then(this.formatError.bind(this))
             .catch(() => clone.text());
 
-        void sw.notification.dispatch({
-            variant: 'error',
-            title: this.i18n.global.t('notification.error'),
-            message: this.i18n.global.t(`errors.${String(code)}`, { message }),
-        });
+        this.dispatchError(code, message);
     }
 
     success(code: keyof Messages['success']) {
@@ -32,6 +33,14 @@ export class Notify {
             variant: 'success',
             title: this.i18n.global.t('notification.success'),
             message: this.i18n.global.t(`success.${String(code)}`),
+        });
+    }
+
+    private dispatchError(code: keyof Messages['errors'], message?: string) {
+        void sw.notification.dispatch({
+            variant: 'error',
+            title: this.i18n.global.t('notification.error'),
+            message: this.i18n.global.t(`errors.${String(code)}`, { message }),
         });
     }
 
