@@ -78,6 +78,7 @@ export const ProceedToBraintreeCheckout = base.extend<FixtureTypes>({
 const MAX_ENTRIES = 5;
 const truncate = (text: string) => text.length > 200 ? `${text.slice(0, 200)}…` : text;
 const withoutQuery = (url: string) => url.split(/[?#]/)[0];
+const list = (entries: string[]) => entries.length ? entries.slice(0, MAX_ENTRIES).join(' | ') : 'none';
 
 /**
  * Collects what tells the causes of a missing card form apart, for the error message of a failed checkout.
@@ -130,37 +131,61 @@ function recordCardFormDiagnostics(page: Page) {
             }
 
             const state = await page.evaluate(() => {
-                const container = document.querySelector('[data-swag-braintree-hosted-fields]');
-                let options: { baseUrl?: unknown, appShopId?: unknown } = {};
-                try {
-                    options = JSON.parse(container?.getAttribute('data-swag-braintree-hosted-fields-options') ?? '{}') as typeof options;
-                }
-                catch {
-                    // reported as missing options below
-                }
-
+                type Instance = { _pluginName?: unknown, el?: Element, options?: { baseUrl?: unknown }, constructor: { name: string } };
                 const pluginManager = (window as unknown as { PluginManager?: {
-                    getPlugin(name: string): unknown
-                    getPluginInstanceFromElement(el: Element, name: string): unknown
+                    getPlugin(name: string): Map<string, unknown>
+                    getPluginInstances(name: string): Instance[]
+                    getPluginInstanceFromElement(el: Element, name: string): Instance | undefined
                 } }).PluginManager;
-                let pluginRegistered = false;
+                const pluginBaseClass = (window as unknown as { PluginBaseClass?: unknown }).PluginBaseClass;
+
+                let registration: Map<string, unknown> | undefined;
                 try {
-                    pluginRegistered = !!pluginManager?.getPlugin('SwagBraintreeHostedFields');
+                    registration = pluginManager?.getPlugin('SwagBraintreeHostedFields');
                 }
                 catch {
                     // getPlugin throws for an unknown plugin
                 }
+                const registeredClass = registration?.get('class') as { name?: string } | undefined;
+                const registrations = [...((registration?.get('registrations') as Map<string, { options?: unknown }> | undefined)?.entries() ?? [])];
+
+                const containers = [...document.querySelectorAll('[data-swag-braintree-hosted-fields]')].map((container) => {
+                    const attribute = container.getAttribute('data-swag-braintree-hosted-fields-options');
+                    let options: { baseUrl?: unknown, appShopId?: unknown } | undefined;
+                    try {
+                        options = JSON.parse(attribute ?? '') as typeof options;
+                    }
+                    catch {
+                        // reported as not parsing below
+                    }
+                    const instance = pluginManager?.getPluginInstanceFromElement(container, 'SwagBraintreeHostedFields');
+
+                    return {
+                        attribute: attribute === null ? 'missing' : options ? 'parses' : 'does not parse',
+                        baseUrl: String(options?.baseUrl),
+                        appShopIdSet: !!options?.appShopId,
+                        iframes: container.querySelectorAll('iframe[name^="braintree-hosted-field-"]').length,
+                        loaderShowing: container.classList.contains('has-element-loader'),
+                        instance: instance && {
+                            pluginName: String(instance._pluginName),
+                            constructorName: instance.constructor.name,
+                            baseUrl: String(instance.options?.baseUrl),
+                            sameClassAsRegistered: instance.constructor === registeredClass,
+                            extendsWindowPluginBaseClass: Object.getPrototypeOf(instance.constructor) === pluginBaseClass,
+                        },
+                    };
+                });
 
                 const checkedPayment = document.querySelector<HTMLInputElement>('input[name="paymentMethodId"]:checked');
 
                 return {
-                    container: !!container,
-                    baseUrl: typeof options.baseUrl === 'string' ? options.baseUrl : String(options.baseUrl),
-                    appShopIdSet: !!options.appShopId,
-                    iframes: container?.querySelectorAll('iframe[name^="braintree-hosted-field-"]').length ?? 0,
-                    loaderShowing: !!container?.classList.contains('has-element-loader'),
-                    pluginRegistered,
-                    pluginInitialized: !!(container && pluginManager?.getPluginInstanceFromElement(container, 'SwagBraintreeHostedFields')),
+                    containers,
+                    registration: registration && {
+                        className: String(registeredClass?.name),
+                        selectors: registrations.map(([selector, entry]) => `${selector}${entry.options && Object.keys(entry.options).length ? ' with options' : ''}`),
+                        instances: (registration.get('instances') as unknown[] | undefined)?.length ?? 0,
+                    },
+                    appScriptTags: document.querySelectorAll('script[src*="swag-braintree-app"]').length,
                     // the label also contains the card form, its first line is the payment method's name
                     checkedPayment: checkedPayment ? document.querySelector<HTMLElement>(`label[for="${checkedPayment.id}"]`)?.innerText.split('\n').map(line => line.trim()).find(Boolean) ?? checkedPayment.id : 'none',
                     alerts: [...document.querySelectorAll<HTMLElement>('[role="alert"]')]
@@ -169,12 +194,14 @@ function recordCardFormDiagnostics(page: Page) {
                 };
             }).catch((evaluateError: unknown) => `page not inspectable: ${String(evaluateError)}`);
 
-            const list = (entries: string[]) => entries.length ? entries.slice(0, MAX_ENTRIES).join(' | ') : 'none';
             const lines = typeof state === 'string'
                 ? [state]
                 : [
-                    `card form container: ${state.container ? `present, baseUrl ${state.baseUrl}, appShopId ${state.appShopIdSet ? 'set' : 'missing'}, ${state.iframes} Hosted Fields iframes, loader ${state.loaderShowing ? 'showing' : 'gone'}` : 'missing'}`,
-                    `card form plugin: ${state.pluginRegistered ? 'registered' : 'not registered'}, ${state.pluginInitialized ? 'initialized on the container' : 'not initialized on the container'}`,
+                    `card form containers: ${state.containers.length || 'none'}`,
+                    ...state.containers.slice(0, 3).map((container, index) => `  #${index + 1}: options attribute ${container.attribute}, baseUrl ${container.baseUrl}, appShopId ${container.appShopIdSet ? 'set' : 'missing'}, ${container.iframes} Hosted Fields iframes, loader ${container.loaderShowing ? 'showing' : 'gone'}, plugin instance ${container.instance
+                        ? `with name ${container.instance.pluginName}, class ${container.instance.constructorName}, options.baseUrl ${container.instance.baseUrl}, ${container.instance.sameClassAsRegistered ? 'registered class' : 'NOT the registered class'}, ${container.instance.extendsWindowPluginBaseClass ? 'extends window.PluginBaseClass' : 'does NOT extend window.PluginBaseClass'}`
+                        : 'none'}`),
+                    `card form plugin: ${state.registration ? `registered as class ${state.registration.className} for ${list(state.registration.selectors)}, ${state.registration.instances} instances` : 'not registered'}, ${state.appScriptTags} app script tags`,
                     `checked payment method: ${truncate(state.checkedPayment)}`,
                     `visible alerts: ${list(state.alerts.map(truncate))}`,
                 ];
