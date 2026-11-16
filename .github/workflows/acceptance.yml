@@ -1,0 +1,169 @@
+name: acceptance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches:
+      - trunk
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    # The Braintree sandbox credentials only exist in this repository's environment
+    # A "labeled" event only starts a run when run/acceptance itself was added
+    if: >-
+      github.repository == 'shopware/braintree-app' && (
+        github.event_name != 'pull_request' || (
+          contains(github.event.pull_request.labels.*.name, 'run/acceptance') &&
+          (github.event.action != 'labeled' || github.event.label.name == 'run/acceptance')
+        )
+      )
+    runs-on: ubuntu-latest
+    environment: acceptance-production
+    timeout-minutes: 45
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: swagbraintree
+          MARIADB_DATABASE: swagbraintree
+          MARIADB_USER: swagbraintree
+          MARIADB_PASSWORD: swagbraintree
+        ports: ['3307:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      BRAINTREE_APP_URL: http://localhost:8001
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup-php
+
+      - uses: ./.github/actions/setup-node
+
+      - name: Build admin iframe
+        run: npm run build
+
+      - uses: shopware/shopware-cli-action@v2
+
+      - name: Generate app secret
+        run: |
+          secret="$(openssl rand -hex 16)"
+          echo "::add-mask::$secret"
+          echo "BRAINTREE_APP_SECRET=$secret" >> "$GITHUB_ENV"
+
+      - name: Configure and build app
+        run: |
+          npm i --prefix ./apps/shared/Resources/app/storefront
+          # apps.sh forces the production URL and drops <secret> whenever CI is set or APP_ENV=prod
+          CI='' APP_ENV=dev APP_URL="$BRAINTREE_APP_URL" APP_SECRET="$BRAINTREE_APP_SECRET" ./bin/apps.sh setup
+
+          manifest=apps/6.7.0.0/manifest.xml
+          if ! grep -qF "$BRAINTREE_APP_URL/app/lifecycle/register" "$manifest" || ! grep -q '<secret>[^<]' "$manifest"; then
+            echo "::error file=$manifest::Manifest is not configured for $BRAINTREE_APP_URL with a setup secret"
+            exit 1
+          fi
+
+          ./bin/apps.sh build 6.7.0.0
+
+      - name: Setup Shopware
+        uses: shopware/setup-shopware@main
+        with:
+          path: shopware
+          shopware-version: trunk
+          php-version: '8.4'
+          node-version: '24.x'
+          env: prod
+          install: true
+          install-admin: true
+          install-storefront: true
+
+      - name: Allow app system requests to the local app server
+        working-directory: shopware
+        run: |
+          # Shopware in prod rejects app system requests to http:// and loopback targets
+          mkdir -p config/packages/prod
+          cat > config/packages/prod/acceptance.yaml <<'YAML'
+          shopware:
+              app_system:
+                  enable_url_validation: false
+          YAML
+          bin/console cache:clear
+
+      - name: Start app server
+        run: |
+          # setup-shopware exported Shopware's APP_ENV, APP_SECRET and DATABASE_URL to $GITHUB_ENV
+          export APP_ENV=prod APP_DEBUG=0 APP_SECRET="$BRAINTREE_APP_SECRET"
+          export DATABASE_URL=mysql://swagbraintree:swagbraintree@127.0.0.1:3307/swagbraintree
+          bin/console doctrine:migrations:migrate -n
+
+          mkdir -p "$RUNNER_TEMP/acceptance-artifact"
+          log="$RUNNER_TEMP/acceptance-artifact/app-server.log"
+          SYMFONY_NO_TLS=1 SYMFONY_ALLOW_HTTP=1 SYMFONY_PORT=8001 SYMFONY_ALLOW_ALL_IP=1 \
+            nohup symfony server:start > "$log" 2>&1 &
+
+          for _ in $(seq 60); do
+            if curl -sfo /dev/null "$BRAINTREE_APP_URL/build/admin.js"; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::App server did not answer on $BRAINTREE_APP_URL"
+          tail -n 100 "$log"
+          exit 1
+
+      - name: Install app
+        run: |
+          ln -s "$GITHUB_WORKSPACE/apps/6.7.0.0" shopware/custom/apps/SwagBraintreeApp
+          cd shopware
+          bin/console app:install --activate --force SwagBraintreeApp
+          bin/console app:list --format json | jq -e '.[] | select(.name == "SwagBraintreeApp" and .active)' > /dev/null
+
+      - uses: ./.github/actions/setup-acceptance
+        with:
+          path: tests/acceptance
+
+      - name: Prepare acceptance environment
+        working-directory: shopware
+        run: |
+          echo "SHOPWARE_URL=http://localhost:8000" > "$GITHUB_WORKSPACE/tests/acceptance/.env"
+          symfony console integration:create AcceptanceTest --admin >> "$GITHUB_WORKSPACE/tests/acceptance/.env"
+
+      - name: Run Playwright
+        working-directory: tests/acceptance
+        run: npx playwright test --reporter=github --trace=on-first-retry
+        env:
+          BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
+          BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
+          BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
+
+      - name: Compress and encrypt test results
+        if: always()
+        env:
+          ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
+        run: |
+          : "${ARTIFACT_PASSWORD:?ARTIFACT_PASSWORD is required to encrypt the test results}"
+          dir="$RUNNER_TEMP/acceptance-artifact"
+          mkdir -p "$dir"
+          if [ -d tests/acceptance/test-results ]; then cp -r tests/acceptance/test-results "$dir/"; fi
+          if [ -d shopware/var/log ]; then cp -r shopware/var/log "$dir/shopware-log"; fi
+          cd "$dir"
+          if [ -z "$(ls -A)" ]; then
+            echo "Nothing to archive"
+            exit 0
+          fi
+          zip -r -P "$ARTIFACT_PASSWORD" "$RUNNER_TEMP/test-results.zip" .
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: acceptance-test-result
+          path: ${{ runner.temp }}/test-results.zip
+          retention-days: 3
