@@ -95,21 +95,34 @@ jobs:
           install-admin: true
           install-storefront: true
 
-      - name: Allow app system requests to the local app server
+      - name: Configure Shopware for the acceptance run
         working-directory: shopware
         run: |
-          # Shopware in prod rejects app system requests to http:// and loopback targets.
-          # Lines without the switch have no such check, and an unknown key would break the container build.
-          if ! yq -e '.shopware.app_system.enable_url_validation != null' src/Core/Framework/Resources/config/packages/shopware.yaml > /dev/null; then
-            echo "This Shopware has no app system URL validation to disable"
-            exit 0
-          fi
+          # Each override is only written when this Shopware knows the key, an unknown key would break the container build
+          defaults=src/Core/Framework/Resources/config/packages/shopware.yaml
           mkdir -p config/packages/prod
-          cat > config/packages/prod/acceptance.yaml <<'YAML'
+
+          # Shopware in prod rejects app system requests to http:// and loopback targets
+          if yq -e '.shopware.app_system.enable_url_validation != null' "$defaults" > /dev/null; then
+            cat > config/packages/prod/acceptance-app-system.yaml <<'YAML'
           shopware:
               app_system:
                   enable_url_validation: false
           YAML
+          fi
+
+          # With per-key tags, a storefront page cached before its sales channel had a theme is not purged when the
+          # theme gets assigned, so it keeps pointing at a stylesheet that does not exist. The global config tag is
+          # purged by the theme seed the compilation saves.
+          if yq -e '.shopware.cache.tagging.each_config != null' "$defaults" > /dev/null; then
+            cat > config/packages/prod/acceptance-http-cache.yaml <<'YAML'
+          shopware:
+              cache:
+                  tagging:
+                      each_config: false
+          YAML
+          fi
+
           bin/console cache:clear
 
       - name: Start app server
@@ -157,6 +170,7 @@ jobs:
           symfony console integration:create AcceptanceTest --admin >> "$GITHUB_WORKSPACE/tests/acceptance/.env"
 
       - name: Run Playwright
+        id: playwright
         working-directory: tests/acceptance
         # No --trace here: the CLI flag would override the specs that turn tracing off to keep the keys out of it
         run: npx playwright test --reporter=github
@@ -164,6 +178,28 @@ jobs:
           BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
           BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
           BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
+
+      - name: Show storefront theme state
+        if: failure() && steps.playwright.outcome == 'failure'
+        working-directory: shopware
+        run: |
+          db="${DATABASE_URL##*/}"
+          mysql -h 127.0.0.1 -u root -t -e "SELECT name, active, base_app_url,
+              (SELECT COUNT(*) FROM app_template t WHERE t.app_id = app.id AND t.active = 1) AS templates,
+              (SELECT COUNT(*) FROM script s WHERE s.app_id = app.id AND s.active = 1) AS scripts
+            FROM app" "$db"
+
+          for dir in public/theme/*/; do
+            echo "$dir all.css: $([ -f "${dir}css/all.css" ] && echo yes || echo no), app js: $([ -f "${dir}js/swag-braintree-app/swag-braintree-app.js" ] && echo yes || echo no)"
+          done
+
+          page="$(mktemp)"
+          mysql -h 127.0.0.1 -u root -N -s -e "SELECT url FROM sales_channel_domain WHERE url LIKE 'http%'" "$db" | while read -r url; do
+            echo "$url -> $(curl -s -o "$page" -w '%{http_code} age=%header{age}' "$url")"
+            grep -oE 'https?://[^"]*(all\.css|swag-braintree-app\.js)[^"]*' "$page" | sort -u | while read -r asset; do
+              echo "  $asset -> $(curl -s -o /dev/null -w '%{http_code}' "$asset")"
+            done
+          done
 
       - name: Compress and encrypt test results
         if: always()
