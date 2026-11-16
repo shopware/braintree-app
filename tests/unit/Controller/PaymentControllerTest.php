@@ -5,6 +5,7 @@ namespace Swag\Braintree\Tests\Unit\Controller;
 use Braintree\Transaction;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -44,7 +45,7 @@ class PaymentControllerTest extends TestCase
 
     public function testPaySuccess(): void
     {
-        $payment = $this->createMock(PaymentPayAction::class);
+        $payment = static::createStub(PaymentPayAction::class);
 
         $this->paymentService->expects(static::once())
             ->method('handleTransaction')
@@ -66,7 +67,7 @@ class PaymentControllerTest extends TestCase
 
     public function testPayFailure(): void
     {
-        $payment = $this->createMock(PaymentPayAction::class);
+        $payment = static::createStub(PaymentPayAction::class);
 
         $this->paymentService->expects(static::once())
             ->method('handleTransaction')
@@ -88,6 +89,7 @@ class PaymentControllerTest extends TestCase
         $this->paymentController->pay($payment);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testFindBraintreeTransactionForOrderTransactions(): void
     {
         $data = [
@@ -107,6 +109,7 @@ class PaymentControllerTest extends TestCase
         $this->paymentController->findBraintreeTransactionForOrderTransactions($request, $shop);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testFindBraintreeTransactionForOrderTransactionsWithoutArray(): void
     {
         $data = 'transaction-id';
@@ -122,6 +125,7 @@ class PaymentControllerTest extends TestCase
         static::assertNull($this->paymentController->findBraintreeTransactionForOrderTransactions($request, $shop));
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testFindBraintreeTransactionForOrderTransactionsWithoutIds(): void
     {
         $data = [];

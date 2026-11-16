@@ -14,8 +14,10 @@ use Monolog\Handler\TestHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\LogRecord;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Braintree\Exception\BraintreePaymentException;
 use Swag\Braintree\Braintree\Exception\BraintreeTransactionNotFoundException;
@@ -31,6 +33,7 @@ use Swag\Braintree\Repository\TransactionRepository;
 use Swag\Braintree\Tests\Contract\PaymentPayActionHelperTrait;
 
 #[CoversClass(BraintreePaymentService::class)]
+#[AllowMockObjectsWithoutExpectations]
 class BraintreePaymentServiceTest extends TestCase
 {
     use PaymentPayActionHelperTrait;
@@ -41,7 +44,7 @@ class BraintreePaymentServiceTest extends TestCase
 
     private ShopEntity $shop;
 
-    private MockObject&Gateway $gateway;
+    private Stub&Gateway $gateway;
 
     private MockObject&TransactionGateway $transactionGateway;
 
@@ -60,7 +63,7 @@ class BraintreePaymentServiceTest extends TestCase
         $this->paymentMethodNonceGateway = $this->createMock(PaymentMethodNonceGateway::class);
         $this->transactionGateway = $this->createMock(TransactionGateway::class);
 
-        $this->gateway = $this->createMock(Gateway::class);
+        $this->gateway = static::createStub(Gateway::class);
         $this->gateway->method('paymentMethodNonce')->willReturn($this->paymentMethodNonceGateway);
         $this->gateway->method('transaction')->willReturn($this->transactionGateway);
 
@@ -379,7 +382,7 @@ class BraintreePaymentServiceTest extends TestCase
 
     public function testHandleTransactionWithoutMerchantIdThrowsException(): void
     {
-        $salesChannelConfigService = $this->createMock(SalesChannelConfigService::class);
+        $salesChannelConfigService = static::createStub(SalesChannelConfigService::class);
         $salesChannelConfigService->method('getMerchantId')->willReturn(null);
 
         $this->paymentService = new BraintreePaymentService(

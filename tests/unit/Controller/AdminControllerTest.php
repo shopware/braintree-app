@@ -3,7 +3,6 @@
 namespace Swag\Braintree\Tests\Unit\Controller;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Controller\AdminController;
 use Swag\Braintree\Entity\ShopEntity;
@@ -18,22 +17,17 @@ use Twig\Environment;
 #[CoversClass(AdminController::class)]
 class AdminControllerTest extends TestCase
 {
-    private HmrService&MockObject $hmrService;
-
-    private AdminController $controller;
-
     private ShopEntity $shop;
 
     protected function setUp(): void
     {
-        $this->hmrService = $this->createMock(HmrService::class);
-        $this->controller = new AdminController($this->hmrService);
         $this->shop = new ShopEntity('shop-id', '', 'secret');
     }
 
     public function testAdminSdk(): void
     {
-        $this->hmrService
+        $hmrService = $this->createMock(HmrService::class);
+        $hmrService
             ->expects(static::once())
             ->method('isHmr')
             ->willReturn(false);
@@ -45,10 +39,11 @@ class AdminControllerTest extends TestCase
             ->with('admin-sdk.html.twig', ['hmr' => false]);
 
         $container = $this->createMock(Container::class);
-        $container->method('has')->with('twig')->willReturn(true);
-        $container->method('get')->with('twig')->willReturn($twig);
+        $container->expects(static::once())->method('has')->with('twig')->willReturn(true);
+        $container->expects(static::once())->method('get')->with('twig')->willReturn($twig);
 
-        $this->controller->setContainer($container);
+        $controller = new AdminController($hmrService);
+        $controller->setContainer($container);
 
         $session = $this->createMock(SessionInterface::class);
         $session
@@ -56,20 +51,21 @@ class AdminControllerTest extends TestCase
             ->method('set')
             ->with('shop-id', $this->shop->getShopId());
 
-        $this->controller->adminSdk($session, $this->shop);
+        $controller->adminSdk($session, $this->shop);
     }
 
     public function testItSetsCookie(): void
     {
-        $twig = $this->createMock(Environment::class);
+        $twig = static::createStub(Environment::class);
         $container = $this->createMock(Container::class);
-        $container->method('has')->with('twig')->willReturn(true);
-        $container->method('get')->with('twig')->willReturn($twig);
+        $container->expects(static::once())->method('has')->with('twig')->willReturn(true);
+        $container->expects(static::once())->method('get')->with('twig')->willReturn($twig);
 
-        $this->controller->setContainer($container);
+        $controller = new AdminController(static::createStub(HmrService::class));
+        $controller->setContainer($container);
 
         $session = new Session(new MockArraySessionStorage());
-        $response = $this->controller->adminSdk($session, $this->shop);
+        $response = $controller->adminSdk($session, $this->shop);
 
         static::assertCount(1, $response->headers->getCookies());
 

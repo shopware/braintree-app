@@ -24,12 +24,14 @@ class TransactionReportRepositoryTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->entityManager
+            ->expects(static::once())
             ->method('getClassMetadata')
             ->with(TransactionReportEntity::class)
             ->willReturn(new ClassMetadata(TransactionReportEntity::class));
 
         $this->registry = $this->createMock(ManagerRegistry::class);
         $this->registry
+            ->expects(static::once())
             ->method('getManagerForClass')
             ->with(TransactionReportEntity::class)
             ->willReturn($this->entityManager);

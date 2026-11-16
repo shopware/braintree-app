@@ -5,8 +5,10 @@ namespace Swag\Braintree\Tests\Unit\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Swag\Braintree\Entity\Contract\EntityTrait;
 use Swag\Braintree\Entity\Contract\SalesChannelAwareTrait;
@@ -27,7 +29,7 @@ class AbstractRepositoryTest extends TestCase
 {
     private MockObject&EntityManagerInterface $entityManager;
 
-    private MockObject&ManagerRegistry $registry;
+    private Stub&ManagerRegistry $registry;
 
     private Repository $repository;
 
@@ -35,7 +37,7 @@ class AbstractRepositoryTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
-        $this->registry = $this->createMock(ManagerRegistry::class);
+        $this->registry = static::createStub(ManagerRegistry::class);
         $this->registry
             ->method('getManagerForClass')
             ->willReturn($this->entityManager);
@@ -244,6 +246,7 @@ class AbstractRepositoryTest extends TestCase
         $this->repository->delete([$id]);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testDeserializeInto(): void
     {
         $data = '{"name": "John Doe"}';
@@ -274,6 +277,7 @@ class AbstractRepositoryTest extends TestCase
         static::assertSame($entity, $result);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testDenormalizeInto(): void
     {
         $data = [];
@@ -304,6 +308,7 @@ class AbstractRepositoryTest extends TestCase
         static::assertSame($entity, $result);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testDenormalizerNotInstantiated(): void
     {
         $this->entityManager
@@ -314,10 +319,11 @@ class AbstractRepositoryTest extends TestCase
 
         static::assertFalse($denormalizer->isInitialized($this->repository));
 
-        $this->repository->setDenormalizer($this->createMock(DenormalizerInterface::class));
+        $this->repository->setDenormalizer(static::createStub(DenormalizerInterface::class));
         static::assertTrue($denormalizer->isInitialized($this->repository));
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testSerializerNotInstantiated(): void
     {
         $this->entityManager
@@ -328,10 +334,11 @@ class AbstractRepositoryTest extends TestCase
 
         static::assertFalse($serializer->isInitialized($this->repository));
 
-        $this->repository->setSerializer($this->createMock(SerializerInterface::class));
+        $this->repository->setSerializer(static::createStub(SerializerInterface::class));
         static::assertTrue($serializer->isInitialized($this->repository));
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testHasTraitWithDefaultTraits(): void
     {
         $this->entityManager
@@ -348,6 +355,7 @@ class AbstractRepositoryTest extends TestCase
         static::assertFalse($method->invokeArgs($this->repository, ['foo']));
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testHasTraitWithoutTraits(): void
     {
         $this->entityManager

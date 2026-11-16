@@ -27,12 +27,14 @@ class CurrencyMappingRepositoryTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->entityManager
+            ->expects(static::once())
             ->method('getClassMetadata')
             ->with(CurrencyMappingEntity::class)
             ->willReturn(new ClassMetadata(CurrencyMappingEntity::class));
 
         $this->registry = $this->createMock(ManagerRegistry::class);
         $this->registry
+            ->expects(static::once())
             ->method('getManagerForClass')
             ->with(CurrencyMappingEntity::class)
             ->willReturn($this->entityManager);
