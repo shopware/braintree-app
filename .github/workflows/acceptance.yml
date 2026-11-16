@@ -190,7 +190,17 @@ jobs:
             FROM app" "$db"
 
           for dir in public/theme/*/; do
-            echo "$dir all.css: $([ -f "${dir}css/all.css" ] && echo yes || echo no), app js: $([ -f "${dir}js/swag-braintree-app/swag-braintree-app.js" ] && echo yes || echo no)"
+            echo "$dir all.css: $([ -f "${dir}css/all.css" ] && echo yes || echo no), app js: $([ -f "${dir}js/swag-braintree-app/swag-braintree-app.js" ] && echo yes || echo no), js: $(ls "${dir}js" 2>/dev/null | tr '\n' ' ')"
+          done
+
+          ls custom/apps custom/plugins
+          built="$GITHUB_WORKSPACE/apps/$BRAINTREE_APP_VERSION/Resources/app/storefront/dist/storefront/js/swag-braintree-app/swag-braintree-app.js"
+          for file in "$built" public/theme/*/js/swag-braintree-app/swag-braintree-app.js; do
+            echo "$file: $(wc -c < "$file") bytes, sha256 $(sha256sum "$file" | cut -c1-16)"
+            grep -o 'PluginBaseClass:[A-Za-z_$]*}=window;class [A-Za-z_$]* extends [A-Za-z_$]*' "$file" | head -3
+            grep -o 'new URL("/api/client/config",[^)]*)' "$file" | head -3
+            grep -o 'class [A-Za-z_$]* extends [A-Za-z_$]*' "$file" | tr '\n' ';'
+            echo
           done
 
           page="$(mktemp)"
