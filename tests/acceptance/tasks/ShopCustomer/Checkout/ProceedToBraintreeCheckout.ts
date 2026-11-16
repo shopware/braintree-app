@@ -78,7 +78,6 @@ export const ProceedToBraintreeCheckout = base.extend<FixtureTypes>({
 const MAX_ENTRIES = 5;
 const truncate = (text: string) => text.length > 200 ? `${text.slice(0, 200)}…` : text;
 const withoutQuery = (url: string) => url.split(/[?#]/)[0];
-const list = (entries: string[]) => entries.length ? entries.slice(0, MAX_ENTRIES).join(' | ') : 'none';
 
 /**
  * Collects what tells the causes of a missing card form apart, for the error message of a failed checkout.
@@ -89,19 +88,8 @@ function recordCardFormDiagnostics(page: Page) {
     const pageErrors: string[] = [];
     const consoleErrors: string[] = [];
     const failedRequests: string[] = [];
-    const timeline: string[] = [];
     let appScript = 'not requested';
 
-    const onNavigated = (frame: { url(): string, parentFrame(): unknown }) => {
-        if (!frame.parentFrame()) {
-            timeline.push(`navigated ${new URL(frame.url()).pathname}`);
-        }
-    };
-    const onRequest = (request: { method(): string, url(): string }) => {
-        if (/client\/config|generate-token|swag-braintree-app\.js|storefront\/storefront\.js/.test(request.url())) {
-            timeline.push(`${request.method()} ${withoutQuery(request.url()).replace(/\/theme\/[0-9a-f]+\//, '/theme/…/')}`);
-        }
-    };
     const onPageError = (error: Error) => pageErrors.push(truncate(error.message));
     const onConsole = (message: { type(): string, text(): string }) => {
         if (message.type() === 'error') {
@@ -123,8 +111,6 @@ function recordCardFormDiagnostics(page: Page) {
         failedRequests.push(`${request.method()} ${withoutQuery(request.url())} -> ${request.failure()?.errorText}`);
     };
 
-    page.on('framenavigated', onNavigated);
-    page.on('request', onRequest);
     page.on('pageerror', onPageError);
     page.on('console', onConsole);
     page.on('response', onResponse);
@@ -132,8 +118,6 @@ function recordCardFormDiagnostics(page: Page) {
 
     return {
         stop() {
-            page.off('framenavigated', onNavigated);
-            page.off('request', onRequest);
             page.off('pageerror', onPageError);
             page.off('console', onConsole);
             page.off('response', onResponse);
@@ -146,65 +130,37 @@ function recordCardFormDiagnostics(page: Page) {
             }
 
             const state = await page.evaluate(() => {
-                type Instance = { _pluginName?: unknown, el?: Element, options?: { baseUrl?: unknown }, constructor: { name: string } };
-                const pluginManager = (window as unknown as { PluginManager?: {
-                    getPlugin(name: string): Map<string, unknown>
-                    getPluginInstances(name: string): Instance[]
-                    getPluginInstanceFromElement(el: Element, name: string): Instance | undefined
-                } }).PluginManager;
-                const pluginBaseClass = (window as unknown as { PluginBaseClass?: unknown }).PluginBaseClass;
-
-                let registration: Map<string, unknown> | undefined;
+                const container = document.querySelector('[data-swag-braintree-hosted-fields]');
+                let options: { baseUrl?: unknown, appShopId?: unknown } = {};
                 try {
-                    registration = pluginManager?.getPlugin('SwagBraintreeHostedFields');
+                    options = JSON.parse(container?.getAttribute('data-swag-braintree-hosted-fields-options') ?? '{}') as typeof options;
+                }
+                catch {
+                    // reported as missing options below
+                }
+
+                const pluginManager = (window as unknown as { PluginManager?: {
+                    getPlugin(name: string): unknown
+                    getPluginInstanceFromElement(el: Element, name: string): unknown
+                } }).PluginManager;
+                let pluginRegistered = false;
+                try {
+                    pluginRegistered = !!pluginManager?.getPlugin('SwagBraintreeHostedFields');
                 }
                 catch {
                     // getPlugin throws for an unknown plugin
                 }
-                const registeredClass = registration?.get('class') as { name?: string } | undefined;
-                const registrations = [...((registration?.get('registrations') as Map<string, { options?: unknown }> | undefined)?.entries() ?? [])];
-
-                const containers = [...document.querySelectorAll('[data-swag-braintree-hosted-fields]')].map((container) => {
-                    const attribute = container.getAttribute('data-swag-braintree-hosted-fields-options');
-                    let options: { baseUrl?: unknown, appShopId?: unknown } | undefined;
-                    try {
-                        options = JSON.parse(attribute ?? '') as typeof options;
-                    }
-                    catch {
-                        // reported as not parsing below
-                    }
-                    const instance = pluginManager?.getPluginInstanceFromElement(container, 'SwagBraintreeHostedFields');
-
-                    return {
-                        attribute: attribute === null ? 'missing' : options ? 'parses' : 'does not parse',
-                        baseUrl: String(options?.baseUrl),
-                        appShopIdSet: !!options?.appShopId,
-                        iframes: container.querySelectorAll('iframe[name^="braintree-hosted-field-"]').length,
-                        loaderShowing: container.classList.contains('has-element-loader'),
-                        instance: instance && {
-                            pluginName: String(instance._pluginName),
-                            constructorName: instance.constructor.name,
-                            baseUrl: String(instance.options?.baseUrl),
-                            sameClassAsRegistered: instance.constructor === registeredClass,
-                            extendsWindowPluginBaseClass: Object.getPrototypeOf(instance.constructor) === pluginBaseClass,
-                            parentClass: String((Object.getPrototypeOf(instance.constructor) as { name?: string } | null)?.name),
-                            elementPlugins: [...((container as unknown as { __plugins?: Map<string, unknown> }).__plugins?.keys() ?? [])].join(','),
-                        },
-                    };
-                });
 
                 const checkedPayment = document.querySelector<HTMLInputElement>('input[name="paymentMethodId"]:checked');
 
                 return {
-                    containers,
-                    registration: registration && {
-                        className: String(registeredClass?.name),
-                        selectors: registrations.map(([selector, entry]) => `${selector}${entry.options && Object.keys(entry.options).length ? ' with options' : ''}`),
-                        instances: (registration.get('instances') as unknown[] | undefined)?.length ?? 0,
-                    },
-                    appScriptTags: document.querySelectorAll('script[src*="swag-braintree-app"]').length,
-                    pluginBaseClass: typeof pluginBaseClass === 'function' ? `class ${(pluginBaseClass as { name: string }).name}` : typeof pluginBaseClass,
-                    scripts: [...document.scripts].filter(script => script.src).map(script => new URL(script.src).pathname.replace(/^\/theme\/[0-9a-f]+\//, '')),
+                    container: !!container,
+                    baseUrl: typeof options.baseUrl === 'string' ? options.baseUrl : String(options.baseUrl),
+                    appShopIdSet: !!options.appShopId,
+                    iframes: container?.querySelectorAll('iframe[name^="braintree-hosted-field-"]').length ?? 0,
+                    loaderShowing: !!container?.classList.contains('has-element-loader'),
+                    pluginRegistered,
+                    pluginInitialized: !!(container && pluginManager?.getPluginInstanceFromElement(container, 'SwagBraintreeHostedFields')),
                     // the label also contains the card form, its first line is the payment method's name
                     checkedPayment: checkedPayment ? document.querySelector<HTMLElement>(`label[for="${checkedPayment.id}"]`)?.innerText.split('\n').map(line => line.trim()).find(Boolean) ?? checkedPayment.id : 'none',
                     alerts: [...document.querySelectorAll<HTMLElement>('[role="alert"]')]
@@ -213,16 +169,12 @@ function recordCardFormDiagnostics(page: Page) {
                 };
             }).catch((evaluateError: unknown) => `page not inspectable: ${String(evaluateError)}`);
 
+            const list = (entries: string[]) => entries.length ? entries.slice(0, MAX_ENTRIES).join(' | ') : 'none';
             const lines = typeof state === 'string'
                 ? [state]
                 : [
-                    `card form containers: ${state.containers.length || 'none'}`,
-                    ...state.containers.slice(0, 3).map((container, index) => `  #${index + 1}: options attribute ${container.attribute}, baseUrl ${container.baseUrl}, appShopId ${container.appShopIdSet ? 'set' : 'missing'}, ${container.iframes} Hosted Fields iframes, loader ${container.loaderShowing ? 'showing' : 'gone'}, plugin instance ${container.instance
-                        ? `with name ${container.instance.pluginName}, class ${container.instance.constructorName}, options.baseUrl ${container.instance.baseUrl}, ${container.instance.sameClassAsRegistered ? 'registered class' : 'NOT the registered class'}, ${container.instance.extendsWindowPluginBaseClass ? 'extends window.PluginBaseClass' : 'does NOT extend window.PluginBaseClass'}, parent class ${container.instance.parentClass}, plugins on element ${container.instance.elementPlugins}`
-                        : 'none'}`),
-                    `card form plugin: ${state.registration ? `registered as class ${state.registration.className} for ${list(state.registration.selectors)}, ${state.registration.instances} instances` : 'not registered'}, ${state.appScriptTags} app script tags`,
-                    `window.PluginBaseClass: ${state.pluginBaseClass}`,
-                    `scripts: ${state.scripts.join(' | ')}`,
+                    `card form container: ${state.container ? `present, baseUrl ${state.baseUrl}, appShopId ${state.appShopIdSet ? 'set' : 'missing'}, ${state.iframes} Hosted Fields iframes, loader ${state.loaderShowing ? 'showing' : 'gone'}` : 'missing'}`,
+                    `card form plugin: ${state.pluginRegistered ? 'registered' : 'not registered'}, ${state.pluginInitialized ? 'initialized on the container' : 'not initialized on the container'}`,
                     `checked payment method: ${truncate(state.checkedPayment)}`,
                     `visible alerts: ${list(state.alerts.map(truncate))}`,
                 ];
@@ -231,7 +183,6 @@ function recordCardFormDiagnostics(page: Page) {
                 `page errors: ${list(pageErrors)}`,
                 `console errors: ${list(consoleErrors)}`,
                 `failed requests: ${list(failedRequests)}`,
-                `timeline: ${timeline.join(' > ')}`,
             );
 
             const original = error.message;
