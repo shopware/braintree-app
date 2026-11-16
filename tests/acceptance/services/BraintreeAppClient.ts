@@ -137,6 +137,11 @@ export class BraintreeAppClient {
         await assertOk(response, 'Saving the Braintree config');
     }
 
+    /** `null` means the sales channel inherits the default */
+    async getThreeDSecureEnforced(salesChannelId: string | null): Promise<boolean | null> {
+        return (await this.get<ConfigEntity>(`/api/entity/by-sales-channel/config/${String(salesChannelId)}`)).threeDSecureEnforced;
+    }
+
     async dispose(): Promise<void> {
         await this.context.dispose();
     }
