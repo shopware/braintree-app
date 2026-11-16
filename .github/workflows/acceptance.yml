@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   acceptance:
+    name: acceptance (app ${{ matrix.app-version }}, Shopware ${{ matrix.shopware-version }})
     # The Braintree sandbox credentials only exist in this repository's environment
     # A "labeled" event only starts a run when run/acceptance itself was added
     if: >-
@@ -25,6 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: acceptance-production
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app-version: 6.7.0.0
+            shopware-version: trunk
+          - app-version: 6.6.0.0
+            shopware-version: 6.6.x
     services:
       mariadb:
         image: mariadb:10.11
@@ -41,6 +50,7 @@ jobs:
           --health-retries=20
     env:
       BRAINTREE_APP_URL: http://localhost:8001
+      BRAINTREE_APP_VERSION: ${{ matrix.app-version }}
     steps:
       - uses: actions/checkout@v7
 
@@ -65,19 +75,19 @@ jobs:
           # apps.sh forces the production URL and drops <secret> whenever CI is set or APP_ENV=prod
           CI='' APP_ENV=dev APP_URL="$BRAINTREE_APP_URL" APP_SECRET="$BRAINTREE_APP_SECRET" ./bin/apps.sh setup
 
-          manifest=apps/6.7.0.0/manifest.xml
+          manifest="apps/$BRAINTREE_APP_VERSION/manifest.xml"
           if ! grep -qF "$BRAINTREE_APP_URL/app/lifecycle/register" "$manifest" || ! grep -q '<secret>[^<]' "$manifest"; then
             echo "::error file=$manifest::Manifest is not configured for $BRAINTREE_APP_URL with a setup secret"
             exit 1
           fi
 
-          ./bin/apps.sh build 6.7.0.0
+          ./bin/apps.sh build "$BRAINTREE_APP_VERSION"
 
       - name: Setup Shopware
         uses: shopware/setup-shopware@main
         with:
           path: shopware
-          shopware-version: trunk
+          shopware-version: ${{ matrix.shopware-version }}
           php-version: '8.4'
           node-version: '24.x'
           env: prod
@@ -88,7 +98,12 @@ jobs:
       - name: Allow app system requests to the local app server
         working-directory: shopware
         run: |
-          # Shopware in prod rejects app system requests to http:// and loopback targets
+          # Shopware in prod rejects app system requests to http:// and loopback targets.
+          # Lines without the switch have no such check, and an unknown key would break the container build.
+          if ! yq -e '.shopware.app_system.enable_url_validation != null' src/Core/Framework/Resources/config/packages/shopware.yaml > /dev/null; then
+            echo "This Shopware has no app system URL validation to disable"
+            exit 0
+          fi
           mkdir -p config/packages/prod
           cat > config/packages/prod/acceptance.yaml <<'YAML'
           shopware:
@@ -121,10 +136,15 @@ jobs:
 
       - name: Install app
         run: |
-          ln -s "$GITHUB_WORKSPACE/apps/6.7.0.0" shopware/custom/apps/SwagBraintreeApp
+          ln -s "$GITHUB_WORKSPACE/apps/$BRAINTREE_APP_VERSION" shopware/custom/apps/SwagBraintreeApp
           cd shopware
           bin/console app:install --activate --force SwagBraintreeApp
-          bin/console app:list --format json | jq -e '.[] | select(.name == "SwagBraintreeApp" and .active)' > /dev/null
+          # app:install exits 0 when it finds no app, and Shopware 6.6 has no app:list to check with
+          active="$(mysql -h 127.0.0.1 -u root -N -s -e "SELECT active FROM app WHERE name = 'SwagBraintreeApp'" "${DATABASE_URL##*/}")"
+          if [ "$active" != 1 ]; then
+            echo "::error::SwagBraintreeApp is not installed and active"
+            exit 1
+          fi
 
       - uses: ./.github/actions/setup-acceptance
         with:
@@ -174,6 +194,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: acceptance-test-result
+          name: acceptance-test-result-${{ matrix.app-version }}
           path: ${{ runner.temp }}/test-results.zip
           retention-days: 3
