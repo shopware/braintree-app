@@ -1,6 +1,6 @@
 ## Setup
 
-The suite needs a running Shopware 6.7 shop with the SwagBraintreeApp installed, active and registered with a reachable app server.
+The suite needs a running Shopware 6.6 or 6.7 shop with the SwagBraintreeApp from the matching `apps/<version>` folder installed, active and registered with a reachable app server.
 
 Navigate to this directory and install the dependencies and the browser.
 
@@ -24,6 +24,8 @@ SHOPWARE_SECRET_ACCESS_KEY="<your-api-secret>"
 ```
 
 If the shop runs in `dev`, run `bin/console cache:clear` in the shop after installing the app: Shopware loads app storefront templates in `dev` from the compiled container, so the Hosted Fields are missing until it is rebuilt.
+
+If the shop is a development checkout of Shopware, set `shopware.deployment.runtime_extension_management: false` in its config. Such a shop sends no version to the Shopware Store, which then offers its latest release of the app as an update, and the daily app update task installs that release over the app you are testing. If the shop runs in `prod` and the app server is on `http://localhost`, also set `shopware.app_system.enable_url_validation: false`. The `acceptance` workflow does both.
 
 To generate the access key you can use `bin/console integration:create AcceptanceTest --admin` in the shop.
 
