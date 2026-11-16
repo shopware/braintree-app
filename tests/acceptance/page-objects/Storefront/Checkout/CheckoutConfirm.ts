@@ -4,6 +4,8 @@ import { StorefrontPageObjects } from '@shopware-ag/acceptance-test-suite';
 export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
     public readonly paymentBraintreeName = 'Credit or Debit Card (by Braintree)';
     public readonly paymentBraintree: Locator;
+    /** Shopware's notice when it switched away from Braintree because the checkout gateway removed it */
+    public readonly paymentBraintreeUnavailableAlert: Locator;
 
     public readonly braintreeHostedFields: Locator;
     public readonly braintreeCardNumberInput: Locator;
@@ -12,10 +14,21 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
     public readonly braintreeCardholderNameInput: Locator;
     public readonly braintreePostalCodeInput: Locator;
 
+    /** The containers around the Hosted Fields iframes, which the app marks with `is-invalid` */
+    public readonly braintreeCardNumberField: Locator;
+    public readonly braintreeExpirationDateField: Locator;
+    public readonly braintreeCvvField: Locator;
+    public readonly braintreeCardholderNameField: Locator;
+    public readonly braintreePostalCodeField: Locator;
+
+    public readonly threeDSecureChallengeCodeInput: Locator;
+    public readonly threeDSecureChallengeSubmitButton: Locator;
+
     constructor(page: Page) {
         super(page);
 
         this.paymentBraintree = this.paymentMethodRadioGroup.getByRole('radio', { name: this.paymentBraintreeName });
+        this.paymentBraintreeUnavailableAlert = page.getByRole('alert').filter({ hasText: `"${this.paymentBraintreeName}" payment is not available` });
 
         this.braintreeHostedFields = page.locator('.swag-braintree-hosted-fields');
         this.braintreeCardNumberInput = this.hostedFieldInput('number', '#credit-card-number');
@@ -23,6 +36,17 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
         this.braintreeCvvInput = this.hostedFieldInput('cvv', '#cvv');
         this.braintreeCardholderNameInput = this.hostedFieldInput('cardholderName', '#cardholder-name');
         this.braintreePostalCodeInput = this.hostedFieldInput('postalCode', '#postal-code');
+
+        this.braintreeCardNumberField = page.locator('#sw-braintree-payment-method__number');
+        this.braintreeExpirationDateField = page.locator('#sw-braintree-payment-method__expirationDate');
+        this.braintreeCvvField = page.locator('#sw-braintree-payment-method__cvv');
+        this.braintreeCardholderNameField = page.locator('#sw-braintree-payment-method__cardholderName');
+        this.braintreePostalCodeField = page.locator('#sw-braintree-payment-method__postalCode');
+
+        // Cardinal renders the 3D Secure challenge of the sandbox issuer in a cross-origin iframe inside its modal
+        const threeDSecureChallenge = page.locator('#Cardinal-CCA-IFrame').contentFrame();
+        this.threeDSecureChallengeCodeInput = threeDSecureChallenge.getByPlaceholder('Enter Code Here');
+        this.threeDSecureChallengeSubmitButton = threeDSecureChallenge.getByRole('button', { name: 'Submit' });
     }
 
     // Each Hosted Field is a cross-origin iframe served by Braintree
