@@ -95,6 +95,7 @@ export default defineComponent({
 
     created() {
         void this.getConfig('null');
+        if (this.salesChannelId) void this.getConfig(this.stringifySalesChannelId);
         this.registerSaveHandler(this.updateConfig.bind(this));
     },
 

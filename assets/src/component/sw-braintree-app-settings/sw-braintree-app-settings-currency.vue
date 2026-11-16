@@ -143,6 +143,7 @@ export default defineComponent({
         void this.getShopwareCurrencies();
 
         const promises = [this.getMerchantAccounts(), this.getCurrencyMappings()];
+        if (this.salesChannelId) promises.push(this.getCurrencyMappings(this.salesChannelId));
         void Promise.all(promises).then(() => this.loadingInputs = false);
     },
 
