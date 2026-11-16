@@ -6,13 +6,14 @@ export type ProceedToBraintreeCheckoutTask = Task<[product: Product]>;
  * Extends the acceptance test suite's test instead of Playwright's, because it uses its tasks.
  *
  * Puts the product into the cart and opens the confirm page with the test shipping method
- * and the Braintree payment method selected. The customer must be logged in.
+ * and the Braintree payment method selected and its card form loaded. The customer must be logged in.
  */
 export const ProceedToBraintreeCheckout = base.extend<FixtureTypes>({
     ProceedToBraintreeCheckout: async ({
         ShopCustomer,
         StorefrontProductDetail,
         StorefrontCheckoutConfirm,
+        StorefrontBraintreeCardPayment,
         TestShippingMethod,
         AddProductToCart,
         ProceedFromProductToCheckout,
@@ -54,6 +55,11 @@ export const ProceedToBraintreeCheckout = base.extend<FixtureTypes>({
                 // Both selections reload the confirm page, so they have to happen before anything is filled in
                 await selectMethod(StorefrontCheckoutConfirm.shippingMethodRadioGroup.getByRole('radio', { name: TestShippingMethod.name }));
                 await selectMethod(StorefrontCheckoutConfirm.paymentBraintree);
+
+                // The card form requests an app token from the shop before it creates the Hosted Fields. Without session
+                // locking (PHP's Redis session handler by default), a token request still running when the test navigates
+                // on writes back an older session and drops what the next page stored in it, e.g. Shopware's notices.
+                await ShopCustomer.expects(StorefrontBraintreeCardPayment.cardNumberInput).toBeVisible();
             };
         };
 

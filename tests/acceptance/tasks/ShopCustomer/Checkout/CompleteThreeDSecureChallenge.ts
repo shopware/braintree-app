@@ -9,11 +9,11 @@ export type CompleteThreeDSecureChallengeTask = Task<[]>;
  * Uses plain fill() and click() for the same reason as FillBraintreeCard: the challenge is a cross-origin iframe.
  */
 export const CompleteThreeDSecureChallenge = base.extend<FixtureTypes>({
-    CompleteThreeDSecureChallenge: async ({ StorefrontCheckoutConfirm }, use) => {
+    CompleteThreeDSecureChallenge: async ({ StorefrontBraintreeCardPayment }, use) => {
         const task: CompleteThreeDSecureChallengeTask = () => {
             return async function CompleteThreeDSecureChallenge() {
-                await StorefrontCheckoutConfirm.threeDSecureChallengeCodeInput.fill('1234');
-                await StorefrontCheckoutConfirm.threeDSecureChallengeSubmitButton.click();
+                await StorefrontBraintreeCardPayment.threeDSecureChallengeCodeInput.fill('1234');
+                await StorefrontBraintreeCardPayment.threeDSecureChallengeSubmitButton.click();
             };
         };
 

@@ -26,6 +26,7 @@ test('Customer cannot submit the order with empty card data.', { tag: ['@Storefr
     ShopCustomer,
     TestDataService,
     StorefrontCheckoutConfirm,
+    StorefrontBraintreeCardPayment,
     Login,
     ProceedToBraintreeCheckout,
     ConfirmTermsAndConditions,
@@ -36,15 +37,14 @@ test('Customer cannot submit the order with empty card data.', { tag: ['@Storefr
     await ShopCustomer.attemptsTo(Login(customer));
     await ShopCustomer.attemptsTo(ProceedToBraintreeCheckout(product));
     await ShopCustomer.attemptsTo(ConfirmTermsAndConditions());
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeCardNumberInput).toBeVisible();
     await submitOrderAndExpectItCancelled(StorefrontCheckoutConfirm);
 
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeCardNumberField).toHaveClass(/is-invalid/);
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeExpirationDateField).toHaveClass(/is-invalid/);
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeCvvField).toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.cardNumberField).toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.expirationDateField).toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.cvvField).toHaveClass(/is-invalid/);
     // prefilled from the customer
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeCardholderNameField).not.toHaveClass(/is-invalid/);
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreePostalCodeField).not.toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.cardholderNameField).not.toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.postalCodeField).not.toHaveClass(/is-invalid/);
 
     await ShopCustomer.expects(StorefrontCheckoutConfirm.headline).toBeVisible();
     await ShopCustomer.expects(StorefrontCheckoutConfirm.submitOrderButton).toBeEnabled();
@@ -54,6 +54,7 @@ test('Customer cannot submit the order with an invalid card number and an expire
     ShopCustomer,
     TestDataService,
     StorefrontCheckoutConfirm,
+    StorefrontBraintreeCardPayment,
     Login,
     ProceedToBraintreeCheckout,
     ConfirmTermsAndConditions,
@@ -69,9 +70,9 @@ test('Customer cannot submit the order with an invalid card number and an expire
     await ShopCustomer.attemptsTo(FillBraintreeCard({ number: '4111111111111112', expirationDate: '01/2001', cvv: '123' }));
     await submitOrderAndExpectItCancelled(StorefrontCheckoutConfirm);
 
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeCardNumberField).toHaveClass(/is-invalid/);
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeExpirationDateField).toHaveClass(/is-invalid/);
-    await ShopCustomer.expects(StorefrontCheckoutConfirm.braintreeCvvField).not.toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.cardNumberField).toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.expirationDateField).toHaveClass(/is-invalid/);
+    await ShopCustomer.expects(StorefrontBraintreeCardPayment.cvvField).not.toHaveClass(/is-invalid/);
 
     await ShopCustomer.expects(StorefrontCheckoutConfirm.headline).toBeVisible();
     await ShopCustomer.expects(StorefrontCheckoutConfirm.submitOrderButton).toBeEnabled();

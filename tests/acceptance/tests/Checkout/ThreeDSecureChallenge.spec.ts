@@ -40,11 +40,12 @@ test('Customer passes an enforced 3D Secure challenge and the order is paid.', {
     expect(await ReadOrderTransactionState(orderId)()).toBe('paid');
 });
 
-test('Customer fails an enforced 3D Secure challenge and the payment of the order fails.', { tag: ['@Storefront'] }, async ({
+test('Customer fails an enforced 3D Secure challenge, the payment fails and the customer pays the order on the edit order page.', { tag: ['@Storefront'] }, async ({
     ShopCustomer,
     TestDataService,
     StorefrontCheckoutConfirm,
     StorefrontCheckoutOrderEdit,
+    StorefrontCheckoutFinish,
     Login,
     ProceedToBraintreeCheckout,
     ConfirmTermsAndConditions,
@@ -68,4 +69,14 @@ test('Customer fails an enforced 3D Secure challenge and the payment of the orde
     const orderId = StorefrontCheckoutOrderEdit.getOrderId();
     expect(orderId).not.toBe('');
     expect(await ReadOrderTransactionState(orderId)()).toBe('failed');
+
+    // The edit order page keeps the card payment selected and loads the card form again
+    await ShopCustomer.expects(StorefrontCheckoutOrderEdit.paymentMethodRadioGroup.getByRole('radio', { name: StorefrontCheckoutConfirm.paymentBraintreeName })).toBeChecked();
+    await ShopCustomer.attemptsTo(FillBraintreeCard(TestCards.successfulNoChallenge));
+    await ShopCustomer.presses(StorefrontCheckoutOrderEdit.completePaymentButton);
+
+    // the finish page of a changed payment greets differently than the one of a new order
+    await ShopCustomer.expects(StorefrontCheckoutFinish.page.getByRole('heading', { name: 'Thank you for updating your order!' })).toBeVisible();
+    expect(StorefrontCheckoutFinish.getOrderId()).toBe(orderId);
+    expect(await ReadOrderTransactionState(orderId)()).toBe('paid');
 });
