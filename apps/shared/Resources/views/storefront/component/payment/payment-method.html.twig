@@ -3,10 +3,9 @@
 {% block component_payment_method_description %}
     {{ parent() }}
 
-    {% set selectedAppPaymentMethodId = context.paymentMethod.appPaymentMethod.identifier %}
     {% set appPaymentMethodId = payment.appPaymentMethod.identifier %}
 
-    {% if selectedAppPaymentMethodId == 'credit_card' and appPaymentMethodId == 'credit_card' %}
+    {% if payment.id is same as(selectedPaymentMethodId ?? context.paymentMethod.id) and appPaymentMethodId == 'credit_card' %}
         {% sw_include '@SwagBraintreeApp/storefront/braintree/component/checkout/braintree-hosted-fields.html.twig' %}
     {% endif %}
 {% endblock %}

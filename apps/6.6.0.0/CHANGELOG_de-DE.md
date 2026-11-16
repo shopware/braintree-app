@@ -1,3 +1,7 @@
+# 2.3.4
+
+* Behebt ein Problem, bei dem die Kreditkartenfelder nicht geladen wurden, wenn eine fehlgeschlagene Zahlung über die Bestellbearbeitung wiederholt wurde
+
 # 2.3.3
 
 * Behebt ein Problem während des Checkouts, bei dem Braintree Merchants nicht für 3DS registriert sind
