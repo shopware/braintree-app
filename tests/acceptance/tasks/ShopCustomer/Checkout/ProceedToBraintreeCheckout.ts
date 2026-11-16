@@ -62,7 +62,10 @@ export const ProceedToBraintreeCheckout = base.extend<FixtureTypes>({
                     // The card form requests an app token from the shop before it creates the Hosted Fields. Without session
                     // locking (PHP's Redis session handler by default), a token request still running when the test navigates
                     // on writes back an older session and drops what the next page stored in it, e.g. Shopware's notices.
+                    // The plugin shows the fields before it creates its 3D Secure client and only then registers its submit
+                    // handler. It removes its loader last, so a submit before that would send the order without the card.
                     await ShopCustomer.expects(StorefrontBraintreeCardPayment.cardNumberInput).toBeVisible()
+                        .then(() => ShopCustomer.expects(StorefrontBraintreeCardPayment.loadingHostedFields).toHaveCount(0))
                         .catch(async (error: unknown) => { throw await diagnostics.appendTo(error); });
                 }
                 finally {

@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
 
 export interface BraintreeCard {
     number: string
@@ -22,6 +22,8 @@ export const FillBraintreeCard = base.extend<FixtureTypes>({
                 await StorefrontBraintreeCardPayment.cardNumberInput.fill(card.number);
                 await StorefrontBraintreeCardPayment.expirationDateInput.fill(card.expirationDate);
                 await StorefrontBraintreeCardPayment.cvvInput.fill(card.cvv);
+                // the plugin handles a submit only once its setup is done, which can end after the fields were filled
+                await expect(StorefrontBraintreeCardPayment.loadingHostedFields).toHaveCount(0);
             };
         };
 

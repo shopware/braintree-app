@@ -6,6 +6,8 @@ import type { Page, Locator } from '@shopware-ag/acceptance-test-suite';
  */
 export class BraintreeCardPayment {
     private readonly hostedFields: Locator;
+    /** The card form while the app's plugin sets it up. The plugin handles a submit only once this is gone. */
+    public readonly loadingHostedFields: Locator;
     public readonly cardNumberInput: Locator;
     public readonly expirationDateInput: Locator;
     public readonly cvvInput: Locator;
@@ -22,6 +24,7 @@ export class BraintreeCardPayment {
 
     constructor(page: Page) {
         this.hostedFields = page.locator('.swag-braintree-hosted-fields');
+        this.loadingHostedFields = page.locator('.swag-braintree-hosted-fields.has-element-loader');
         this.cardNumberInput = this.hostedFieldInput('number', '#credit-card-number');
         this.expirationDateInput = this.hostedFieldInput('expirationDate', '#expiration');
         this.cvvInput = this.hostedFieldInput('cvv', '#cvv');
