@@ -2,6 +2,7 @@
 
 namespace Swag\Braintree\Tests\Application\Controller;
 
+use Swag\Braintree\Entity\CurrencyMappingEntity;
 use Swag\Braintree\Tests\Contract\ApplicationHelperTrait;
 use Swag\Braintree\Tests\Ids;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -45,5 +46,43 @@ class EntityControllerTest extends WebTestCase
         $client->request(Request::METHOD_GET, '/api/entity/shop');
 
         static::assertResponseStatusCodeSame(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    public function testGetCurrencyMappingEntities(): void
+    {
+        $shop = static::createShop();
+
+        $mapped = (new CurrencyMappingEntity())
+            ->setCurrencyId('euro-id')
+            ->setCurrencyIso('EUR')
+            ->setMerchantAccountId('merchant-account')
+            ->setShop($shop);
+
+        $unmapped = (new CurrencyMappingEntity())
+            ->setCurrencyId('dollar-id')
+            ->setCurrencyIso('USD')
+            ->setSalesChannelId('sales-channel-id')
+            ->setShop($shop);
+
+        $entityManager = static::getEntityManager();
+        $entityManager->persist($mapped);
+        $entityManager->persist($unmapped);
+        $entityManager->flush();
+        $entityManager->clear();
+
+        $client = static::createClientForShop($shop);
+        $client->request(Request::METHOD_POST, '/api/entity/currency_mapping', content: '{}');
+
+        static::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        /** @var Response $response */
+        $response = $client->getResponse();
+
+        $mappings = \json_decode($response->getContent(), true, flags: \JSON_THROW_ON_ERROR);
+
+        static::assertSame(
+            ['EUR' => 'merchant-account', 'USD' => null],
+            \array_column($mappings, 'merchantAccountId', 'currencyIso'),
+        );
     }
 }

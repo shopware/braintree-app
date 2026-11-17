@@ -87,9 +87,11 @@ export default defineComponent({
     },
 
     methods: {
-        onUpdateMerchantAccount(merchantAccount: string) {
-            if (Array.isArray(merchantAccount)) {
-                this.$emit('delete:mapping', this.mapping);
+        onUpdateMerchantAccount(merchantAccount: string | null) {
+            // a sales channel keeps the emptied mapping, it overrides the inherited one
+            if (!merchantAccount && !this.inheritance) {
+                if (this.mapping) this.$emit('delete:mapping', this.mapping);
+
                 return;
             }
 
