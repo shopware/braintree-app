@@ -1,0 +1,225 @@
+name: acceptance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches:
+      - trunk
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    name: acceptance (app ${{ matrix.app-version }}, Shopware ${{ matrix.shopware-version }})
+    # The Braintree sandbox credentials only exist in this repository's environment
+    # A "labeled" event only starts a run when run/acceptance itself was added
+    if: >-
+      github.repository == 'shopware/braintree-app' && (
+        github.event_name != 'pull_request' || (
+          contains(github.event.pull_request.labels.*.name, 'run/acceptance') &&
+          (github.event.action != 'labeled' || github.event.label.name == 'run/acceptance')
+        )
+      )
+    runs-on: ubuntu-latest
+    environment: acceptance-production
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app-version: 6.7.0.0
+            shopware-version: trunk
+          - app-version: 6.6.0.0
+            shopware-version: 6.6.x
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: swagbraintree
+          MARIADB_DATABASE: swagbraintree
+          MARIADB_USER: swagbraintree
+          MARIADB_PASSWORD: swagbraintree
+        ports: ['3307:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      BRAINTREE_APP_URL: http://localhost:8001
+      BRAINTREE_APP_VERSION: ${{ matrix.app-version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup-php
+
+      - uses: ./.github/actions/setup-node
+
+      - name: Build admin iframe
+        run: npm run build
+
+      - uses: shopware/shopware-cli-action@v2
+
+      - name: Generate app secret
+        run: |
+          secret="$(openssl rand -hex 16)"
+          echo "::add-mask::$secret"
+          echo "BRAINTREE_APP_SECRET=$secret" >> "$GITHUB_ENV"
+
+      - name: Configure and build app
+        run: |
+          npm i --prefix ./apps/shared/Resources/app/storefront
+          # apps.sh forces the production URL and drops <secret> whenever CI is set or APP_ENV=prod
+          CI='' APP_ENV=dev APP_URL="$BRAINTREE_APP_URL" APP_SECRET="$BRAINTREE_APP_SECRET" ./bin/apps.sh setup
+
+          manifest="apps/$BRAINTREE_APP_VERSION/manifest.xml"
+          if ! grep -qF "$BRAINTREE_APP_URL/app/lifecycle/register" "$manifest" || ! grep -q '<secret>[^<]' "$manifest"; then
+            echo "::error file=$manifest::Manifest is not configured for $BRAINTREE_APP_URL with a setup secret"
+            exit 1
+          fi
+
+          ./bin/apps.sh build "$BRAINTREE_APP_VERSION"
+
+      - name: Setup Shopware
+        uses: shopware/setup-shopware@main
+        with:
+          path: shopware
+          shopware-version: ${{ matrix.shopware-version }}
+          php-version: '8.4'
+          node-version: '24.x'
+          env: prod
+          install: true
+          install-admin: true
+          install-storefront: true
+
+      - name: Configure Shopware for the acceptance run
+        working-directory: shopware
+        run: |
+          # Each override is only written when this Shopware knows the key, an unknown key would break the container build
+          defaults=src/Core/Framework/Resources/config/packages/shopware.yaml
+          mkdir -p config/packages/prod
+
+          # Shopware in prod rejects app system requests to http:// and loopback targets
+          if yq -e '.shopware.app_system.enable_url_validation != null' "$defaults" > /dev/null; then
+            yq -n '.shopware.app_system.enable_url_validation = false' > config/packages/prod/acceptance-app-system.yaml
+          fi
+
+          # With per-key tags, a storefront page cached before its sales channel had a theme is not purged when the
+          # theme gets assigned, so it keeps pointing at a stylesheet that does not exist. The global config tag is
+          # purged by the theme seed the compilation saves.
+          if yq -e '.shopware.cache.tagging.each_config != null' "$defaults" > /dev/null; then
+            yq -n '.shopware.cache.tagging.each_config = false' > config/packages/prod/acceptance-http-cache.yaml
+          fi
+
+          # A -dev Shopware sends no version to the Shopware Store, which then offers its latest release of the app as an
+          # update whatever line it is for. The daily app update task would download that release over the app under test.
+          if grep -q "'runtime_extension_management'" src/Core/Framework/DependencyInjection/Configuration.php; then
+            yq -n '.shopware.deployment.runtime_extension_management = false' > config/packages/prod/acceptance-extension-management.yaml
+          fi
+
+          bin/console cache:clear
+
+      - name: Start app server
+        run: |
+          # setup-shopware exported Shopware's APP_ENV, APP_SECRET and DATABASE_URL to $GITHUB_ENV
+          export APP_ENV=prod APP_DEBUG=0 APP_SECRET="$BRAINTREE_APP_SECRET"
+          export DATABASE_URL=mysql://swagbraintree:swagbraintree@127.0.0.1:3307/swagbraintree
+          bin/console doctrine:migrations:migrate -n
+
+          mkdir -p "$RUNNER_TEMP/acceptance-artifact"
+          log="$RUNNER_TEMP/acceptance-artifact/app-server.log"
+          SYMFONY_NO_TLS=1 SYMFONY_ALLOW_HTTP=1 SYMFONY_PORT=8001 SYMFONY_ALLOW_ALL_IP=1 \
+            nohup symfony server:start > "$log" 2>&1 &
+
+          for _ in $(seq 60); do
+            if curl -sfo /dev/null "$BRAINTREE_APP_URL/build/admin.js"; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::App server did not answer on $BRAINTREE_APP_URL"
+          tail -n 100 "$log"
+          exit 1
+
+      - name: Install app
+        run: |
+          ln -s "$GITHUB_WORKSPACE/apps/$BRAINTREE_APP_VERSION" shopware/custom/apps/SwagBraintreeApp
+          shopware/bin/console app:install --activate --force SwagBraintreeApp
+          # app:install exits 0 when it finds no app, and Shopware 6.6 has no app:list to check with
+          active="$(mysql -h 127.0.0.1 -u root -N -s -e "SELECT active FROM app WHERE name = 'SwagBraintreeApp'" "${DATABASE_URL##*/}")"
+          if [ "$active" != 1 ]; then
+            echo "::error::SwagBraintreeApp is not installed and active"
+            exit 1
+          fi
+
+      - uses: ./.github/actions/setup-acceptance
+        with:
+          path: tests/acceptance
+
+      - name: Prepare acceptance environment
+        working-directory: shopware
+        run: |
+          echo "SHOPWARE_URL=http://localhost:8000" > "$GITHUB_WORKSPACE/tests/acceptance/.env"
+          symfony console integration:create AcceptanceTest --admin >> "$GITHUB_WORKSPACE/tests/acceptance/.env"
+
+      - name: Run Playwright
+        id: playwright
+        working-directory: tests/acceptance
+        # No --trace here: the CLI flag would override the specs that turn tracing off to keep the keys out of it
+        run: npx playwright test --reporter=github
+        env:
+          BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
+          BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
+          BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
+
+      - name: Show storefront theme state
+        if: failure() && steps.playwright.outcome == 'failure'
+        working-directory: shopware
+        run: |
+          db="${DATABASE_URL##*/}"
+          mysql -h 127.0.0.1 -u root -t -e "SELECT name, active, base_app_url,
+              (SELECT COUNT(*) FROM app_template t WHERE t.app_id = app.id AND t.active = 1) AS templates,
+              (SELECT COUNT(*) FROM script s WHERE s.app_id = app.id AND s.active = 1) AS scripts
+            FROM app" "$db"
+
+          built="$GITHUB_WORKSPACE/apps/$BRAINTREE_APP_VERSION/Resources/app/storefront/dist/storefront/js/swag-braintree-app/swag-braintree-app.js"
+          for dir in public/theme/*/; do
+            js="${dir}js/swag-braintree-app/swag-braintree-app.js"
+            echo "$dir all.css: $([ -f "${dir}css/all.css" ] && echo yes || echo no), app js: $(if [ ! -f "$js" ]; then echo no; elif cmp -s "$js" "$built"; then echo as built; else echo NOT as built; fi)"
+          done
+
+          page="$(mktemp)"
+          mysql -h 127.0.0.1 -u root -N -s -e "SELECT url FROM sales_channel_domain WHERE url LIKE 'http%'" "$db" | while read -r url; do
+            echo "$url -> $(curl -s -o "$page" -w '%{http_code} age=%header{age}' "$url")"
+            grep -oE 'https?://[^"]*(all\.css|swag-braintree-app\.js)[^"]*' "$page" | sort -u | while read -r asset; do
+              echo "  $asset -> $(curl -s -o /dev/null -w '%{http_code}' "$asset")"
+            done
+          done
+
+      - name: Compress and encrypt test results
+        if: always()
+        env:
+          ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
+        run: |
+          : "${ARTIFACT_PASSWORD:?ARTIFACT_PASSWORD is required to encrypt the test results}"
+          dir="$RUNNER_TEMP/acceptance-artifact"
+          mkdir -p "$dir"
+          if [ -d tests/acceptance/test-results ]; then cp -r tests/acceptance/test-results "$dir/"; fi
+          if [ -d shopware/var/log ]; then cp -r shopware/var/log "$dir/shopware-log"; fi
+          cd "$dir"
+          if [ -z "$(ls -A)" ]; then
+            echo "Nothing to archive"
+            exit 0
+          fi
+          # AES-256 including the file names, where zip -P would only apply the breakable ZipCrypto
+          7z a -mhe=on -p"$ARTIFACT_PASSWORD" "$RUNNER_TEMP/test-results.7z" .
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: acceptance-test-result-${{ matrix.app-version }}
+          path: ${{ runner.temp }}/test-results.7z
+          retention-days: 3

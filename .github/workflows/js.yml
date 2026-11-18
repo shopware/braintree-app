@@ -8,6 +8,7 @@ on:
       - '**/*.ts'
       - package.json
       - package-lock.json
+      - tests/acceptance/**
       - .github/actions/setup-node/action.yml
       - .github/workflows/js.yml
   push:
@@ -16,6 +17,7 @@ on:
       - '**/*.ts'
       - package.json
       - package-lock.json
+      - tests/acceptance/**
       - .github/actions/setup-node/action.yml
       - .github/workflows/js.yml
     branches:
@@ -56,3 +58,22 @@ jobs:
       - uses: ./.github/actions/setup-node
       - name: Run vite
         run: npm run build
+
+  acceptance-lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tests/acceptance
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: tests/acceptance/package.json
+          cache: npm
+          cache-dependency-path: tests/acceptance/package-lock.json
+      - name: Install dependencies
+        run: npm ci --no-audit --prefer-offline
+      - name: Run ESLint
+        run: npm run lint
+      - name: Run type check
+        run: npm run tsc

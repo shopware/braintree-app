@@ -23,6 +23,19 @@ updates:
     ignore:
       - dependency-name: typescript
         update-types: [version-update:semver-minor]
+  - package-ecosystem: npm
+    directory: /tests/acceptance
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'fix(deps): '
+    groups:
+      all:
+        patterns:
+          - '*'
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-minor]
   - package-ecosystem: github-actions
     directory: /
     schedule:
