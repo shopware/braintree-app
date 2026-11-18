@@ -104,33 +104,20 @@ jobs:
 
           # Shopware in prod rejects app system requests to http:// and loopback targets
           if yq -e '.shopware.app_system.enable_url_validation != null' "$defaults" > /dev/null; then
-            cat > config/packages/prod/acceptance-app-system.yaml <<'YAML'
-          shopware:
-              app_system:
-                  enable_url_validation: false
-          YAML
+            yq -n '.shopware.app_system.enable_url_validation = false' > config/packages/prod/acceptance-app-system.yaml
           fi
 
           # With per-key tags, a storefront page cached before its sales channel had a theme is not purged when the
           # theme gets assigned, so it keeps pointing at a stylesheet that does not exist. The global config tag is
           # purged by the theme seed the compilation saves.
           if yq -e '.shopware.cache.tagging.each_config != null' "$defaults" > /dev/null; then
-            cat > config/packages/prod/acceptance-http-cache.yaml <<'YAML'
-          shopware:
-              cache:
-                  tagging:
-                      each_config: false
-          YAML
+            yq -n '.shopware.cache.tagging.each_config = false' > config/packages/prod/acceptance-http-cache.yaml
           fi
 
           # A -dev Shopware sends no version to the Shopware Store, which then offers its latest release of the app as an
           # update whatever line it is for. The daily app update task would download that release over the app under test.
           if grep -q "'runtime_extension_management'" src/Core/Framework/DependencyInjection/Configuration.php; then
-            cat > config/packages/prod/acceptance-extension-management.yaml <<'YAML'
-          shopware:
-              deployment:
-                  runtime_extension_management: false
-          YAML
+            yq -n '.shopware.deployment.runtime_extension_management = false' > config/packages/prod/acceptance-extension-management.yaml
           fi
 
           bin/console cache:clear
@@ -160,8 +147,7 @@ jobs:
       - name: Install app
         run: |
           ln -s "$GITHUB_WORKSPACE/apps/$BRAINTREE_APP_VERSION" shopware/custom/apps/SwagBraintreeApp
-          cd shopware
-          bin/console app:install --activate --force SwagBraintreeApp
+          shopware/bin/console app:install --activate --force SwagBraintreeApp
           # app:install exits 0 when it finds no app, and Shopware 6.6 has no app:list to check with
           active="$(mysql -h 127.0.0.1 -u root -N -s -e "SELECT active FROM app WHERE name = 'SwagBraintreeApp'" "${DATABASE_URL##*/}")"
           if [ "$active" != 1 ]; then
@@ -217,8 +203,6 @@ jobs:
         if: always()
         env:
           ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
-          BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
-          BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
         run: |
           : "${ARTIFACT_PASSWORD:?ARTIFACT_PASSWORD is required to encrypt the test results}"
           dir="$RUNNER_TEMP/acceptance-artifact"
@@ -226,28 +210,16 @@ jobs:
           if [ -d tests/acceptance/test-results ]; then cp -r tests/acceptance/test-results "$dir/"; fi
           if [ -d shopware/var/log ]; then cp -r shopware/var/log "$dir/shopware-log"; fi
           cd "$dir"
-          # The archive is only weakly encrypted, so no file that still contains a Braintree API key may get into it.
-          # Traces are compressed, so they are searched unpacked, and one that cannot be unpacked goes as well.
-          # The merchant ID is not searched for: every shopper's browser receives it, so it is in every checkout trace.
-          for secret in "$BRAINTREE_PUBLIC_KEY" "$BRAINTREE_PRIVATE_KEY"; do
-            if [ -n "$secret" ]; then
-              { grep -rlF --null -e "$secret" . || true; } | xargs -0 -r rm -fv
-              find . -name '*.zip' -print0 | while IFS= read -r -d '' trace; do
-                if ! unzip -tqq "$trace" > /dev/null 2>&1 || unzip -p "$trace" | grep -qF -e "$secret"; then
-                  rm -fv "$trace"
-                fi
-              done
-            fi
-          done
           if [ -z "$(ls -A)" ]; then
             echo "Nothing to archive"
             exit 0
           fi
-          zip -r -P "$ARTIFACT_PASSWORD" "$RUNNER_TEMP/test-results.zip" .
+          # AES-256 including the file names, where zip -P would only apply the breakable ZipCrypto
+          7z a -mhe=on -p"$ARTIFACT_PASSWORD" "$RUNNER_TEMP/test-results.7z" .
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: acceptance-test-result-${{ matrix.app-version }}
-          path: ${{ runner.temp }}/test-results.zip
+          path: ${{ runner.temp }}/test-results.7z
           retention-days: 3
